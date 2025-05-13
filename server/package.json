@@ -1,0 +1,29 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "description": "backend logic",
+    "main": "src/index.ts",
+    "scripts": {
+        "start": "node --env-file=.env dist/index.js",
+        "start:dev": "nodemon --exec node -r ts-node/register --env-file=.env src/index.ts",
+        "build": "tsc --build",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "imad rouah",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^6.0.0",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "mysql2": "^3.14.1"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^5.0.2",
+        "@types/express": "^5.0.1",
+        "@types/jsonwebtoken": "^9.0.9",
+        "@types/node": "^22.15.17",
+        "nodemon": "^3.1.10",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    }
+}
