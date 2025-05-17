@@ -1,10 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config";
+import { User } from "../models/usersModel";
 
 interface AuthRequest extends Request {
     user?: any;
 }
+
+// type AuthHeader = `Bearer ${string}`;
 
 export const authenticateJWT = (
     req: AuthRequest,
@@ -12,15 +15,17 @@ export const authenticateJWT = (
     next: NextFunction
 ) => {
     if (config.jwtSecret === undefined) {
-        return res
-            .status(500)
-            .json({ message: "Some error occurred, please try again later" });
+        res.status(500).json({
+            message: "Some error occurred, please try again later",
+        });
+        return;
     }
 
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "Access token required" });
+        res.status(401).json({ message: "Access token required" });
+        return;
     }
 
     const token = authHeader.split(" ")[1];
@@ -34,7 +39,7 @@ export const authenticateJWT = (
     }
 };
 
-export const checkRole = (role: string) => {
+export const checkRole = (role: User["role"]) => {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
         if (req.user && req.user.role === role) {
             next();
