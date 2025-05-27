@@ -22,6 +22,15 @@ export const getUserById = async (id: number): Promise<User | null> => {
     return users.length > 0 ? users[0] : null;
 };
 
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+    const [row] = await db.query("SELECT * FROM users WHERE email = ?", [
+        email,
+    ]);
+    const users = row as User[];
+
+    return users.length > 0 ? users[0] : null;
+};
+
 export const insertUser = async (
     user: WithOptional<User, "id" | "banned" | "createdAt">
 ): Promise<boolean> => {

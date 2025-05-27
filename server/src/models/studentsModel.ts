@@ -4,9 +4,8 @@ import { db } from "../config/database";
 import { User } from "./usersModel";
 
 export interface Student {
-    id: number;
+    id: string;
     fullName: string;
-    cin: string;
     email: string;
     phone: string;
     address: string;
@@ -28,15 +27,15 @@ export const getStudentById = async (id: number): Promise<Student | null> => {
 };
 
 export const insertStudent = async (
-    student: WithOptional<Student, "id" | "createdAt">
+    student: WithOptional<Student, "createdAt">
 ): Promise<boolean> => {
-    const { fullName, cin, email, phone, address, dateOfBirth, createdBy } =
+    const { id, fullName, email, phone, address, dateOfBirth, createdBy } =
         student;
 
     try {
         await db.query(
-            "INSERT INTO students (fullName, cin, email, phone, address, dateOfBirth, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [fullName, cin, email, phone, address, dateOfBirth, createdBy]
+            "INSERT INTO students (id, fullName, email, phone, address, dateOfBirth, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [id, fullName, email, phone, address, dateOfBirth, createdBy]
         );
         return true;
     } catch (error) {
@@ -47,24 +46,24 @@ export const insertStudent = async (
 
 export const updateStudent = async (
     id: number,
-    student: Partial<Omit<Student, "id" | "createdAt" | "createdBy">>
+    student: Partial<Omit<Student, "createdAt" | "createdBy">>
 ): Promise<boolean> => {
-    const { fullName, cin, email, phone, address, dateOfBirth } = student;
+    const { id: newId, fullName, email, phone, address, dateOfBirth } = student;
 
-    if (!fullName && !cin && !email && !phone && !address && !dateOfBirth)
+    if (!newId && !fullName && !email && !phone && !address && !dateOfBirth)
         return false;
 
     let configs = {
         values: "",
         passed: [] as (string | boolean | Date)[],
     };
+    if (newId) {
+        configs.values += "id = ?, ";
+        configs.passed.push(newId);
+    }
     if (fullName) {
         configs.values += "fullName = ?, ";
         configs.passed.push(fullName);
-    }
-    if (cin) {
-        configs.values += "cin = ?, ";
-        configs.passed.push(cin);
     }
     if (email) {
         configs.values += "email = ?, ";

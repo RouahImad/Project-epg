@@ -21,7 +21,9 @@ export const getTaxById = async (id: Tax["id"]): Promise<Tax | null> => {
     return taxes.length > 0 ? taxes[0] : null;
 };
 
-export const insertTax = async (tax: Tax): Promise<boolean> => {
+export const insertTax = async (
+    tax: WithOptional<Tax, "id">
+): Promise<boolean> => {
     const { name, description, amount } = tax;
 
     try {

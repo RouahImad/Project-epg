@@ -1,4 +1,4 @@
-import {  WithOptional, config } from "../config/config";
+import { WithOptional, config } from "../config/config";
 import { db } from "../config/database";
 
 import { Major } from "./majorsModel";
@@ -70,11 +70,10 @@ export const updateStudentMajor = async (
 
     configs.values = configs.values.slice(0, -2); // Remove the last comma and space
 
-    configs.passed.push(studentId, majorId);
     try {
         await db.query(
             `UPDATE studentMajors SET ${configs.values} WHERE studentId = ? AND majorId = ?`,
-            configs.passed
+            [...configs.passed, studentId, majorId]
         );
         return true;
     } catch (error) {

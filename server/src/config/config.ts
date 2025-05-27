@@ -3,7 +3,9 @@ export type WithOptional<T, K extends keyof T> = Omit<T, K> &
 
 export const config = {
     jwtSecret: process.env.JWT_SECRET,
-    jwtExpiration: process.env.JWT_EXPIRATION,
+    jwtExp: "1h",
+    // jwtExp: (process.env.JWT_EXPIRES_IN as string) || "1h",
     port: process.env.PORT || 3000,
     apiKey: process.env.API_KEY,
+    env: process.env.NODE_ENV || "development",
 };

@@ -18,6 +18,16 @@ export const getMajors = async (): Promise<Major[]> => {
     return rows as Major[];
 };
 
+export const getMajorsByTypeId = async (
+    majorTypeId: MajorType["id"]
+): Promise<Major[]> => {
+    const [rows] = await db.query(
+        "SELECT * FROM majors WHERE majorTypeId = ?",
+        [majorTypeId]
+    );
+    return rows as Major[];
+};
+
 export const getMajorById = async (id: number): Promise<Major | null> => {
     const [row] = await db.query("SELECT * FROM majors WHERE id = ?", [id]);
     const majors = row as Major[];

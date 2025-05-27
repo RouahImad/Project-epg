@@ -21,7 +21,10 @@ export const authenticateJWT = (
         return;
     }
 
-    const authHeader = req.headers.authorization;
+    const authHeader =
+        (req.cookies?.token ? `Bearer ${req.cookies.token.trim()}` : null) ||
+        req.headers?.authorization ||
+        null;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json({ message: "Access token required" });
@@ -31,7 +34,7 @@ export const authenticateJWT = (
     const token = authHeader.split(" ")[1];
 
     try {
-        const decoded = jwt.verify(token, config.jwtSecret) as any;
+        const decoded = jwt.verify(token, config.jwtSecret) as User;
         req.user = decoded;
         next();
     } catch (error) {
@@ -44,7 +47,7 @@ export const checkRole = (role: User["role"]) => {
         if (req.user && req.user.role === role) {
             next();
         } else {
-            res.status(403).json({ message: "Forbidden" });
+            res.status(403).json({ message: "Unauthorized access" });
         }
     };
 };
