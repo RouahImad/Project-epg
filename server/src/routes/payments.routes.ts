@@ -10,7 +10,7 @@ import {
 import { getMajorTaxesByMajorId } from "../models/majorTaxesModel";
 import { getTaxById } from "../models/taxesModel";
 import { getMajorById } from "../models/majorsModel";
-import { Payment, Tax } from "../types/Financial.types";
+import { Payment, Tax } from "../types/index";
 
 const router = Router();
 

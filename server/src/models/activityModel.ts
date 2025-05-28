@@ -1,6 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Activity } from "../types/User.types";
+import { Activity } from "../types/index";
 
 export const getActivities = async (): Promise<Activity[]> => {
     const [rows] = await db.query("SELECT * FROM activities");

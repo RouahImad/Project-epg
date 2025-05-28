@@ -1,6 +1,5 @@
 import { db } from "../config/database";
-import { Major } from "../types/Academic.types";
-import { MajorTax, Tax } from "../types/Financial.types";
+import { Major, MajorTax, Tax } from "../types/index";
 
 export const getMajorTaxes = async (): Promise<MajorTax[]> => {
     const [rows] = await db.query("SELECT * FROM major_taxes");

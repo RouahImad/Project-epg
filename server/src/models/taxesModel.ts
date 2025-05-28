@@ -1,6 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Tax } from "../types/Financial.types";
+import { Tax } from "../types/index";
 
 export const getTaxes = async (): Promise<Tax[]> => {
     const [rows] = await db.query("SELECT * FROM taxes");

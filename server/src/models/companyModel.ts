@@ -1,5 +1,5 @@
 import { db } from "../config/database";
-import { Company } from "../types/Company.types";
+import { Company } from "../types/index";
 
 export const getCompanyInfo = async (): Promise<Company | null> => {
     const [rows] = await db.query("SELECT * FROM companyinfo ");
