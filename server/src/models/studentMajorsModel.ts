@@ -10,14 +10,14 @@ export const getStudentMajors = async (): Promise<StudentMajor[]> => {
 export const getStudentMajorById = async (
     studentId: Student["id"],
     majorId: Major["id"]
-): Promise<StudentMajor | null> => {
+): Promise<StudentMajor[] | null> => {
     const [row] = await db.query(
         "SELECT * FROM studentMajors WHERE studentId = ? AND majorId = ?",
         [studentId, majorId]
     );
     const studentMajors = row as StudentMajor[];
 
-    return studentMajors.length > 0 ? studentMajors[0] : null;
+    return studentMajors.length > 0 ? studentMajors : null;
 };
 
 export const insertStudentMajor = async (

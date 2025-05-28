@@ -7,6 +7,7 @@ import {
     updateMajorType,
 } from "../models/majorTypesModel";
 import { getMajorsByTypeId, insertMajor } from "../models/majorsModel";
+import { db } from "../config/database";
 
 const router = Router();
 
@@ -233,5 +234,55 @@ router.post(
         }
     }
 );
+
+/**
+ * @route   GET /program-types/:id
+ * @desc    Get details of a specific program type
+ * @access  Super Admin Only
+ * continue here
+ */
+// router.get(
+//     "/:id",
+//     authenticateJWT,
+//     checkRole("super_admin"),
+//     async (req: Request, res: Response) => {
+//         try {
+//             const programTypeId = parseInt(req.params.id);
+
+//             // Validate input
+//             if (Number.isNaN(programTypeId)) {
+//                 res.status(400).json({ message: "Invalid program type ID" });
+//                 return;
+//             }
+
+//             // Get the program type data
+//             // Assuming there's a getMajorTypeById function in the model
+//             const [rows] = await db.query(
+//                 "SELECT * FROM majorTypes WHERE id = ?",
+//                 [programTypeId]
+//             );
+//             const programTypes = rows as any[];
+
+//             if (!programTypes || programTypes.length === 0) {
+//                 res.status(404).json({ message: "Program type not found" });
+//                 return;
+//             }
+
+//             const programType = programTypes[0];
+
+//             // Get all majors under this program type
+//             const majors = await getMajorsByTypeId(programTypeId);
+
+//             // Return combined data
+//             res.status(200).json({
+//                 programType,
+//                 majors,
+//             });
+//         } catch (error) {
+//             console.error("Get program type error:", error);
+//             res.status(500).json({ message: "Server error" });
+//         }
+//     }
+// );
 
 export default router;

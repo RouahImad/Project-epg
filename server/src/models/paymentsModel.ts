@@ -49,7 +49,7 @@ export const updatePayment = async (
 ): Promise<boolean> => {
     const { amountPaid, remainingAmount } = payment;
 
-    if (!amountPaid && !remainingAmount) return false;
+    if (!amountPaid && remainingAmount === undefined) return false;
 
     let configs = {
         values: "",
@@ -60,19 +60,20 @@ export const updatePayment = async (
         configs.values += "amountPaid = ?, ";
         configs.passed.push(amountPaid);
     }
-    if (remainingAmount) {
+    if (remainingAmount !== undefined) {
         configs.values += "remainingAmount = ?, ";
         configs.passed.push(remainingAmount);
     }
 
     // Remove the last comma and space
     configs.values = configs.values.slice(0, -2);
+    configs.passed.push(id);
 
     try {
-        await db.query(`UPDATE payments SET ${configs.values} WHERE id = ?`, [
-            ...configs.passed,
-            id,
-        ]);
+        await db.query(
+            `UPDATE payments SET ${configs.values} WHERE id = ?`,
+            configs.passed
+        );
         return true;
     } catch (error) {
         console.error("Error updating payment:", error);

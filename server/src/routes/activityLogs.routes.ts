@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { authenticateJWT, checkRole } from "../middlewares/auth";
+import { getActivities } from "../models/activityModel";
 
 const router = Router();
 
@@ -29,30 +30,44 @@ router.get(
                 : undefined;
             const endDate = req.query.endDate
                 ? new Date(req.query.endDate as string)
-                : undefined;
+                : undefined; // Get activities with filtering
+            const activities = await getActivities();
 
-            // logic to get activity logs with filters
-            // This would typically call a function like getActivityLogs({
-            //   skip, limit, userId: userIdFilter, action: actionFilter,
-            //   startDate, endDate
-            // })
+            // Apply filters
+            let filteredActivities = activities;
 
-            const mockActivityLogs = [
-                {
-                    id: 1,
-                    userId: 1,
-                    action: "USER_LOGIN",
-                    details: "User logged in",
-                    timestamp: new Date(),
-                },
-            ];
+            if (userIdFilter) {
+                filteredActivities = filteredActivities.filter(
+                    (activity) => activity.userId === userIdFilter
+                );
+            }
 
-            // also get the total count
-            // const totalCount = await getActivityLogsCount({ userId: userIdFilter, action: actionFilter, startDate, endDate });
-            const totalCount = 1;
+            if (actionFilter) {
+                filteredActivities = filteredActivities.filter((activity) =>
+                    activity.action.includes(actionFilter)
+                );
+            }
 
+            if (startDate) {
+                filteredActivities = filteredActivities.filter(
+                    (activity) => new Date(activity.timestamp) >= startDate
+                );
+            }
+
+            if (endDate) {
+                filteredActivities = filteredActivities.filter(
+                    (activity) => new Date(activity.timestamp) <= endDate
+                );
+            }
+
+            // Apply pagination
+            const totalCount = filteredActivities.length;
+            const paginatedActivities = filteredActivities.slice(
+                skip,
+                skip + limit
+            );
             res.status(200).json({
-                logs: mockActivityLogs,
+                logs: paginatedActivities,
                 pagination: {
                     currentPage: page,
                     totalPages: Math.ceil(totalCount / limit),

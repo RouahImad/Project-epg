@@ -8,6 +8,14 @@ import {
     deleteStudent,
 } from "../models/studentsModel";
 import { formatDate, isValidDate } from "../utils/helpers";
+import {
+    getStudentMajors,
+    getStudentMajorById,
+    insertStudentMajor,
+    updateStudentMajor,
+    deleteStudentMajor,
+} from "../models/studentMajorsModel";
+import { getMajorById } from "../models/majorsModel";
 
 const router = Router();
 
@@ -190,18 +198,42 @@ router.get(
     authenticateJWT,
     async (req: Request, res: Response) => {
         try {
-            const studentId = parseInt(req.params.id);
+            const studentId = req.params.id;
 
             // Validate input
-            if (Number.isNaN(studentId)) {
+            if (!studentId) {
                 res.status(400).json({ message: "Invalid student ID" });
                 return;
             }
 
-            // logic to get student majors history
-            // This would typically call a function like getStudentMajors(studentId)
+            // Check if student exists
+            const student = await getStudentById(studentId);
+            if (!student) {
+                res.status(404).json({ message: "Student not found" });
+                return;
+            }
 
-            res.status(200).json({ message: "Student major history" });
+            // Get student majors
+            const studentMajors = await getStudentMajors();
+            const studentMajorsFiltered = studentMajors.filter(
+                (sm) => sm.studentId === studentId
+            );
+
+            // Get major details for each enrollment
+            const majorDetailsPromises = studentMajorsFiltered.map(
+                async (sm) => {
+                    const major = await getMajorById(sm.majorId);
+                    return {
+                        majorId: sm.majorId,
+                        majorName: major ? major.name : "Unknown",
+                        enrollmentDate: sm.enrollmentDate,
+                    };
+                }
+            );
+
+            const majorsWithDetails = await Promise.all(majorDetailsPromises);
+
+            res.status(200).json(majorsWithDetails);
         } catch (error) {
             console.error("Get student majors error:", error);
             res.status(500).json({ message: "Server error" });
@@ -219,19 +251,59 @@ router.post(
     authenticateJWT,
     async (req: Request, res: Response) => {
         try {
-            const studentId = parseInt(req.params.id);
-            const { majorId, year } = req.body || {};
+            const studentId = req.params.id;
+            const { majorId } = req.body || {};
 
             // Validate input
-            if (Number.isNaN(studentId) || !majorId || !year) {
-                res.status(400).json({ message: "Invalid input" });
+            if (!studentId || !majorId) {
+                res.status(400).json({
+                    message: "Student ID and Major ID are required",
+                });
                 return;
             }
 
-            // logic to add student major
-            // This would typically call a function like addStudentMajor(studentId, majorId, year)
+            // Check if student exists
+            const student = await getStudentById(studentId);
+            if (!student) {
+                res.status(404).json({ message: "Student not found" });
+                return;
+            }
 
-            res.status(201).json({ message: "Major enrollment added" });
+            // Check if major exists
+            const major = await getMajorById(majorId);
+            if (!major) {
+                res.status(404).json({ message: "Major not found" });
+                return;
+            }
+
+            // Check if student is already enrolled in this major
+            const existingEnrollment = await getStudentMajorById(
+                studentId,
+                majorId
+            );
+            if (existingEnrollment) {
+                res.status(400).json({
+                    message: "Student is already enrolled in this major",
+                });
+                return;
+            }
+
+            // Add student to major
+            const success = await insertStudentMajor({
+                studentId,
+                majorId,
+            });
+
+            if (!success) {
+                res.status(400).json({
+                    message: "Failed to enroll student in major",
+                });
+                return;
+            }
+
+            res.status(201).json({
+                message: "Student enrolled in major successfully",
+            });
         } catch (error) {
             console.error("Add student major error:", error);
             res.status(500).json({ message: "Server error" });
@@ -245,25 +317,57 @@ router.post(
  * @access  Super Admin Only
  */
 router.patch(
-    "/:id/majors/:historyId",
+    "/:id/majors/:majorId",
     authenticateJWT,
     checkRole("super_admin"),
     async (req: Request, res: Response) => {
         try {
-            const studentId = parseInt(req.params.id);
-            const historyId = parseInt(req.params.historyId);
-            const { majorId, year } = req.body || {};
+            const studentId = req.params.id;
+            const majorId = parseInt(req.params.majorId);
+            const { newMajorId, enrollmentDate } = req.body || {};
 
             // Validate input
-            if (Number.isNaN(studentId) || Number.isNaN(historyId)) {
+            if (!studentId || Number.isNaN(majorId)) {
                 res.status(400).json({ message: "Invalid input" });
                 return;
             }
 
-            // logic to update student major history
-            // This would typically call a function like updateStudentMajor(historyId, { majorId, year })
+            // Check if student-major relationship exists
+            const enrollment = await getStudentMajorById(studentId, majorId);
+            if (!enrollment) {
+                res.status(404).json({
+                    message: "Student is not enrolled in this major",
+                });
+                return;
+            }
 
-            res.status(200).json({ message: "Major enrollment updated" });
+            // Validate new major if provided
+            if (newMajorId) {
+                const newMajor = await getMajorById(newMajorId);
+                if (!newMajor) {
+                    res.status(404).json({ message: "New major not found" });
+                    return;
+                }
+            }
+
+            // Update student major
+            const success = await updateStudentMajor(studentId, majorId, {
+                majorId: newMajorId,
+                enrollmentDate: enrollmentDate
+                    ? new Date(enrollmentDate)
+                    : undefined,
+            });
+
+            if (!success) {
+                res.status(400).json({
+                    message: "Failed to update student major enrollment",
+                });
+                return;
+            }
+
+            res.status(200).json({
+                message: "Student major enrollment updated successfully",
+            });
         } catch (error) {
             console.error("Update student major error:", error);
             res.status(500).json({ message: "Server error" });
@@ -277,24 +381,42 @@ router.patch(
  * @access  Super Admin Only
  */
 router.delete(
-    "/:id/majors/:historyId",
+    "/:id/majors/:majorId",
     authenticateJWT,
     checkRole("super_admin"),
     async (req: Request, res: Response) => {
         try {
-            const studentId = parseInt(req.params.id);
-            const historyId = parseInt(req.params.historyId);
+            const studentId = req.params.id;
+            const majorId = parseInt(req.params.majorId);
 
             // Validate input
-            if (Number.isNaN(studentId) || Number.isNaN(historyId)) {
+            if (!studentId || Number.isNaN(majorId)) {
                 res.status(400).json({ message: "Invalid input" });
                 return;
             }
 
-            // logic to delete student major history
-            // This would typically call a function like deleteStudentMajor(historyId)
+            // Check if student-major relationship exists
+            const enrollment = await getStudentMajorById(studentId, majorId);
+            if (!enrollment) {
+                res.status(404).json({
+                    message: "Student is not enrolled in this major",
+                });
+                return;
+            }
 
-            res.status(200).json({ message: "Major enrollment deleted" });
+            // Delete student major
+            const success = await deleteStudentMajor(studentId, majorId);
+
+            if (!success) {
+                res.status(400).json({
+                    message: "Failed to delete student major enrollment",
+                });
+                return;
+            }
+
+            res.status(200).json({
+                message: "Student major enrollment deleted successfully",
+            });
         } catch (error) {
             console.error("Delete student major error:", error);
             res.status(500).json({ message: "Server error" });
