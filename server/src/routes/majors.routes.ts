@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { authenticateJWT, checkRole } from "../middlewares/auth";
+import { deleteMajor, updateMajor } from "../models/majorsModel";
 
 const router = Router();
 
@@ -21,6 +22,32 @@ router.patch(
             // Validate input
             if (Number.isNaN(majorId)) {
                 res.status(400).json({ message: "Invalid major ID" });
+                return;
+            }
+
+            if (!name || !majorTypeId || !price || !duration) {
+                res.status(400).json({ message: "All fields are required" });
+                return;
+            }
+
+            // Ensure price and duration are valid numbers
+            if (isNaN(price) || isNaN(duration)) {
+                res.status(400).json({
+                    message: "Price and duration must be numbers",
+                });
+                return;
+            }
+
+            const success = await updateMajor(majorId, {
+                name,
+                majorTypeId,
+                price,
+                duration,
+                description,
+            });
+
+            if (!success) {
+                res.status(400).json({ message: "Failed to update major" });
                 return;
             }
 
@@ -51,8 +78,12 @@ router.delete(
                 return;
             }
 
-            // logic to delete major
-            // This would typically call a function like deleteMajor(majorId)
+            const success = await deleteMajor(majorId);
+
+            if (!success) {
+                res.status(400).json({ message: "Failed to delete major" });
+                return;
+            }
 
             res.status(200).json({ message: "Major deleted successfully" });
         } catch (error) {

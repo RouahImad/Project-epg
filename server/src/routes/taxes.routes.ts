@@ -56,7 +56,6 @@ router.post(
                 name,
                 description,
                 amount: parseFloat(amount),
-                createdAt: new Date(),
             });
 
             if (!success) {

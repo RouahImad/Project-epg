@@ -1,15 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-export interface User {
-    id: number;
-    fullName: string;
-    email: string;
-    password: string;
-    role: "admin" | "super_admin";
-    createdAt: Date;
-    banned: boolean;
-}
+import { User } from "../types/User.types";
 
 export const getUsers = async (): Promise<User[]> => {
     const [rows] = await db.query("SELECT * FROM users");

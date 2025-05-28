@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config";
-import { User } from "../models/usersModel";
+import { User } from "../types/User.types";
 
-interface AuthRequest extends Request {
-    user?: any;
+export interface AuthRequest extends Request {
+    user?: User;
 }
 
 // type AuthHeader = `Bearer ${string}`;
@@ -14,7 +14,8 @@ export const authenticateJWT = (
     res: Response,
     next: NextFunction
 ) => {
-    if (config.jwtSecret === undefined) {
+    if (!config.jwtSecret) {
+        console.error("JWT Secret is not defined");
         res.status(500).json({
             message: "Some error occurred, please try again later",
         });
@@ -38,6 +39,7 @@ export const authenticateJWT = (
         req.user = decoded;
         next();
     } catch (error) {
+        console.error("Token verification error:", error);
         res.status(403).json({ message: "Invalid or expired token" });
     }
 };

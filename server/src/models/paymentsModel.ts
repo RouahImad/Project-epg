@@ -1,19 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-import { Major } from "./majorsModel";
-import { Student } from "./studentsModel";
-import { User } from "./usersModel";
-
-export interface Payment {
-    id: number;
-    studentId: Student["id"];
-    majorId: Major["id"];
-    amountPaid: number;
-    remainingAmount?: number;
-    paidAt: Date;
-    handledByUserId: User["id"];
-}
+import { Payment } from "../types/Financial.types";
 
 export const getPayments = async (): Promise<Payment[]> => {
     const [rows] = await db.query("SELECT * FROM payments");

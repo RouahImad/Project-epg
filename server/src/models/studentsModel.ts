@@ -1,25 +1,13 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-import { User } from "./usersModel";
-
-export interface Student {
-    id: string;
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    dateOfBirth: Date;
-    createdBy: User["id"];
-    createdAt: Date;
-}
+import { Student } from "../types/Academic.types";
 
 export const getStudents = async (): Promise<Student[]> => {
     const [rows] = await db.query("SELECT * FROM students");
     return rows as Student[];
 };
 
-export const getStudentById = async (id: number): Promise<Student | null> => {
+export const getStudentById = async (id: string): Promise<Student | null> => {
     const [row] = await db.query("SELECT * FROM students WHERE id = ?", [id]);
     const students = row as Student[];
 
@@ -45,7 +33,7 @@ export const insertStudent = async (
 };
 
 export const updateStudent = async (
-    id: number,
+    id: string,
     student: Partial<Omit<Student, "createdAt" | "createdBy">>
 ): Promise<boolean> => {
     const { id: newId, fullName, email, phone, address, dateOfBirth } = student;
@@ -97,7 +85,7 @@ export const updateStudent = async (
     }
 };
 
-export const deleteStudent = async (id: number): Promise<boolean> => {
+export const deleteStudent = async (id: string): Promise<boolean> => {
     try {
         await db.query("DELETE FROM students WHERE id = ?", [id]);
         return true;

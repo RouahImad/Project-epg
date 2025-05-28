@@ -1,14 +1,5 @@
 import { db } from "../config/database";
-
-export interface Company {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    logoUrl: string;
-    website?: string;
-}
+import { Company } from "../types/Company.types";
 
 export const getCompanyInfo = async (): Promise<Company | null> => {
     const [rows] = await db.query("SELECT * FROM companyinfo ");

@@ -7,6 +7,7 @@ import {
     updateStudent,
     deleteStudent,
 } from "../models/studentsModel";
+import { formatDate, isValidDate } from "../utils/helpers";
 
 const router = Router();
 
@@ -78,14 +79,7 @@ router.post(
  */
 router.get("/:id", authenticateJWT, async (req: Request, res: Response) => {
     try {
-        const studentId = parseInt(req.params.id);
-
-        // Validate input
-        if (Number.isNaN(studentId)) {
-            res.status(400).json({ message: "Invalid student ID" });
-            return;
-        }
-
+        const studentId = req.params.id;
         const student = await getStudentById(studentId);
 
         if (!student) {
@@ -107,7 +101,7 @@ router.get("/:id", authenticateJWT, async (req: Request, res: Response) => {
  */
 router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
     try {
-        const studentId = parseInt(req.params.id);
+        const studentId = req.params.id;
         const {
             id: newId,
             fullName,
@@ -116,12 +110,6 @@ router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
             address,
             dateOfBirth,
         } = req.body || {};
-
-        // Validate input
-        if (Number.isNaN(studentId)) {
-            res.status(400).json({ message: "Invalid student ID" });
-            return;
-        }
 
         // Check if student exists
         const student = await getStudentById(studentId);
@@ -133,12 +121,16 @@ router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
 
         // Prepare update data
         const updateData: any = {};
-        if (newId) updateData.id = newId;
-        if (fullName) updateData.fullName = fullName;
-        if (email) updateData.email = email;
-        if (phone) updateData.phone = phone;
-        if (address) updateData.address = address;
-        if (dateOfBirth) updateData.dateOfBirth = new Date(dateOfBirth);
+        updateData.id = newId == student.id ? null : newId;
+        updateData.fullName = fullName == student.fullName ? null : fullName;
+        updateData.email = email == student.email ? null : email;
+        updateData.phone = phone == student.phone ? null : phone;
+        updateData.address = address == student.address ? null : address;
+        if (dateOfBirth)
+            updateData.dateOfBirth =
+                dateOfBirth && isValidDate(dateOfBirth)
+                    ? formatDate(dateOfBirth, "YYYY-MM-DD")
+                    : null;
 
         // Update student
         const success = await updateStudent(studentId, updateData);
@@ -166,21 +158,7 @@ router.delete(
     checkRole("super_admin"),
     async (req: Request, res: Response) => {
         try {
-            const studentId = parseInt(req.params.id);
-
-            // Validate input
-            if (Number.isNaN(studentId)) {
-                res.status(400).json({ message: "Invalid student ID" });
-                return;
-            }
-
-            // Check if student exists
-            const student = await getStudentById(studentId);
-
-            if (!student) {
-                res.status(404).json({ message: "Student not found" });
-                return;
-            }
+            const studentId = req.params.id;
 
             // Delete student
             const success = await deleteStudent(studentId);

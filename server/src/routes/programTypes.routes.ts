@@ -206,7 +206,7 @@ router.post(
             const { name, price, duration, description } = req.body || {};
 
             // Validate input
-            if (Number.isNaN(majorTypeId) || !name) {
+            if (Number.isNaN(majorTypeId) || !name || !price || isNaN(price)) {
                 res.status(400).json({ message: "Invalid input" });
                 return;
             }

@@ -1,14 +1,7 @@
-import { WithOptional, config } from "../config/config";
+import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-import { Major } from "./majorsModel";
-import { Student } from "./studentsModel";
-
-export interface StudentMajor {
-    studentId: Student["id"];
-    majorId: Major["id"];
-    enrollmentDate: Date;
-}
+import { formatDate } from "../utils/helpers";
+import { Major, Student, StudentMajor } from "../types/Academic.types";
 export const getStudentMajors = async (): Promise<StudentMajor[]> => {
     const [rows] = await db.query("SELECT * FROM studentMajors");
     return rows as StudentMajor[];
@@ -31,7 +24,7 @@ export const insertStudentMajor = async (
     studentMajor: WithOptional<StudentMajor, "enrollmentDate">
 ): Promise<boolean> => {
     const { studentId, majorId } = studentMajor;
-    const enrollmentDate = new Date().toISOString().split("T")[0];
+    const enrollmentDate = formatDate(undefined, "YYYY-MM-DD");
 
     try {
         await db.query(

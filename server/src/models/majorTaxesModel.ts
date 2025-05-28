@@ -1,16 +1,19 @@
-import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-import { Major } from "./majorsModel";
-import { Tax } from "./taxesModel";
-
-export interface MajorTax {
-    majorId: Major["id"];
-    taxId: Tax["id"];
-}
+import { Major } from "../types/Academic.types";
+import { MajorTax, Tax } from "../types/Financial.types";
 
 export const getMajorTaxes = async (): Promise<MajorTax[]> => {
     const [rows] = await db.query("SELECT * FROM major_taxes");
+    return rows as MajorTax[];
+};
+
+export const getMajorTaxesByMajorId = async (
+    majorId: Major["id"]
+): Promise<MajorTax[]> => {
+    const [rows] = await db.query(
+        "SELECT * FROM major_taxes WHERE majorId = ?",
+        [majorId]
+    );
     return rows as MajorTax[];
 };
 

@@ -1,4 +1,5 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { config } from "./config/config";
 import authRouter from "./routes/auth.routes";
 import usersRouter from "./routes/users.routes";
@@ -10,16 +11,23 @@ import majorsRouter from "./routes/majors.routes";
 import programTypesRouter from "./routes/programTypes.routes";
 import taxesRouter from "./routes/taxes.routes";
 import companyInfoRouter from "./routes/companyInfo.routes";
+import cookieParser from "cookie-parser";
 
 const app: Application = express();
 
+// Middleware
 app.use(express.json());
+app.use(cookieParser());
 
-app.get("/", (req, res) => {
-    console.log(req.cookies);
-    // req.cookies = "ts=yes;";
-    res.send("hello");
-});
+// CORS configuration
+app.use(
+    cors({
+        origin: process.env.CORS_ORIGIN || "*",
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 
 // const apiVersion = "/api/v1";
 // API routes with proper prefix
@@ -33,6 +41,17 @@ app.use("/majors", majorsRouter);
 app.use("/program-types", programTypesRouter);
 app.use("/taxes", taxesRouter);
 app.use("/company-info", companyInfoRouter);
+
+// Global error handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error("Unhandled error:", err);
+    res.status(500).json({ message: "Internal server error" });
+});
+
+// Handle 404 routes
+app.use((req: Request, res: Response) => {
+    res.status(404).json({ message: "Endpoint not found" });
+});
 
 app.listen(config.port, (err) => {
     if (err) {

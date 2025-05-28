@@ -1,18 +1,28 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
+import { rateLimit } from "express-rate-limit";
 import { authenticateJWT } from "../middlewares/auth";
 import { getUserByEmail, getUserById, updateUser } from "../models/usersModel";
 import { config } from "../config/config";
 
 const router = Router();
 
+// Rate limiting for login attempts
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 requests per windowMs per IP
+    message: { message: "Too many login attempts, please try again later" },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 /**
  * @route   POST /auth/login
  * @desc    Login and get token
  * @access  Public
  */
-router.post("/login", async (req: Request, res: Response) => {
+router.post("/login", loginLimiter, async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body || {};
 
@@ -36,15 +46,14 @@ router.post("/login", async (req: Request, res: Response) => {
         if (!isMatch) {
             res.status(401).json({ message: "Invalid credentials" });
             return;
-        }
-
-        // Check ban
+        } // Check ban
         if (user.banned) {
             res.status(403).json({ message: "User is banned" });
             return;
         }
 
-        if (config.jwtSecret === undefined) {
+        if (!config.jwtSecret) {
+            console.error("JWT Secret is not defined");
             res.status(500).json({
                 message: "Some error occurred, please try again later",
             });

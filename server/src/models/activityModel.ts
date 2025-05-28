@@ -1,13 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { User } from "./usersModel";
-
-export interface Activity {
-    id: number;
-    userId: User["id"];
-    action: string;
-    timestamp: Date;
-}
+import { Activity } from "../types/User.types";
 
 export const getActivities = async (): Promise<Activity[]> => {
     const [rows] = await db.query("SELECT * FROM activities");
@@ -30,8 +23,8 @@ export const insertActivity = async (
 
     try {
         await db.query(
-            "INSERT INTO activities (userId, action, timestamp) VALUES (?, ?, ?)",
-            [userId, action, new Date()]
+            "INSERT INTO activities (userId, action) VALUES (?, ?)",
+            [userId, action]
         );
         return true;
     } catch (error) {

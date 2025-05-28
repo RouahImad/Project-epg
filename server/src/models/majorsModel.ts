@@ -1,17 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-import { MajorType } from "./majorTypesModel";
-
-export interface Major {
-    id: number;
-    name: string;
-    majorTypeId: MajorType["id"];
-    price: number;
-    duration: number;
-    description: string;
-    createdAt: Date;
-}
+import { Major, MajorType } from "../types/Academic.types";
 
 export const getMajors = async (): Promise<Major[]> => {
     const [rows] = await db.query("SELECT * FROM majors");

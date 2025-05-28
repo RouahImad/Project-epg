@@ -1,13 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-export interface Tax {
-    id: number;
-    name: string;
-    description: string;
-    amount: number;
-    createdAt: Date;
-}
+import { Tax } from "../types/Financial.types";
 
 export const getTaxes = async (): Promise<Tax[]> => {
     const [rows] = await db.query("SELECT * FROM taxes");
@@ -22,7 +15,7 @@ export const getTaxById = async (id: Tax["id"]): Promise<Tax | null> => {
 };
 
 export const insertTax = async (
-    tax: WithOptional<Tax, "id">
+    tax: WithOptional<Tax, "id" | "createdAt">
 ): Promise<boolean> => {
     const { name, description, amount } = tax;
 

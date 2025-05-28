@@ -1,14 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-
-import { Payment } from "./paymentsModel";
-
-export interface Receipt {
-    id: number;
-    paymentId: Payment["id"];
-    userId: number;
-    printedAt: Date;
-}
+import { Receipt } from "../types/Financial.types";
 
 export const getReceipts = async (): Promise<Receipt[]> => {
     const [rows] = await db.query("SELECT * FROM receipts");
@@ -27,12 +19,12 @@ export const getReceiptById = async (
 export const insertReceipt = async (
     receipt: WithOptional<Receipt, "id" | "printedAt">
 ): Promise<boolean> => {
-    const { paymentId, userId } = receipt;
+    const { paymentId, printedBy } = receipt;
 
     try {
         await db.query(
-            "INSERT INTO receipts (paymentId, userId, printedAt) VALUES (?, ?, ?)",
-            [paymentId, userId, new Date()]
+            "INSERT INTO receipts (paymentId, printedBy) VALUES (?, ?)",
+            [paymentId, printedBy]
         );
         return true;
     } catch (error) {
