@@ -23,7 +23,10 @@ app.use(cookieParser());
 // CORS configuration
 app.use(
     cors({
-        origin: process.env.CORS_ORIGIN || "*",
+        origin: process.env.CORS_ORIGIN || [
+            "http://127.0.0.1:5173",
+            "http://localhost:5173",
+        ],
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
@@ -31,7 +34,7 @@ app.use(
 );
 
 // const apiVersion = "/api/v1";
-// API routes with proper prefix
+// API routes
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/dashboard", dashboardRouter);
@@ -51,9 +54,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Handle 404 routes
-app.use((req: Request, res: Response) => {
-    res.status(404).json({ message: "Endpoint not found" });
-});
+// app.use((req: Request, res: Response) => {
+//     res.status(404).json({ message: "Endpoint not found" });
+// });
 
 app.listen(config.port, (err) => {
     if (err) {

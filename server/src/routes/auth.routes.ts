@@ -71,9 +71,12 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
             secure: config.env === "production", // Use secure cookies in production
             sameSite: "strict", // Prevent CSRF attacks
         });
+        const { password: _, ...userWithoutPassword } = user;
 
         res.status(200).json({
             message: "Login successful",
+            token,
+            user: userWithoutPassword,
         });
     } catch (error) {
         console.error("Login error:", error);

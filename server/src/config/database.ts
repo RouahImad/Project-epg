@@ -8,12 +8,12 @@ const sqlDb = {
 };
 
 // Check if all required DB variables are defined
-if (!sqlDb.host || !sqlDb.user || !sqlDb.password || !sqlDb.database) {
-    console.error(
-        "Missing database configuration. Please check the environment variables."
-    );
-    process.exit(1);
-}
+// if (!sqlDb.host || !sqlDb.user || !sqlDb.password || !sqlDb.database) {
+//     console.error(
+//         "Missing database configuration. Please check the environment variables."
+//     );
+//     process.exit(1);
+// }
 
 export const db = mysql.createPool({
     host: sqlDb.host,

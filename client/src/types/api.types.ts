@@ -1,0 +1,188 @@
+import type {
+    User,
+    Student,
+    MajorType,
+    Major,
+    StudentMajor,
+    Tax,
+    Payment,
+    Receipt,
+    Company,
+    Activity,
+} from "./index";
+
+// Authentication Types
+export interface LoginCredentials {
+    email: string;
+    password: string;
+}
+
+export interface AuthResponse {
+    message: string;
+    token?: string;
+    user?: User;
+}
+
+// API Response Types
+export interface ApiResponse<T> {
+    data?: T;
+    message?: string;
+    success?: boolean;
+}
+
+// Auth API Types
+export interface AuthApi {
+    login: (credentials: LoginCredentials) => Promise<AuthResponse>;
+    logout: () => Promise<ApiResponse<null>>;
+    getCurrentUser: () => Promise<User>;
+    updateProfile: (userData: Partial<User>) => Promise<User>;
+}
+
+// Token Service Types
+export interface TokenService {
+    setToken: (token: string) => void;
+    getToken: () => string | null;
+    removeToken: () => void;
+}
+
+// Users API Types
+export interface UsersApi {
+    getUsers: () => Promise<User[]>;
+    getUserById: (userId: number) => Promise<User>;
+    createUser: (userData: Partial<User>) => Promise<User>;
+    updateUser: (userId: number, userData: Partial<User>) => Promise<User>;
+    deleteUser: (userId: number) => Promise<ApiResponse<null>>;
+}
+
+// Students API Types
+export interface StudentsApi {
+    getStudents: () => Promise<Student[]>;
+    getStudentById: (studentId: string) => Promise<Student>;
+    createStudent: (studentData: Partial<Student>) => Promise<Student>;
+    updateStudent: (
+        studentId: string,
+        studentData: Partial<Student>
+    ) => Promise<Student>;
+    deleteStudent: (studentId: string) => Promise<ApiResponse<null>>;
+
+    // Student Majors
+    getStudentMajors: (studentId: string) => Promise<StudentMajor[]>;
+    addStudentMajor: (
+        studentId: string,
+        majorId: number
+    ) => Promise<StudentMajor>;
+    updateStudentMajor: (
+        studentId: string,
+        majorId: number,
+        data: Partial<StudentMajor>
+    ) => Promise<StudentMajor>;
+    deleteStudentMajor: (
+        studentId: string,
+        majorId: number
+    ) => Promise<ApiResponse<null>>;
+}
+
+// Program Types API Types
+export interface ProgramTypesApi {
+    getProgramTypes: () => Promise<MajorType[]>;
+    createProgramType: (data: Partial<MajorType>) => Promise<MajorType>;
+    updateProgramType: (
+        typeId: number,
+        data: Partial<MajorType>
+    ) => Promise<MajorType>;
+    deleteProgramType: (typeId: number) => Promise<ApiResponse<null>>;
+
+    // Majors under program type
+    getMajorsByProgramType: (typeId: number) => Promise<Major[]>;
+    addMajorToProgramType: (
+        typeId: number,
+        majorData: Partial<Major>
+    ) => Promise<Major>;
+}
+
+// Majors API Types
+export interface MajorsApi {
+    getMajors: () => Promise<Major[]>;
+    getMajorById: (majorId: number) => Promise<Major>;
+    updateMajor: (majorId: number, data: Partial<Major>) => Promise<Major>;
+    deleteMajor: (majorId: number) => Promise<ApiResponse<null>>;
+
+    // Major taxes
+    getTaxesForMajor: (majorId: number) => Promise<Tax[]>;
+    addTaxToMajor: (
+        majorId: number,
+        taxId: number
+    ) => Promise<ApiResponse<null>>;
+    removeTaxFromMajor: (
+        majorId: number,
+        taxId: number
+    ) => Promise<ApiResponse<null>>;
+}
+
+// Taxes API Types
+export interface TaxesApi {
+    getTaxes: () => Promise<Tax[]>;
+    createTax: (taxData: Partial<Tax>) => Promise<Tax>;
+    updateTax: (taxId: number, taxData: Partial<Tax>) => Promise<Tax>;
+    deleteTax: (taxId: number) => Promise<ApiResponse<null>>;
+}
+
+// Payments API Types
+export interface PaymentsApi {
+    getPayments: () => Promise<Payment[]>;
+    getPaymentById: (paymentId: number) => Promise<Payment>;
+    createPayment: (paymentData: Partial<Payment>) => Promise<Payment>;
+    updatePayment: (
+        paymentId: number,
+        paymentData: Partial<Payment>
+    ) => Promise<Payment>;
+    deletePayment: (paymentId: number) => Promise<ApiResponse<null>>;
+}
+
+// Receipts API Types
+export interface ReceiptsApi {
+    getReceipts: () => Promise<Receipt[]>;
+    getReceiptById: (receiptId: number) => Promise<Receipt>;
+    generateReceipt: (paymentId: number) => Promise<Receipt>;
+    deleteReceipt: (receiptId: number) => Promise<ApiResponse<null>>;
+}
+
+// Company Info API Types
+export interface CompanyApi {
+    getCompanyInfo: () => Promise<Company>;
+    updateCompanyInfo: (companyData: Partial<Company>) => Promise<Company>;
+}
+
+// Dashboard API Types
+export interface DashboardStats {
+    totalStudents: number;
+    totalRevenue: number;
+    paymentsThisMonth: number;
+    recentActivities: Activity[];
+    // Add any other dashboard statistics as needed
+}
+
+export interface DashboardApi {
+    getDashboardStats: () => Promise<DashboardStats>;
+}
+
+// Activity Logs API Types
+export interface ActivityApi {
+    getActivityLogs: () => Promise<Activity[]>;
+}
+
+// Complete API Interface
+export interface Api {
+    auth: AuthApi;
+    users: UsersApi;
+    students: StudentsApi;
+    programTypes: ProgramTypesApi;
+    majors: MajorsApi;
+    taxes: TaxesApi;
+    payments: PaymentsApi;
+    receipts: ReceiptsApi;
+    company: CompanyApi;
+    dashboard: DashboardApi;
+    activity: ActivityApi;
+    token: TokenService;
+}
