@@ -17,17 +17,6 @@ router.get(
         try {
             const companyInfo = await getCompanyInfo();
 
-            // If company info is not found, return default info
-            if (!companyInfo) {
-                res.status(200).json({
-                    name: "Default Company",
-                    logo: "https://www.t.com/logo.png",
-                    address: "123 Default",
-                    email: "test@example.com",
-                    phone: "+1234567890",
-                });
-                return;
-            }
             res.status(200).json(companyInfo);
         } catch (error) {
             console.error("Get company info error:", error);

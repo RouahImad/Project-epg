@@ -36,7 +36,10 @@ app.use(
 // requests logger
 app.use((req: Request, res: Response, next: NextFunction) => {
     console.log(
-        `${new Date().toISOString()} - ${req.method} ${req.originalUrl}`
+        `${new Date().toISOString()} - ${req.method} ${
+            req.originalUrl
+        } - from ${req.ip}
+        `
     );
     next();
 });

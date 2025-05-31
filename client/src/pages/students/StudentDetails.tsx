@@ -7,11 +7,11 @@ import {
 } from "../../hooks/api/useStudentsApi";
 import { useMajors } from "../../hooks/api/useProgramsApi";
 import { usePaymentsByStudent } from "../../hooks/api/usePaymentsApi";
-import StudentProfile from "../../components/StudentProfile";
-import StudentMajors from "../../components/StudentMajors";
-import StudentPayments from "../../components/StudentPayments";
+import StudentProfile from "../../components/student/StudentProfile";
+import StudentMajors from "../../components/student/StudentMajors";
+import StudentPayments from "../../components/student/StudentPayments";
 import EnrollMajorDialog from "../../components/EnrollMajorDialog";
-import UpdateStudentDialog from "../../components/UpdateStudentDialog";
+import UpdateStudentDialog from "../../components/student/UpdateStudentDialog";
 import { FiArrowLeft } from "react-icons/fi";
 import type { Student } from "../../types";
 

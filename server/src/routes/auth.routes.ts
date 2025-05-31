@@ -5,6 +5,7 @@ import { rateLimit } from "express-rate-limit";
 import { authenticateJWT } from "../middlewares/auth";
 import { getUserByEmail, getUserById, updateUser } from "../models/usersModel";
 import { config } from "../config/config";
+import { RequestWithUser } from "../types";
 
 const router = Router();
 
@@ -22,7 +23,7 @@ const loginLimiter = rateLimit({
  * @desc    Login and get token
  * @access  Public
  */
-router.post("/login", loginLimiter, async (req: Request, res: Response) => {
+router.post("/login", loginLimiter, async (req: RequestWithUser, res: Response) => {
     try {
         const { email, password } = req.body || {};
 
@@ -71,6 +72,7 @@ router.post("/login", loginLimiter, async (req: Request, res: Response) => {
             secure: config.env === "production", // Use secure cookies in production
             sameSite: "strict", // Prevent CSRF attacks
         });
+        req.user = user;
         const { password: _, ...userWithoutPassword } = user;
 
         res.status(200).json({

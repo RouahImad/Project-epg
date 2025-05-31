@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
-import AddStudentForm from "../../components/AddStudentForm";
+import AddStudentForm from "../../components/student/AddStudentForm";
 import { useCreateStudent, useStudents } from "../../hooks/api/useStudentsApi";
-import StudentCard from "../../components/StudentCard";
+import StudentCard from "../../components/student/StudentCard";
 import { FiSearch, FiX, FiPlus, FiUsers } from "react-icons/fi";
 
 const StudentsList = () => {

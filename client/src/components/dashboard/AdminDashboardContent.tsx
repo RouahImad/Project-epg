@@ -1,0 +1,93 @@
+import StatCard from "./StatCard";
+import DashboardCharts from "./DashboardCharts";
+import { FiTrendingUp } from "react-icons/fi";
+import type { AdminDashboardData } from "../../types/api.types";
+
+interface Props {
+    data: AdminDashboardData;
+}
+
+const AdminDashboardContent = ({ data }: Props) => (
+    <div className="container mx-auto px-4 py-8">
+        <h2 className="text-3xl font-bold mb-6 flex items-center gap-2">
+            <FiTrendingUp className="text-indigo-500" /> Dashboard
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <StatCard
+                icon="dollar"
+                label="My Income"
+                value={data.myIncome.toLocaleString()}
+            />
+            <StatCard
+                icon="users"
+                label="My Students"
+                value={data.myStudentsCount}
+            />
+            <StatCard
+                icon="activity"
+                label="Outstanding"
+                value={data.myOutstandingPayments.toLocaleString()}
+            />
+            <StatCard
+                icon="user"
+                label="My Activity"
+                value={data.myActivityCount}
+            />
+        </div>
+        <DashboardCharts role="admin" data={data} />
+        <div className="bg-white rounded-xl shadow p-6 mb-8">
+            <h3 className="font-semibold mb-4">Recent Actions</h3>
+            <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                    <thead>
+                        <tr className="bg-gray-50">
+                            <th className="px-3 py-2 text-left font-semibold">
+                                User
+                            </th>
+                            <th className="px-3 py-2 text-left font-semibold">
+                                Action
+                            </th>
+                            <th className="px-3 py-2 text-left font-semibold">
+                                Entity
+                            </th>
+                            <th className="px-3 py-2 text-left font-semibold">
+                                Entity ID
+                            </th>
+                            <th className="px-3 py-2 text-left font-semibold">
+                                Details
+                            </th>
+                            <th className="px-3 py-2 text-left font-semibold">
+                                Timestamp
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.recentActions.map((act, idx) => (
+                            <tr
+                                key={idx}
+                                className="border-b last:border-b-0 hover:bg-gray-50 transition"
+                            >
+                                <td className="px-3 py-2">{act.userName}</td>
+                                <td className="px-3 py-2">{act.action}</td>
+                                <td className="px-3 py-2">{act.entityType}</td>
+                                <td className="px-3 py-2">{act.entityId}</td>
+                                <td className="px-3 py-2">
+                                    {act.details || (
+                                        <span className="text-gray-400 italic">
+                                            —
+                                        </span>
+                                    )}
+                                </td>
+                                <td className="px-3 py-2 text-gray-400">
+                                    {act.timestamp}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+);
+
+export default AdminDashboardContent;

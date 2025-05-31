@@ -1,11 +1,27 @@
 import { db } from "../config/database";
-import { Company } from "../types/index";
+import { Company } from "../types";
 
-export const getCompanyInfo = async (): Promise<Company | null> => {
-    const [rows] = await db.query("SELECT * FROM companyinfo ");
-    const companies = rows as Company[];
+export const getCompanyInfo = async (): Promise<Company> => {
+    const [rows] = await db.query("SELECT * FROM companyinfo WHERE id = 1");
+    const typedRow = (rows as any)[0];
 
-    return companies.length > 0 ? companies[0] : null;
+    const defaults: Company = {
+        id: 1,
+        name: "Ecole Polytechnique des Génies",
+        logoUrl: "/assets/logo.webp",
+        address: "Fes - Maroc",
+        // "22, Rue Mohammed El Hayani, V.N Fès, 4éme Etage, Appt 20 Imm Hazzaz Fes - Maroc",
+        email: "contact@epg.ma",
+        phone: "+2126 60 77 73 82",
+        website: "https://epg.ma/",
+    };
+
+    for (const key of Object.keys(defaults) as Array<keyof Company>) {
+        if (typedRow[key] === undefined || typedRow[key] === null) {
+            typedRow[key] = defaults[key] as Company[keyof Company];
+        }
+    }
+    return typedRow as Company;
 };
 
 export const updateCompanyInfo = async (
@@ -55,23 +71,6 @@ export const updateCompanyInfo = async (
         return true;
     } catch (error) {
         console.error("Error updating company info:", error);
-        return false;
-    }
-};
-
-export const insertCompanyInfo = async (
-    company: Omit<Company, "id">
-): Promise<boolean> => {
-    const { name, email, phone, address, logoUrl, website } = company;
-
-    try {
-        await db.query(
-            "INSERT INTO companyinfo (name, email, phone, address, logoUrl, website) VALUES (?, ?, ?, ?, ?, ?)",
-            [name, email, phone, address, logoUrl, website || null]
-        );
-        return true;
-    } catch (error) {
-        console.error("Error inserting company info:", error);
         return false;
     }
 };

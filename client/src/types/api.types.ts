@@ -9,7 +9,6 @@ import type {
     PaymentWithTaxes,
     Receipt,
     Company,
-    Activity,
 } from "./index";
 
 // Authentication Types
@@ -156,21 +155,70 @@ export interface CompanyApi {
 }
 
 // Dashboard API Types
-export interface DashboardStats {
-    totalStudents: number;
-    totalRevenue: number;
-    paymentsThisMonth: number;
-    recentActivities: Activity[];
-    // Add any other dashboard statistics as needed
-}
+// export interface DashboardStats {
+//     totalStudents: number;
+//     totalRevenue: number;
+//     paymentsThisMonth: number;
+//     recentActivities: Activity[];
+//     // Add any other dashboard statistics as needed
+// }
+
+export type AdminDashboardData = {
+    myIncome: number;
+    myStudentsCount: number;
+    myOutstandingPayments: number;
+    myActivityCount: number;
+    recentActions: {
+        userId: number | string;
+        userName: string;
+        action: string;
+        entityType: string;
+        entityId: number | string;
+        details: string;
+        timestamp: string;
+    }[];
+    charts: {
+        paymentsByMonth: { month: string; amount: number }[];
+        outstandingByMonth: { month: string; amount: number }[];
+        studentsByMonth: { month: string; count: number }[];
+    };
+};
+export type SuperDashboardData = {
+    totalIncome: number;
+    studentCount: number;
+    outstandingBalance: number;
+    staffCount: number;
+    systemStats: {
+        totalUsers: number;
+        activeUsers: number;
+        totalMajors: number;
+        averagePaymentAmount: number;
+    };
+    charts: {
+        incomeOverTime: { month: string; amount: number }[];
+        paymentsByProgram: { program: string; total: number }[];
+    };
+    sortedStaff: {
+        userId: number;
+        userName: string;
+        income: number;
+        joinedAt: string;
+    }[];
+    recentActivity: {
+        userId: number;
+        userName: string;
+        action: string;
+        entityType: string;
+        entityId: number | string;
+        details: string;
+        timestamp: string;
+    }[];
+};
 
 export interface DashboardApi {
-    getDashboardStats: () => Promise<DashboardStats>;
-}
-
-// Activity Logs API Types
-export interface ActivityApi {
-    getActivityLogs: () => Promise<Activity[]>;
+    // getDashboardStats: () => Promise<DashboardStats>;
+    getAdminStats: () => Promise<AdminDashboardData>;
+    getSuperStats: () => Promise<SuperDashboardData>;
 }
 
 // Complete API Interface
@@ -185,6 +233,5 @@ export interface Api {
     receipts: ReceiptsApi;
     company: CompanyApi;
     dashboard: DashboardApi;
-    activity: ActivityApi;
     token: TokenService;
 }

@@ -1,6 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Student } from "../types/index";
+import { Student, User } from "../types/index";
 
 export const getStudents = async (): Promise<Student[]> => {
     const [rows] = await db.query("SELECT * FROM students");
@@ -12,6 +12,16 @@ export const getStudentById = async (id: string): Promise<Student | null> => {
     const students = row as Student[];
 
     return students.length > 0 ? students[0] : null;
+};
+
+export const getStudentsByUserId = async (
+    userId: User["id"]
+): Promise<Student[]> => {
+    const [rows] = await db.query(
+        "SELECT * FROM students WHERE createdBy = ?",
+        [userId]
+    );
+    return rows as Student[];
 };
 
 export const insertStudent = async (

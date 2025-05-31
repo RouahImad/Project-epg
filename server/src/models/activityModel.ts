@@ -1,30 +1,51 @@
-import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Activity } from "../types/index";
+import { ActivityLog, User } from "../types/index";
+import { LogsWithUserName } from "../types/User.types";
 
-export const getActivities = async (): Promise<Activity[]> => {
-    const [rows] = await db.query("SELECT * FROM activities");
-    return rows as Activity[];
+export const getActivities = async (): Promise<LogsWithUserName[]> => {
+    const [rows] = await db.query(
+        `SELECT al.*, users.fullName as username 
+        FROM activity_logs al 
+        join users on al.userId = users.id`
+    );
+    return rows as LogsWithUserName[];
 };
 
-export const getActivityById = async (
-    id: Activity["id"]
-): Promise<Activity | null> => {
-    const [row] = await db.query("SELECT * FROM activities WHERE id = ?", [id]);
-    const activities = row as Activity[];
+export const getActivitiesByUserId = async (
+    id: User["id"]
+): Promise<LogsWithUserName[]> => {
+    const [rows] = await db.query(
+        `SELECT al.*, users.fullName AS username
+        FROM activity_logs al
+        JOIN users ON al.userId = users.id
+        WHERE al.userId = ?;`,
+        [id]
+    );
 
-    return activities.length > 0 ? activities[0] : null;
+    return rows as LogsWithUserName[];
 };
 
 export const insertActivity = async (
-    activity: WithOptional<Activity, "id" | "timestamp">
+    activity: Omit<ActivityLog, "id" | "timestamp">
 ): Promise<boolean> => {
-    const { userId, action } = activity;
+    const {
+        userId,
+        action,
+        entityType,
+        entityId,
+        details = {}, // Default to empty object if not provided
+    } = activity;
 
     try {
         await db.query(
-            "INSERT INTO activities (userId, action) VALUES (?, ?)",
-            [userId, action]
+            "INSERT INTO activity_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)",
+            [
+                userId,
+                action,
+                entityType,
+                entityId,
+                JSON.stringify(details), // Convert details to JSON string
+            ]
         );
         return true;
     } catch (error) {
@@ -34,15 +55,15 @@ export const insertActivity = async (
 };
 
 export const updateActivity = async (
-    id: Activity["id"],
-    activity: Pick<Activity, "action">
+    id: ActivityLog["id"],
+    activity: Pick<ActivityLog, "action">
 ): Promise<boolean> => {
     const { action } = activity;
 
     if (!action) return false;
 
     try {
-        await db.query("UPDATE activities SET action = ? WHERE id = ?", [
+        await db.query("UPDATE activity_logs SET action = ? WHERE id = ?", [
             action,
             id,
         ]);
@@ -53,9 +74,11 @@ export const updateActivity = async (
     }
 };
 
-export const deleteActivity = async (id: Activity["id"]): Promise<boolean> => {
+export const deleteActivity = async (
+    id: ActivityLog["id"]
+): Promise<boolean> => {
     try {
-        await db.query("DELETE FROM activities WHERE id = ?", [id]);
+        await db.query("DELETE FROM activity_logs WHERE id = ?", [id]);
         return true;
     } catch (error) {
         console.error("Error deleting activity:", error);

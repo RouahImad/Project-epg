@@ -21,7 +21,6 @@ import type {
     ReceiptsApi,
     CompanyApi,
     DashboardApi,
-    ActivityApi,
     Api,
     LoginCredentials,
 } from "../types/api.types";
@@ -247,19 +246,15 @@ export const receiptsApi: ReceiptsApi = {
 // Company Info API
 export const companyApi: CompanyApi = {
     getCompanyInfo: () => apiClient.get("/company-info"),
-
     updateCompanyInfo: (companyData: Partial<Company>) =>
         apiClient.patch("/company-info", companyData),
 };
 
 // Dashboard API
 export const dashboardApi: DashboardApi = {
-    getDashboardStats: () => apiClient.get("/dashboard"),
-};
-
-// Activity Logs API
-export const activityApi: ActivityApi = {
-    getActivityLogs: () => apiClient.get("/activity-logs"),
+    // getDashboardStats: () => apiClient.get("/dashboard"),
+    getSuperStats: () => apiClient.get("/dashboard/super"),
+    getAdminStats: () => apiClient.get("/dashboard/admin"),
 };
 
 // Default export of all API services
@@ -274,6 +269,5 @@ export default {
     receipts: receiptsApi,
     company: companyApi,
     dashboard: dashboardApi,
-    activity: activityApi,
     token: tokenService,
 } as Api;

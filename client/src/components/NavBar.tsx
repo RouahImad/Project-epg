@@ -195,7 +195,7 @@ const NavBar = () => {
                             Admin
                         </button>
                         {adminMenuOpen && (
-                            <div className="absolute left-0 mt-2 w-64 bg-white shadow-lg rounded-lg z-30 p-3 grid grid-cols-2 gap-2 animate-fade-in">
+                            <div className="absolute -left-13 md:left-0 mt-2 w-64 bg-white shadow-lg rounded-lg z-30 p-3 grid grid-cols-2 gap-2 animate-fade-in">
                                 {adminLinks}
                             </div>
                         )}
