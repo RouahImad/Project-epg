@@ -14,6 +14,14 @@ export const getPaymentById = async (id: number): Promise<Payment | null> => {
     return payments.length > 0 ? payments[0] : null;
 };
 
+export const getPaymentsByUser = async (userId: number): Promise<Payment[]> => {
+    const [rows] = await db.query(
+        "SELECT * FROM payments WHERE handledByUserId = ?",
+        [userId]
+    );
+    return rows as Payment[];
+};
+
 export const insertPayment = async (
     payment: WithOptional<Payment, "id" | "paidAt">
 ): Promise<boolean> => {

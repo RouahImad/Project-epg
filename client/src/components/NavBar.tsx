@@ -4,7 +4,6 @@ import {
     FiUser,
     FiHome,
     FiUsers,
-    FiDollarSign,
     FiSettings,
     FiBriefcase,
     FiBookOpen,
@@ -12,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
+import { useLogout } from "../hooks/api/useAuthApi";
 
 const NavBar = () => {
     const navigate = useNavigate();
@@ -21,12 +21,17 @@ const NavBar = () => {
     const adminMenuRef = useRef<HTMLDivElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
 
+    const logoutMutation = useLogout();
+
     const handleLogout = useCallback(() => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userRole");
-        setUser(null);
-        navigate("/login");
-    }, [navigate, setUser]);
+        logoutMutation.mutate(undefined, {
+            onSettled: () => {
+                localStorage.removeItem("userRole");
+                setUser(null);
+                navigate("/login");
+            },
+        });
+    }, [logoutMutation, navigate, setUser]);
 
     useEffect(() => {
         // Handle closing admin menu on outside click
@@ -89,7 +94,7 @@ const NavBar = () => {
                 className={({ isActive }) =>
                     `flex items-center gap-2 font-medium transition px-3 py-2 rounded-md ${
                         isActive
-                            ? "text-indigo-900 bg-indigo-50 active"
+                            ? "text-indigo-500 bg-indigo-50 active"
                             : "text-gray-700 hover:text-indigo-900 hover:bg-indigo-50"
                     } text-sm md:text-base`
                 }
@@ -102,7 +107,7 @@ const NavBar = () => {
                 className={({ isActive }) =>
                     `flex items-center gap-2 font-medium transition px-3 py-2 rounded-md ${
                         isActive
-                            ? "text-indigo-900 bg-indigo-50 active"
+                            ? "text-indigo-500 bg-indigo-50 active"
                             : "text-gray-700 hover:text-indigo-900 hover:bg-indigo-50"
                     } text-sm md:text-base`
                 }
@@ -115,7 +120,7 @@ const NavBar = () => {
                 className={({ isActive }) =>
                     `flex items-center gap-2 font-medium transition px-3 py-2 rounded-md ${
                         isActive
-                            ? "text-indigo-900 bg-indigo-50 active"
+                            ? "text-indigo-500 bg-indigo-50 active"
                             : "text-gray-700 hover:text-indigo-900 hover:bg-indigo-50"
                     } text-sm md:text-base`
                 }
@@ -128,7 +133,7 @@ const NavBar = () => {
                 className={({ isActive }) =>
                     `flex items-center gap-2 font-medium transition px-3 py-2 rounded-md ${
                         isActive
-                            ? "text-indigo-900 bg-indigo-50 active"
+                            ? "text-indigo-500 bg-indigo-50 active"
                             : "text-gray-700 hover:text-indigo-900 hover:bg-indigo-50"
                     } text-sm md:text-base`
                 }
@@ -147,8 +152,8 @@ const NavBar = () => {
                     className={({ isActive }) =>
                         `flex items-center gap-1.5 md:gap-2 font-medium transition ${
                             isActive
-                                ? "text-indigo-900 active font-bold"
-                                : "text-indigo-700 hover:text-indigo-900"
+                                ? "text-indigo-500 active font-bold"
+                                : "text-gray-700 hover:text-indigo-700"
                         } text-sm md:text-base px-2 md:px-3 py-1.5 md:py-2`
                     }
                 >
@@ -159,24 +164,12 @@ const NavBar = () => {
                     className={({ isActive }) =>
                         `flex items-center gap-1.5 md:gap-2 font-medium transition ${
                             isActive
-                                ? "text-indigo-900 active font-bold"
-                                : "text-gray-700 hover:text-indigo-900"
+                                ? "text-indigo-500 active font-bold"
+                                : "text-gray-700 hover:text-indigo-700"
                         } text-sm md:text-base px-2 md:px-3 py-1.5 md:py-2`
                     }
                 >
                     <FiUsers className="h-4 w-4 md:h-5 md:w-5" /> Students
-                </NavLink>
-                <NavLink
-                    to="/payments"
-                    className={({ isActive }) =>
-                        `flex items-center gap-1.5 md:gap-2 font-medium transition ${
-                            isActive
-                                ? "text-indigo-900 active font-bold"
-                                : "text-gray-700 hover:text-indigo-900"
-                        } text-sm md:text-base px-2 md:px-3 py-1.5 md:py-2`
-                    }
-                >
-                    <FiDollarSign className="h-4 w-4 md:h-5 md:w-5" /> Payments
                 </NavLink>
                 {/* SUPER_ADMIN ONLY: Unified Mega Menu for all screens */}
                 {userRole === "super_admin" && (
@@ -193,7 +186,7 @@ const NavBar = () => {
                     >
                         <button
                             type="button"
-                            className="flex items-center gap-2 font-medium text-gray-700 hover:text-indigo-900 transition px-3 py-2 rounded-md focus:outline-none cursor-pointer"
+                            className="flex items-center gap-2 font-medium text-gray-700 hover:text-indigo-900 transition px-3 py-2 rounded-md focus:outline-none"
                             aria-haspopup="true"
                             aria-expanded={adminMenuOpen}
                             tabIndex={-1}
@@ -218,8 +211,8 @@ const NavBar = () => {
                             className={({ isActive }) =>
                                 `flex items-center gap-1.5 md:gap-2 text-gray-700 transition ${
                                     isActive
-                                        ? "text-indigo-900 active font-bold"
-                                        : "hover:text-indigo-900"
+                                        ? "text-indigo-500 active font-bold"
+                                        : "hover:text-indigo-700"
                                 } text-sm md:text-base px-2 md:px-3 py-1.5 md:py-2`
                             }
                         >
@@ -268,7 +261,7 @@ const NavBar = () => {
                                 className={({ isActive }) =>
                                     `flex items-center gap-1.5 px-2 py-1.5 rounded-md transition ${
                                         isActive
-                                            ? "text-indigo-900 bg-indigo-50 active"
+                                            ? "text-indigo-500 bg-indigo-50 active"
                                             : "text-gray-700 hover:text-indigo-900 hover:bg-indigo-50"
                                     }`
                                 }

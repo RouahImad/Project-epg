@@ -40,14 +40,6 @@ const apiClient = axios.create({
 // Add a request interceptor to handle JWT tokens
 apiClient.interceptors.request.use(
     (config) => {
-        // request info
-        // console.log("API Request:", {
-        //     url: config.url,
-        //     method: config.method,
-        //     headers: config.headers,
-        //     data: config.data,
-        // });
-        // Get token from our token service
         const token = tokenService.getToken();
 
         if (token && !config.headers.Authorization) {
@@ -64,7 +56,6 @@ apiClient.interceptors.request.use(
 // Add a response interceptor to handle authentication errors and extract data
 apiClient.interceptors.response.use(
     (response) => {
-        // Return just the data instead of the entire response
         return response.data;
     },
     (error) => {
@@ -234,6 +225,9 @@ export const paymentsApi: PaymentsApi = {
 
     deletePayment: (paymentId: number) =>
         apiClient.delete(`/payments/${paymentId}`),
+
+    getPaymentsByUser: (userId: number) =>
+        apiClient.get(`/payments/user/${userId}`),
 };
 
 // Receipts API

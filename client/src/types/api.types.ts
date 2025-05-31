@@ -6,6 +6,7 @@ import type {
     StudentMajor,
     Tax,
     Payment,
+    PaymentWithTaxes,
     Receipt,
     Company,
     Activity,
@@ -129,14 +130,15 @@ export interface TaxesApi {
 
 // Payments API Types
 export interface PaymentsApi {
-    getPayments: () => Promise<Payment[]>;
-    getPaymentById: (paymentId: number) => Promise<Payment>;
-    createPayment: (paymentData: Partial<Payment>) => Promise<Payment>;
+    getPayments: () => Promise<PaymentWithTaxes[]>;
+    getPaymentById: (paymentId: number) => Promise<PaymentWithTaxes>;
+    createPayment: (paymentData: Partial<Payment>) => Promise<ApiResponse<any>>;
     updatePayment: (
         paymentId: number,
         paymentData: Partial<Payment>
-    ) => Promise<Payment>;
+    ) => Promise<ApiResponse<any>>;
     deletePayment: (paymentId: number) => Promise<ApiResponse<null>>;
+    getPaymentsByUser: (userId: number) => Promise<PaymentWithTaxes[]>;
 }
 
 // Receipts API Types

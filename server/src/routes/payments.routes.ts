@@ -4,6 +4,7 @@ import {
     deletePayment,
     getPaymentById,
     getPayments,
+    getPaymentsByUser,
     insertPayment,
     updatePayment,
 } from "../models/paymentsModel";
@@ -50,6 +51,55 @@ router.get("/", authenticateJWT, async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+/**
+ * @route   GET /payments/user/:id
+ * @desc    Get payments recorded by user
+ * @access  Admin (regular user/staff)
+ */
+
+router.get(
+    "/user/:id",
+    authenticateJWT,
+    async (req: Request, res: Response) => {
+        try {
+            const userId = parseInt(req.params.id);
+
+            // Validate input
+            if (Number.isNaN(userId)) {
+                res.status(400).json({ message: "Invalid user ID" });
+                return;
+            }
+            
+            // logic to get payments by staff
+            const payments = await getPaymentsByUser(userId);
+            if (!payments || payments.length === 0) {
+                res.status(404).json({ message: "No payments found for this user" });
+                return;
+            }
+
+            const paymentsHistory: PaymentWithTaxes[] = [...payments];
+            const taxPromises = paymentsHistory.map(async (payment) => {
+                payment.taxes = [];
+                const majorTaxes = await getMajorTaxesByMajorId(payment.majorId);
+                if (!majorTaxes || majorTaxes.length === 0) return payment;
+
+                const taxPromises = majorTaxes.map((majorTax) =>
+                    getTaxById(majorTax.taxId)
+                );
+                const taxes = await Promise.all(taxPromises);
+                payment.taxes = taxes.filter((tax) => tax !== null);
+                return payment;
+            });
+            await Promise.all(taxPromises);
+            res.status(200).json(paymentsHistory);
+
+        } catch (error) {
+            console.error("Get staff payments error:", error);
+            res.status(500).json({ message: "Server error" });
+        }
+    }
+);
 
 /**
  * @route   POST /payments
@@ -248,5 +298,7 @@ router.delete(
         }
     }
 );
+
+
 
 export default router;

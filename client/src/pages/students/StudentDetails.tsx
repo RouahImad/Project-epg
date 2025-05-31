@@ -1,18 +1,29 @@
-import React, { useState } from "react";
-import { useParams } from "react-router";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router";
 import {
     useStudent,
     useStudentMajors,
     useUpdateStudent,
-    useAddStudentMajor,
 } from "../../hooks/api/useStudentsApi";
+import { useMajors } from "../../hooks/api/useProgramsApi";
+import { usePaymentsByStudent } from "../../hooks/api/usePaymentsApi";
+import StudentProfile from "../../components/StudentProfile";
+import StudentMajors from "../../components/StudentMajors";
+import StudentPayments from "../../components/StudentPayments";
+import EnrollMajorDialog from "../../components/EnrollMajorDialog";
+import UpdateStudentDialog from "../../components/UpdateStudentDialog";
+import { FiArrowLeft } from "react-icons/fi";
+import type { Student } from "../../types";
 
 const StudentDetails = () => {
     const { id } = useParams<{ id: string }>();
     const [activeTab, setActiveTab] = useState("profile");
     const [showEnrollDialog, setShowEnrollDialog] = useState(false);
+    const [selectedMajorId, setSelectedMajorId] = useState<number | null>(null);
+    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+    const [updateForm, setUpdateForm] = useState<any>(null);
+    const navigate = useNavigate();
 
-    // Fetch student data
     const {
         data: student,
         isLoading: isLoadingStudent,
@@ -24,39 +35,112 @@ const StudentDetails = () => {
     const { data: studentMajors, isLoading: isLoadingMajors } =
         useStudentMajors(id as string);
 
-    // Mutation for updating student
-    const updateStudentMutation = useUpdateStudent();
+    // Fetch all majors for enroll dialog
+    const { data: majors, isLoading: isLoadingMajorsList } = useMajors();
 
-    // Mutation for adding a major to student
-    const addStudentMajorMutation = useAddStudentMajor({
-        onSuccess: () => {
-            setShowEnrollDialog(false);
-        },
-    });
+    // Fetch payments for this student
+    const { data: payments, isLoading: isLoadingPayments } =
+        usePaymentsByStudent(id as string);
 
-    const handleUpdateStudent = (studentData: any) => {
-        updateStudentMutation.mutate({
-            studentId: id as string,
-            studentData,
-        });
-    };
+    const updateStudentMutation = useUpdateStudent(id as string);
 
-    const handleEnrollStudent = (majorId: number) => {
-        addStudentMajorMutation.mutate({
-            studentId: id as string,
-            majorId,
-        });
-    };
-
-    if (isLoadingStudent) return <div>Loading student details...</div>;
-
-    if (isStudentError)
-        return <div>Error loading student: {studentError?.message}</div>;
-
+    // --- Loading/Error States ---
+    if (isLoadingStudent) {
+        return (
+            <div className="flex justify-center items-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+                <span className="ml-4 text-gray-600">
+                    Loading student details...
+                </span>
+            </div>
+        );
+    }
+    if (isStudentError) {
+        return (
+            <div className="flex justify-center items-center min-h-[60vh]">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+                    <h3 className="text-red-700 font-medium mb-2">Error</h3>
+                    <p className="text-red-600">
+                        {studentError?.message || "Failed to load student"}
+                    </p>
+                    <button
+                        className="mt-4 bg-red-100 text-red-700 px-4 py-2 rounded-md hover:bg-red-200 transition-colors"
+                        onClick={() => window.location.reload()}
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
+    }
     if (!student) return <div>Student not found</div>;
+
+    // --- Handlers ---
+    const handleEnrollStudent = () => {
+        // TODO: implement enroll logic
+        setShowEnrollDialog(false);
+    };
+
+    const handleOpenUpdateProfile = () => {
+        setUpdateForm({
+            id: student.id,
+            fullName: student.fullName,
+            email: student.email,
+            phone: student.phone,
+            address: student.address,
+            dateOfBirth: student.dateOfBirth,
+        });
+        setShowUpdateDialog(true);
+    };
+
+    const handleUpdateProfileChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const { name, value } = e.target;
+        setUpdateForm((prev: any) => ({ ...prev, [name]: value }));
+    };
+
+    const handleUpdateProfileSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const updatedFields: Partial<Omit<Student, "createdAt" | "createdBy">> =
+            {};
+        if (updateForm.fullName !== student.fullName)
+            updatedFields.fullName = updateForm.fullName;
+        if (updateForm.email !== student.email)
+            updatedFields.email = updateForm.email;
+        if (updateForm.phone !== student.phone)
+            updatedFields.phone = updateForm.phone;
+        if (updateForm.address !== student.address)
+            updatedFields.address = updateForm.address;
+        if (updateForm.dateOfBirth !== student.dateOfBirth)
+            updatedFields.dateOfBirth = updateForm.dateOfBirth;
+
+        // If nothing changed, do not send to server
+        if (Object.keys(updatedFields).length === 0) {
+            return;
+        }
+
+        updateStudentMutation.mutate(
+            {
+                id: student.id,
+                ...updatedFields,
+            },
+            {
+                onSuccess: () => setShowUpdateDialog(false),
+            }
+        );
+    };
 
     return (
         <div className="container mx-auto px-4 py-6">
+            <button
+                className="mr-3 mb-4 text-gray-500 hover:text-blue-600"
+                onClick={() => navigate(-1)}
+                aria-label="Back"
+                type="button"
+            >
+                <FiArrowLeft size={22} />
+            </button>
             <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
                 <div className="px-6 py-4">
                     <div className="flex justify-between items-center mb-4">
@@ -64,13 +148,12 @@ const StudentDetails = () => {
                             {student.fullName}
                         </h1>
                         <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                            className="bg-blue-500 text-white px-2.5 py-1.5 rounded"
                             onClick={() => setShowEnrollDialog(true)}
                         >
                             Enroll in Major
                         </button>
                     </div>
-
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <p className="text-gray-700">
@@ -100,7 +183,6 @@ const StudentDetails = () => {
                     </div>
                 </div>
             </div>
-
             {/* Tabs */}
             <div className="mb-6">
                 <div className="border-b border-gray-200">
@@ -138,108 +220,54 @@ const StudentDetails = () => {
                     </nav>
                 </div>
             </div>
-
             {/* Tab Content */}
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 {activeTab === "profile" && (
-                    <div className="p-6">
-                        <h2 className="text-xl font-semibold mb-4">
-                            Student Profile
-                        </h2>
-                        {/* Profile editing form would go here */}
-                        <p>Profile editing form would go here</p>
-                    </div>
+                    <StudentProfile
+                        student={student}
+                        onUpdateProfile={handleOpenUpdateProfile}
+                    />
                 )}
-
                 {activeTab === "majors" && (
-                    <div className="p-6">
-                        <h2 className="text-xl font-semibold mb-4">
-                            Enrolled Majors
-                        </h2>
-
-                        {isLoadingMajors ? (
-                            <p>Loading majors...</p>
-                        ) : studentMajors && studentMajors.length > 0 ? (
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Major
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Enrollment Date
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {studentMajors.map((major) => (
-                                        <tr key={major.majorId}>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {major.majorName}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {new Date(
-                                                    major.enrollmentDate
-                                                ).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <button className="text-blue-500 hover:text-blue-700">
-                                                    Add Payment
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p className="text-gray-500">
-                                No majors enrolled yet
-                            </p>
-                        )}
-                    </div>
+                    <StudentMajors
+                        isLoading={isLoadingMajors}
+                        studentMajors={studentMajors || []}
+                    />
                 )}
-
                 {activeTab === "payments" && (
-                    <div className="p-6">
-                        <h2 className="text-xl font-semibold mb-4">
-                            Payments History
-                        </h2>
-                        <p className="text-gray-500">
-                            No payments recorded yet
-                        </p>
-                    </div>
+                    <StudentPayments
+                        isLoading={isLoadingPayments}
+                        payments={payments || []}
+                    />
                 )}
             </div>
-
             {/* Enroll Dialog */}
-            {showEnrollDialog && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">
-                            Enroll in Major
-                        </h2>
-                        {/* This would be a form to select a major and enroll */}
-                        <p>Major selection form would go here</p>
-                        <div className="flex justify-end mt-4">
-                            <button
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
-                                onClick={() => setShowEnrollDialog(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={() => handleEnrollStudent(1)} // Mock major ID for demo
-                            >
-                                Enroll
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <EnrollMajorDialog
+                open={showEnrollDialog}
+                isLoading={isLoadingMajorsList}
+                majors={majors || []}
+                selectedMajorId={selectedMajorId}
+                onSelectMajor={setSelectedMajorId}
+                onClose={() => setShowEnrollDialog(false)}
+                onSubmit={handleEnrollStudent}
+            />
+            {/* Update Profile Dialog */}
+            <UpdateStudentDialog
+                open={showUpdateDialog}
+                form={updateForm}
+                isPending={updateStudentMutation.isPending}
+                onClose={() => setShowUpdateDialog(false)}
+                onChange={handleUpdateProfileChange}
+                onSubmit={handleUpdateProfileSubmit}
+                initialData={{
+                    id: student.id,
+                    fullName: student.fullName,
+                    email: student.email,
+                    phone: student.phone,
+                    address: student.address,
+                    dateOfBirth: student.dateOfBirth,
+                }}
+            />
         </div>
     );
 };

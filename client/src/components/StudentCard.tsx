@@ -1,4 +1,5 @@
 import type { Student } from "../types";
+import { FiMapPin, FiCalendar } from "react-icons/fi";
 
 const StudentCard = ({ student }: { student: Student }) => {
     return (
@@ -13,7 +14,7 @@ const StudentCard = ({ student }: { student: Student }) => {
                     <div className="flex-shrink-0 bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center text-white font-bold text-lg">
                         {student.fullName.charAt(0).toUpperCase()}
                     </div>
-                    <div className="ml-4">
+                    <div className="ml-4 flex-1">
                         <h3 className="text-lg font-semibold text-gray-800 mb-1">
                             {student.fullName}
                         </h3>
@@ -35,7 +36,7 @@ const StudentCard = ({ student }: { student: Student }) => {
                             {student.email}
                         </p>
                         {student.phone && (
-                            <p className="text-sm text-gray-600 flex items-center">
+                            <p className="text-sm text-gray-600 flex items-center mb-1">
                                 <svg
                                     className="h-4 w-4 mr-1 text-gray-500"
                                     fill="none"
@@ -51,6 +52,20 @@ const StudentCard = ({ student }: { student: Student }) => {
                                     ></path>
                                 </svg>
                                 {student.phone}
+                            </p>
+                        )}
+                        {student.address && (
+                            <p className="text-sm text-gray-600 flex items-center mb-1">
+                                <FiMapPin className="h-4 w-4 mr-1 text-gray-500" />
+                                {student.address}
+                            </p>
+                        )}
+                        {student.dateOfBirth && (
+                            <p className="text-sm text-gray-600 flex items-center">
+                                <FiCalendar className="h-4 w-4 mr-1 text-gray-500" />
+                                {new Date(
+                                    student.dateOfBirth
+                                ).toLocaleDateString()}
                             </p>
                         )}
                     </div>

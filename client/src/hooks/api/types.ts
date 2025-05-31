@@ -1,9 +1,3 @@
-// Generic error type for API calls
-export type ApiError = {
-    message: string;
-    statusCode?: number;
-};
-
 // Common query keys for consistent cache management
 export const QueryKeys = {
     users: {
@@ -30,5 +24,9 @@ export const QueryKeys = {
     },
     auth: {
         currentUser: ["currentUser"],
+    },
+    payments: {
+        all: ["payments"],
+        byStudent: (studentId: string) => ["payments", "byStudent", studentId],
     },
 };

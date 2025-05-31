@@ -160,4 +160,26 @@ router.patch(
     }
 );
 
+/**
+ * @route   POST /auth/logout
+ * @desc    Logout user and clear token
+ * @access  Public
+ */
+
+router.post("/logout", (req: Request, res: Response) => {
+    try {
+        // Clear the token cookie
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: config.env === "production",
+            sameSite: "strict",
+        });
+
+        res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        console.error("Logout error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 export default router;

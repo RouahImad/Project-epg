@@ -1,5 +1,5 @@
 // Academic-related types
-import { User } from "./User.types";
+import type { User } from "./User.types";
 
 export interface Student {
     id: string;

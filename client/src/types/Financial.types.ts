@@ -1,6 +1,6 @@
 // Financial-related types
-import { Student, Major } from "./Academic.types";
-import { User } from "./User.types";
+import type { Student, Major } from "./Academic.types";
+import type { User } from "./User.types";
 
 export interface Tax {
     id: number;
@@ -23,6 +23,10 @@ export interface Payment {
     remainingAmount?: number;
     paidAt: Date;
     handledByUserId: User["id"];
+}
+
+export interface PaymentWithTaxes extends Payment {
+    taxes?: Tax[] | undefined;
 }
 
 export interface Receipt {

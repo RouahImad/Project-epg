@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Login from "../components/auth/Login";
 import ProtectedRoute from "../components/auth/ProtectedRoute";

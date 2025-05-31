@@ -45,7 +45,7 @@ const Login = () => {
         }
 
         try {
-            const response = await loginMutation.mutateAsync({
+            await loginMutation.mutateAsync({
                 email,
                 password,
             });
@@ -156,7 +156,7 @@ const Login = () => {
                                 />
                                 <button
                                     type="button"
-                                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                                     onClick={() =>
                                         setShowPassword(!showPassword)
                                     }
@@ -183,7 +183,7 @@ const Login = () => {
                             text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 
                             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
                             disabled:bg-indigo-400 disabled:cursor-not-allowed transition-all duration-200
-                            shadow-md hover:shadow-lg cursor-pointer"
+                            shadow-md hover:shadow-lg"
                         >
                             {loginMutation.isPending ? (
                                 <svg

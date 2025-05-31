@@ -13,7 +13,7 @@ export type { User, Activity } from "./User.types";
 export type { Student, MajorType, Major, StudentMajor } from "./Academic.types";
 
 // Re-export all types from Financial.types.ts
-export type { Tax, MajorTax, Payment, Receipt } from "./Financial.types";
+export type { Tax, MajorTax, Payment, PaymentWithTaxes, Receipt } from "./Financial.types";
 
 // Re-export all types from Company.types.ts
 export type { Company } from "./Company.types";
