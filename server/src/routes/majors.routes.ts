@@ -4,6 +4,8 @@ import {
     deleteMajor,
     getMajorById,
     getMajors,
+    getMajorsGroupedByType,
+    insertMajor,
     updateMajor,
 } from "../models/majorsModel";
 import {
@@ -12,6 +14,7 @@ import {
     insertMajorTax,
 } from "../models/majorTaxesModel";
 import { getTaxById, getTaxes } from "../models/taxesModel";
+import { getMajorTypeById } from "../models/majorTypesModel";
 
 const router = Router();
 
@@ -26,6 +29,23 @@ router.get("/", authenticateJWT, async (req: Request, res: Response) => {
         res.status(200).json(majors);
     } catch (error) {
         console.error("Get majors error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+/**
+ * @route   GET /majors/grouped
+ * @desc    Get majors grouped by type
+ * @access  Admin (regular user/staff)
+ */
+
+router.get("/grouped", authenticateJWT, async (req: Request, res: Response) => {
+    try {
+        const majors = await getMajorsGroupedByType();
+
+        res.status(200).json(majors);
+    } catch (error) {
+        console.error("Get grouped majors error:", error);
         res.status(500).json({ message: "Server error" });
     }
 });
@@ -58,6 +78,61 @@ router.get(
             res.status(200).json(major);
         } catch (error) {
             console.error("Get major error:", error);
+            res.status(500).json({ message: "Server error" });
+        }
+    }
+);
+
+/**
+ * @route   POST /majors
+ * @desc    Create a new major
+ * @access  Super Admin Only
+ */
+
+router.post(
+    "/",
+    authenticateJWT,
+    checkRole("super_admin"),
+    async (req: Request, res: Response) => {
+        try {
+            const { name, majorTypeId, price, duration, description } =
+                req.body || {};
+
+            // Validate input
+            if (!name || !majorTypeId || !price || !duration) {
+                res.status(400).json({ message: "All fields are required" });
+                return;
+            }
+
+            // Ensure price and duration are valid numbers
+            if (isNaN(price) || isNaN(duration)) {
+                res.status(400).json({
+                    message: "Price and duration must be numbers",
+                });
+                return;
+            }
+
+            // Check if major type exists
+            const majorType = await getMajorTypeById(majorTypeId);
+            if (!majorType) {
+                res.status(404).json({ message: "Major type not found" });
+                return;
+            }
+
+            const newMajor = await insertMajor({
+                name,
+                majorTypeId,
+                price,
+                duration,
+                description,
+            });
+
+            res.status(201).json({
+                message: "Major created successfully",
+                major: newMajor,
+            });
+        } catch (error) {
+            console.error("Create major error:", error);
             res.status(500).json({ message: "Server error" });
         }
     }

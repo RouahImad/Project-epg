@@ -11,6 +11,7 @@ export const QueryKeys = {
     },
     majors: {
         all: ["majors"],
+        grouped: () => ["majors", "grouped"],
         detail: (id: number) => ["majors", id],
         taxes: (id: number) => ["majors", id, "taxes"],
     },

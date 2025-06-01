@@ -23,68 +23,72 @@ const loginLimiter = rateLimit({
  * @desc    Login and get token
  * @access  Public
  */
-router.post("/login", loginLimiter, async (req: RequestWithUser, res: Response) => {
-    try {
-        const { email, password } = req.body || {};
+router.post(
+    "/login",
+    loginLimiter,
+    async (req: RequestWithUser, res: Response) => {
+        try {
+            const { email, password } = req.body || {};
 
-        // Validate input
-        if (!email || !password) {
-            res.status(400).json({
-                message: "Email and password are required",
+            // Validate input
+            if (!email || !password) {
+                res.status(400).json({
+                    message: "Email and password are required",
+                });
+                return;
+            }
+
+            // Fetch user from database
+            const user = await getUserByEmail(email);
+            if (!user) {
+                res.status(401).json({ message: "Invalid credentials" });
+                return;
+            }
+
+            // Check password
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                res.status(401).json({ message: "Invalid credentials" });
+                return;
+            } // Check ban
+            if (user.banned) {
+                res.status(403).json({ message: "User is banned" });
+                return;
+            }
+
+            if (!config.jwtSecret) {
+                console.error("JWT Secret is not defined");
+                res.status(500).json({
+                    message: "Some error occurred, please try again later",
+                });
+                return;
+            }
+
+            // Generate JWT token
+            const token = jwt.sign(user, config.jwtSecret, {
+                expiresIn: config.jwtExp,
+            } as SignOptions);
+
+            // Set token in cookie
+            res.cookie("token", token.trim(), {
+                httpOnly: true,
+                secure: config.env === "production", // Use secure cookies in production
+                sameSite: "strict", // Prevent CSRF attacks
             });
-            return;
-        }
+            req.user = user;
+            const { password: _, ...userWithoutPassword } = user;
 
-        // Fetch user from database
-        const user = await getUserByEmail(email);
-        if (!user) {
-            res.status(401).json({ message: "Invalid credentials" });
-            return;
-        }
-
-        // Check password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            res.status(401).json({ message: "Invalid credentials" });
-            return;
-        } // Check ban
-        if (user.banned) {
-            res.status(403).json({ message: "User is banned" });
-            return;
-        }
-
-        if (!config.jwtSecret) {
-            console.error("JWT Secret is not defined");
-            res.status(500).json({
-                message: "Some error occurred, please try again later",
+            res.status(200).json({
+                message: "Login successful",
+                token,
+                user: userWithoutPassword,
             });
-            return;
+        } catch (error) {
+            console.error("Login error:", error);
+            res.status(500).json({ message: "Server error" });
         }
-
-        // Generate JWT token
-        const token = jwt.sign(user, config.jwtSecret, {
-            expiresIn: config.jwtExp,
-        } as SignOptions);
-
-        // Set token in cookie
-        res.cookie("token", token.trim(), {
-            httpOnly: true,
-            secure: config.env === "production", // Use secure cookies in production
-            sameSite: "strict", // Prevent CSRF attacks
-        });
-        req.user = user;
-        const { password: _, ...userWithoutPassword } = user;
-
-        res.status(200).json({
-            message: "Login successful",
-            token,
-            user: userWithoutPassword,
-        });
-    } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ message: "Server error" });
     }
-});
+);
 
 /**
  * @route   GET /auth/profile
@@ -94,7 +98,7 @@ router.post("/login", loginLimiter, async (req: RequestWithUser, res: Response) 
 router.get(
     "/profile",
     authenticateJWT,
-    async (req: Request & { user?: any }, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             if (!req.user || !req.user.id) {
                 res.status(401).json({ message: "User not authenticated" });
@@ -128,7 +132,7 @@ router.get(
 router.patch(
     "/profile",
     authenticateJWT,
-    async (req: Request & { user?: any }, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             if (!req.user || !req.user.id) {
                 res.status(401).json({ message: "User not authenticated" });
@@ -137,7 +141,6 @@ router.patch(
 
             const userId = req.user.id;
             const { fullName, email, password } = req.body || {};
-
             // Hash password if provided
             let updatedData: any = {};
             if (fullName) updatedData.fullName = fullName;

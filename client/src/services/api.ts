@@ -23,6 +23,7 @@ import type {
     DashboardApi,
     Api,
     LoginCredentials,
+    ActivityLogsApi,
 } from "../types/api.types";
 
 const API_URL = import.meta.env.VITE_APP_API_URL || "http://localhost:4000";
@@ -170,9 +171,6 @@ export const programTypesApi: ProgramTypesApi = {
     // Majors under program type
     getMajorsByProgramType: (typeId: number) =>
         apiClient.get(`/program-types/${typeId}/majors`),
-
-    addMajorToProgramType: (typeId: number, majorData: Partial<Major>) =>
-        apiClient.post(`/program-types/${typeId}/majors`, majorData),
 };
 
 // Majors API
@@ -181,10 +179,15 @@ export const majorsApi: MajorsApi = {
 
     getMajorById: (majorId: number) => apiClient.get(`/majors/${majorId}`),
 
+    getMajorsGroupedByType: () => apiClient.get("/majors/grouped"),
+
     updateMajor: (majorId: number, data: Partial<Major>) =>
         apiClient.patch(`/majors/${majorId}`, data),
 
     deleteMajor: (majorId: number) => apiClient.delete(`/majors/${majorId}`),
+
+    createMajor: (majorData: Partial<Major>) =>
+        apiClient.post("/majors", majorData),
 
     // Major taxes
     getTaxesForMajor: (majorId: number) =>
@@ -255,6 +258,11 @@ export const dashboardApi: DashboardApi = {
     // getDashboardStats: () => apiClient.get("/dashboard"),
     getSuperStats: () => apiClient.get("/dashboard/super"),
     getAdminStats: () => apiClient.get("/dashboard/admin"),
+};
+
+// Activity logs API
+export const activityLogsApi: ActivityLogsApi = {
+    getActivityLogs: () => apiClient.get("/logs"),
 };
 
 // Default export of all API services

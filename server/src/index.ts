@@ -52,7 +52,7 @@ app.use("/dashboard", dashboardRouter);
 app.use("/students", studentsRouter);
 app.use("/payments", paymentsRouter);
 app.use("/receipts", receiptsRouter);
-app.use("/activity-logs", activityLogsRouter);
+app.use("/logs", activityLogsRouter);
 app.use("/majors", majorsRouter);
 app.use("/program-types", programTypesRouter);
 app.use("/taxes", taxesRouter);

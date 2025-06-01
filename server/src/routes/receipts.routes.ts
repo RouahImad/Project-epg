@@ -10,6 +10,7 @@ import { getPaymentById } from "../models/paymentsModel";
 import { getStudentById } from "../models/studentsModel";
 import { getMajorById } from "../models/majorsModel";
 import { getCompanyInfo } from "../models/companyModel";
+import { RequestWithUser } from "../types";
 
 const router = Router();
 
@@ -36,7 +37,7 @@ router.get("/", authenticateJWT, async (req: Request, res: Response) => {
 router.post(
     "/",
     authenticateJWT,
-    async (req: Request & { user?: any }, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const { paymentId } = req.body || {};
 
@@ -45,6 +46,11 @@ router.post(
                 res.status(400).json({
                     message: "Payment ID is required",
                 });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 

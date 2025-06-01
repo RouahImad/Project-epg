@@ -2,62 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { majorsApi, programTypesApi } from "../../services/api";
 import { QueryKeys } from "./types";
-import type { Major, MajorType } from "../../types";
-
-// ==================== MAJORS HOOKS ====================
-/**
- * Hook to get all majors
- */
-export const useMajors = () =>
-    useQuery({
-        queryKey: QueryKeys.majors.all,
-        queryFn: majorsApi.getMajors,
-    });
-
-/**
- * Hook to get a single major by ID
- */
-export const useMajor = (majorId: number) =>
-    useQuery({
-        queryKey: QueryKeys.majors.detail(majorId),
-        queryFn: () => majorsApi.getMajorById(majorId),
-        enabled: !!majorId,
-    });
-
-/**
- * Hook to update a major
- */
-export const useUpdateMajor = (majorId: number) => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (majorData: Partial<Major>) =>
-            majorsApi.updateMajor(majorId, majorData),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: QueryKeys.majors.all });
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.majors.detail(majorId),
-            });
-        },
-    });
-};
-
-/**
- * Hook to delete a major
- */
-export const useDeleteMajor = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (majorId: number) => majorsApi.deleteMajor(majorId),
-        onSuccess: (_, majorId) => {
-            queryClient.invalidateQueries({ queryKey: QueryKeys.majors.all });
-            queryClient.removeQueries({
-                queryKey: QueryKeys.majors.detail(majorId),
-            });
-        },
-    });
-};
+import type { MajorType } from "../../types";
 
 /**
  * Hook to get taxes for a major
@@ -178,24 +123,6 @@ export const useDeleteProgramType = () => {
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.programTypes.detail(programTypeId),
             });
-        },
-    });
-};
-
-/**
- * Hook to add a major to a program type
- */
-export const useAddMajorToProgramType = (programTypeId: number) => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (majorData: Partial<Major>) =>
-            programTypesApi.addMajorToProgramType(programTypeId, majorData),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.programTypes.majors(programTypeId),
-            });
-            queryClient.invalidateQueries({ queryKey: QueryKeys.majors.all });
         },
     });
 };

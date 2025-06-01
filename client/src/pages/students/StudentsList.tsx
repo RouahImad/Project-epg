@@ -12,7 +12,14 @@ const StudentsList = () => {
     const { data: students, isLoading, isError, error } = useStudents();
     const createStudentMutation = useCreateStudent();
 
-    const handleAddStudent = (studentData: any) => {
+    const handleAddStudent = (studentData: {
+        id: string;
+        fullName: string;
+        email: string;
+        phone?: string;
+        address?: string;
+        dateOfBirth?: any;
+    }) => {
         createStudentMutation.mutate(studentData);
         setShowAddDialog(false);
     };

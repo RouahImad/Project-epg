@@ -11,7 +11,7 @@ import {
 import { getMajorTaxesByMajorId } from "../models/majorTaxesModel";
 import { getTaxById } from "../models/taxesModel";
 import { getMajorById } from "../models/majorsModel";
-import { Payment, Tax } from "../types/index";
+import { Payment, Tax, RequestWithUser } from "../types/index";
 
 const router = Router();
 
@@ -70,18 +70,22 @@ router.get(
                 res.status(400).json({ message: "Invalid user ID" });
                 return;
             }
-            
+
             // logic to get payments by staff
             const payments = await getPaymentsByUser(userId);
             if (!payments || payments.length === 0) {
-                res.status(404).json({ message: "No payments found for this user" });
+                res.status(404).json({
+                    message: "No payments found for this user",
+                });
                 return;
             }
 
             const paymentsHistory: PaymentWithTaxes[] = [...payments];
             const taxPromises = paymentsHistory.map(async (payment) => {
                 payment.taxes = [];
-                const majorTaxes = await getMajorTaxesByMajorId(payment.majorId);
+                const majorTaxes = await getMajorTaxesByMajorId(
+                    payment.majorId
+                );
                 if (!majorTaxes || majorTaxes.length === 0) return payment;
 
                 const taxPromises = majorTaxes.map((majorTax) =>
@@ -93,7 +97,6 @@ router.get(
             });
             await Promise.all(taxPromises);
             res.status(200).json(paymentsHistory);
-
         } catch (error) {
             console.error("Get staff payments error:", error);
             res.status(500).json({ message: "Server error" });
@@ -109,7 +112,7 @@ router.get(
 router.post(
     "/",
     authenticateJWT,
-    async (req: Request & { user?: any }, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const { studentId, majorId, amountPaid, handledByUserId } =
                 req.body || {};
@@ -117,6 +120,11 @@ router.post(
             // Validate input
             if (!studentId || !majorId || !amountPaid || !handledByUserId) {
                 res.status(400).json({ message: "All fields are required" });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -149,7 +157,7 @@ router.post(
                 majorId,
                 amountPaid: parseFloat(amountPaid),
                 remainingAmount: total - parseFloat(amountPaid),
-                handledByUserId: req.user?.id || handledByUserId,
+                handledByUserId: req.user.id || handledByUserId,
             });
 
             if (!success) {
@@ -298,7 +306,5 @@ router.delete(
         }
     }
 );
-
-
 
 export default router;

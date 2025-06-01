@@ -9,6 +9,7 @@ import type {
     PaymentWithTaxes,
     Receipt,
     Company,
+    LogsWithUserName,
 } from "./index";
 
 // Authentication Types
@@ -94,18 +95,16 @@ export interface ProgramTypesApi {
 
     // Majors under program type
     getMajorsByProgramType: (typeId: number) => Promise<Major[]>;
-    addMajorToProgramType: (
-        typeId: number,
-        majorData: Partial<Major>
-    ) => Promise<Major>;
 }
 
 // Majors API Types
 export interface MajorsApi {
     getMajors: () => Promise<Major[]>;
     getMajorById: (majorId: number) => Promise<Major>;
+    getMajorsGroupedByType: () => Promise<Record<number, Major[]>>;
     updateMajor: (majorId: number, data: Partial<Major>) => Promise<Major>;
     deleteMajor: (majorId: number) => Promise<ApiResponse<null>>;
+    createMajor: (majorData: Partial<Major>) => Promise<Major>;
 
     // Major taxes
     getTaxesForMajor: (majorId: number) => Promise<Tax[]>;
@@ -178,11 +177,12 @@ export type AdminDashboardData = {
         timestamp: string;
     }[];
     charts: {
-        paymentsByMonth: { month: string; amount: number }[];
-        outstandingByMonth: { month: string; amount: number }[];
-        studentsByMonth: { month: string; count: number }[];
+        paymentsByMonth: Record<string, number>;
+        outstandingByMonth: Record<string, number>;
+        studentsByMonth: Record<string, number>;
     };
 };
+
 export type SuperDashboardData = {
     totalIncome: number;
     studentCount: number;
@@ -216,9 +216,13 @@ export type SuperDashboardData = {
 };
 
 export interface DashboardApi {
-    // getDashboardStats: () => Promise<DashboardStats>;
     getAdminStats: () => Promise<AdminDashboardData>;
     getSuperStats: () => Promise<SuperDashboardData>;
+}
+
+// Activity Logs API Types
+export interface ActivityLogsApi {
+    getActivityLogs: () => Promise<LogsWithUserName[]>;
 }
 
 // Complete API Interface
@@ -233,5 +237,6 @@ export interface Api {
     receipts: ReceiptsApi;
     company: CompanyApi;
     dashboard: DashboardApi;
+    activityLogs: ActivityLogsApi;
     token: TokenService;
 }

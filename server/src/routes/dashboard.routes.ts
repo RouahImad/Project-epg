@@ -6,6 +6,7 @@ import { getMajors } from "../models/majorsModel";
 import { getActivities, getActivitiesByUserId } from "../models/activityModel";
 import { getUsers } from "../models/usersModel";
 import { RequestWithUser } from "../types";
+import { formatActivities } from "../utils/helpers";
 
 const router = Router();
 
@@ -154,25 +155,11 @@ router.get(
                     (staff): staff is NonNullable<typeof staff> =>
                         staff !== undefined
                 )
-                .sort((a, b) => b.income - a.income);
+                .sort((a, b) => b.income - a.income)
+                .slice(0, 7); // Top 7 staff by income handled
 
             // Recent activity (last 10)
-            const recentActivity = [...activities]
-                .sort(
-                    (a, b) =>
-                        new Date(b.timestamp).getTime() -
-                        new Date(a.timestamp).getTime()
-                )
-                .slice(0, 10)
-                .map((activity) => ({
-                    userId: activity.userId,
-                    userName: activity.username,
-                    action: activity.action,
-                    entityType: activity.entityType,
-                    entityId: activity.entityId,
-                    details: activity.details,
-                    timestamp: new Date(activity.timestamp).toLocaleString(),
-                }));
+            const recentActivity = formatActivities(activities).slice(0, 10);
 
             const result = {
                 totalIncome,
@@ -259,26 +246,6 @@ router.get(
  * @route   GET /dashboard/admin
  * @desc    Student analytics and statistics
  * @access  Admin (regular user/staff)
- * @Returns
-{
-    myIncome: number,
-    myStudentsCount: number,
-    myOutstandingPayments: number,
-    myActivityCount: number,
-    recentActions: {
-        userId: number | string,
-        userName: string,
-        action: string,
-        entityType: string,
-        entityId: number | string,
-        details: string,
-        timestamp: string // formatted date string
-    }[],
-    charts: {
-        paymentsByMonth: Record<string, number>,
-        outstandingByMonth: Record<string, number>,
-        studentsByMonth: Record<string, number>
-}
  */
 
 router.get(
@@ -314,15 +281,7 @@ router.get(
             const myActivityCount = myActivities.length;
 
             // Get recent actions performed by the admin, count: 5
-            const recentActions = myActivities.slice(0, 5).map((activity) => ({
-                userId: activity.userId,
-                userName: activity.username,
-                action: activity.action,
-                entityType: activity.entityType,
-                entityId: activity.entityId,
-                details: activity.details,
-                timestamp: new Date(activity.timestamp).toLocaleString(),
-            }));
+            const recentActions = formatActivities(myActivities).slice(0, 5);
 
             // --- Data for Charts ---
 
@@ -452,186 +411,6 @@ router.get(
             // res.status(200).json(adminDashboardData);
         } catch (error) {
             console.error("Get admin dashboard stats error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
-    }
-);
-
-/**
- * @route   GET /dashboard/financial
- * @desc    Financial overview and analytics
- * @access  Super Admin Only
- */
-router.get(
-    "/financial",
-    authenticateJWT,
-    checkRole("super_admin"),
-    async (req: Request, res: Response) => {
-        try {
-            const payments = await getPayments();
-            const majors = await getMajors();
-
-            // Get date range parameters
-            const startDate = req.query.startDate
-                ? new Date(req.query.startDate as string)
-                : new Date(
-                      new Date().setFullYear(new Date().getFullYear() - 1)
-                  ); // Default: 1 year ago
-
-            const endDate = req.query.endDate
-                ? new Date(req.query.endDate as string)
-                : new Date(); // Default: current date
-
-            // Filter payments by date range
-            const filteredPayments = payments.filter((payment) => {
-                const paymentDate = new Date(payment.paidAt);
-                return paymentDate >= startDate && paymentDate <= endDate;
-            });
-
-            // Total revenue in period
-            const totalRevenue = filteredPayments.reduce(
-                (sum, payment) => sum + payment.amountPaid,
-                0
-            );
-
-            // Revenue by month
-            const revenueByMonth = filteredPayments.reduce(
-                (monthly, payment) => {
-                    const date = new Date(payment.paidAt);
-                    const monthKey = `${date.getFullYear()}-${
-                        date.getMonth() + 1
-                    }`;
-                    monthly[monthKey] =
-                        (monthly[monthKey] || 0) + payment.amountPaid;
-                    return monthly;
-                },
-                {} as Record<string, number>
-            );
-
-            // Revenue by major
-            const revenueByMajor = filteredPayments.reduce(
-                (byMajor, payment) => {
-                    byMajor[payment.majorId] =
-                        (byMajor[payment.majorId] || 0) + payment.amountPaid;
-                    return byMajor;
-                },
-                {} as Record<number, number>
-            );
-
-            // Enhance revenueByMajor with major names
-            const revenueByMajorWithNames = Object.entries(revenueByMajor).map(
-                ([majorId, revenue]) => {
-                    const major = majors.find(
-                        (m) => m.id === parseInt(majorId)
-                    );
-                    return {
-                        majorId: parseInt(majorId),
-                        majorName: major?.name || "Unknown Major",
-                        revenue,
-                    };
-                }
-            );
-
-            // Outstanding payments (remaining amounts)
-            const outstandingAmount = payments.reduce(
-                (sum, payment) => sum + (payment.remainingAmount || 0),
-                0
-            );
-
-            // Provide financial metrics
-            const financialData = {
-                period: {
-                    startDate,
-                    endDate,
-                },
-                summary: {
-                    totalRevenue,
-                    outstandingAmount,
-                    collectionRate:
-                        (totalRevenue / (totalRevenue + outstandingAmount)) *
-                        100,
-                },
-                revenueByMonth,
-                revenueByMajor: revenueByMajorWithNames,
-            };
-
-            res.status(200).json(financialData);
-        } catch (error) {
-            console.error("Get financial dashboard error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
-    }
-);
-
-/**
- * @route   GET /dashboard/students
- * @desc    Student analytics and statistics
- * @access  Admin (regular user/staff)
- */
-router.get(
-    "/students",
-    authenticateJWT,
-    async (req: Request, res: Response) => {
-        try {
-            const students = await getStudents();
-            const payments = await getPayments();
-            const majors = await getMajors();
-
-            // Students by major
-            const studentsByMajor = majors.map((major) => {
-                const count = payments.filter(
-                    (payment) => payment.majorId === major.id
-                ).length;
-                return {
-                    majorId: major.id,
-                    majorName: major.name,
-                    studentCount: count,
-                };
-            });
-
-            // Calculate new student registrations by month
-            const registrationsByMonth = students.reduce((monthly, student) => {
-                const date = new Date(student.createdAt);
-                const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-                monthly[monthKey] = (monthly[monthKey] || 0) + 1;
-                return monthly;
-            }, {} as Record<string, number>);
-
-            // Calculate age distribution
-            const ageDistribution = students.reduce((distribution, student) => {
-                if (!student.dateOfBirth) return distribution;
-
-                const birthDate = new Date(student.dateOfBirth);
-                const age = new Date().getFullYear() - birthDate.getFullYear();
-
-                // Group by age ranges
-                let ageGroup = "18-24";
-                if (age < 18) ageGroup = "Under 18";
-                else if (age >= 25 && age <= 34) ageGroup = "25-34";
-                else if (age >= 35 && age <= 44) ageGroup = "35-44";
-                else if (age >= 45) ageGroup = "45+";
-
-                distribution[ageGroup] = (distribution[ageGroup] || 0) + 1;
-                return distribution;
-            }, {} as Record<string, number>);
-
-            const studentData = {
-                totalStudents: students.length,
-                studentsByMajor,
-                registrationsByMonth,
-                demographics: {
-                    ageDistribution,
-                },
-                // Since we don't have an isCompleted field, calculating based on major payments
-                completionRate:
-                    (payments.filter((p) => p.remainingAmount === 0).length /
-                        payments.length) *
-                        100 || 0,
-            };
-
-            res.status(200).json(studentData);
-        } catch (error) {
-            console.error("Get student dashboard error:", error);
             res.status(500).json({ message: "Server error" });
         }
     }

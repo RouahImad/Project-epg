@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { authenticateJWT, checkRole } from "../middlewares/auth";
+import { User } from "../types/User.types";
 import {
     getUsers,
     getUserById,
@@ -110,10 +111,8 @@ router.patch(
             if (!user) {
                 res.status(404).json({ message: "User not found" });
                 return;
-            }
-
-            // Prepare update data
-            let updateData: any = {};
+            } // Prepare update data
+            let updateData: Partial<Omit<User, "id" | "createdAt">> = {};
             if (fullName) updateData.fullName = fullName;
             if (email) updateData.email = email;
             if (password) {

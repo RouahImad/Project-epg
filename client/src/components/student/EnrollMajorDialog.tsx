@@ -1,10 +1,11 @@
 import React from "react";
 import { FiBookOpen, FiX } from "react-icons/fi";
+import type { Major } from "../../types/index";
 
 interface EnrollMajorDialogProps {
     open: boolean;
     isLoading: boolean;
-    majors: any[];
+    majors: Major[];
     selectedMajorId: number | null;
     onSelectMajor: (id: number) => void;
     onClose: () => void;

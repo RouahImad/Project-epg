@@ -34,7 +34,7 @@ export interface ActivityLog {
         | "company"
         | "user";
     entityId: string | number;
-    details?: Record<string, any>; // Optional detailed payload
+    details?: string;
     timestamp: Date;
 }
 

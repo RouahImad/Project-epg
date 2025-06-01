@@ -71,9 +71,9 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                                     }
                                     interval={0}
                                 />
-                                <YAxis />
+                                <YAxis />{" "}
                                 <Tooltip
-                                    formatter={(value: any) =>
+                                    formatter={(value: number) =>
                                         value.toLocaleString()
                                     }
                                     labelFormatter={(label: string) => label}

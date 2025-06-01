@@ -6,12 +6,12 @@ import {
     FiUsers,
     FiSettings,
     FiBriefcase,
-    FiBookOpen,
     FiFileText,
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { useLogout } from "../hooks/api/useAuthApi";
+import { IoSchool } from "react-icons/io5";
 
 const NavBar = () => {
     const navigate = useNavigate();
@@ -126,7 +126,7 @@ const NavBar = () => {
                 }
                 onClick={() => setAdminMenuOpen(false)}
             >
-                <FiBookOpen className="h-4 w-4 md:h-5 md:w-5" /> Programs
+                <IoSchool className="h-4 w-4 md:h-5 md:w-5" /> Programs
             </NavLink>
             <NavLink
                 to="/admin/logs"

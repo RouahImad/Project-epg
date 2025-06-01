@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { FiX, FiUser, FiLock } from "react-icons/fi";
 import { authApi } from "../services/api";
+import type { User } from '../types/User.types';
 
 interface Props {
     open: boolean;
     onClose: () => void;
-    user: any;
+    user: User | null;
 }
 
 const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {

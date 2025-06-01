@@ -16,6 +16,7 @@ import {
     deleteStudentMajor,
 } from "../models/studentMajorsModel";
 import { getMajorById } from "../models/majorsModel";
+import { Student, RequestWithUser } from "../types";
 
 const router = Router();
 
@@ -42,7 +43,7 @@ router.get("/", authenticateJWT, async (req: Request, res: Response) => {
 router.post(
     "/",
     authenticateJWT,
-    async (req: Request & { user?: any }, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const { id, fullName, email, phone, address, dateOfBirth } =
                 req.body || {};
@@ -52,6 +53,11 @@ router.post(
                 res.status(400).json({
                     message: "Required fields are missing",
                 });
+                return;
+            }
+
+            if(!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -125,9 +131,7 @@ router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
         if (!student) {
             res.status(404).json({ message: "Student not found" });
             return;
-        }
-
-        // Prepare update data
+        } // Prepare update data
         const updateData: any = {};
         updateData.id = newId == student.id ? null : newId;
         updateData.fullName = fullName == student.fullName ? null : fullName;

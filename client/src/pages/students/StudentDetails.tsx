@@ -4,15 +4,17 @@ import {
     useStudent,
     useStudentMajors,
     useUpdateStudent,
+    useDeleteStudent,
 } from "../../hooks/api/useStudentsApi";
-import { useMajors } from "../../hooks/api/useProgramsApi";
+import { useMajors } from "../../hooks/api/useMajorsApi";
 import { usePaymentsByStudent } from "../../hooks/api/usePaymentsApi";
 import StudentProfile from "../../components/student/StudentProfile";
 import StudentMajors from "../../components/student/StudentMajors";
 import StudentPayments from "../../components/student/StudentPayments";
-import EnrollMajorDialog from "../../components/EnrollMajorDialog";
+import EnrollMajorDialog from "../../components/student/EnrollMajorDialog";
 import UpdateStudentDialog from "../../components/student/UpdateStudentDialog";
-import { FiArrowLeft } from "react-icons/fi";
+import { useAuth } from "../../contexts/AuthContext";
+import { FiArrowLeft, FiTrash2 } from "react-icons/fi";
 import type { Student } from "../../types";
 
 const StudentDetails = () => {
@@ -22,6 +24,7 @@ const StudentDetails = () => {
     const [selectedMajorId, setSelectedMajorId] = useState<number | null>(null);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [updateForm, setUpdateForm] = useState<any>(null);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -43,6 +46,8 @@ const StudentDetails = () => {
         usePaymentsByStudent(id as string);
 
     const updateStudentMutation = useUpdateStudent(id as string);
+    const { userRole } = useAuth();
+    const deleteStudentMutation = useDeleteStudent();
 
     // --- Loading/Error States ---
     if (isLoadingStudent) {
@@ -92,12 +97,11 @@ const StudentDetails = () => {
         });
         setShowUpdateDialog(true);
     };
-
     const handleUpdateProfileChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { name, value } = e.target;
-        setUpdateForm((prev: any) => ({ ...prev, [name]: value }));
+        setUpdateForm((prev: Partial<Student>) => ({ ...prev, [name]: value }));
     };
 
     const handleUpdateProfileSubmit = (e: React.FormEvent) => {
@@ -131,6 +135,16 @@ const StudentDetails = () => {
         );
     };
 
+    const handleDeleteStudent = () => {
+        if (!student) return;
+        deleteStudentMutation.mutate(student.id, {
+            onSuccess: () => {
+                setShowDeleteDialog(false);
+                navigate("/students");
+            },
+        });
+    };
+
     return (
         <div className="container mx-auto px-4 py-6">
             <button
@@ -147,12 +161,24 @@ const StudentDetails = () => {
                         <h1 className="text-2xl font-bold">
                             {student.fullName}
                         </h1>
-                        <button
-                            className="bg-blue-500 text-white px-2.5 py-1.5 rounded"
-                            onClick={() => setShowEnrollDialog(true)}
-                        >
-                            Enroll in Major
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                className="bg-blue-500 text-white px-2.5 py-1.5 rounded"
+                                onClick={() => setShowEnrollDialog(true)}
+                            >
+                                Enroll
+                            </button>
+                            {userRole === "super_admin" && (
+                                <button
+                                    className="bg-red-500 text-white px-2.5 py-1.5 rounded flex items-center gap-1"
+                                    onClick={() => setShowDeleteDialog(true)}
+                                    type="button"
+                                    title="Delete Student"
+                                >
+                                    <FiTrash2 /> Delete
+                                </button>
+                            )}
+                        </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
@@ -268,6 +294,42 @@ const StudentDetails = () => {
                     dateOfBirth: student.dateOfBirth,
                 }}
             />
+            {/* Delete Student Dialog */}
+            {userRole === "super_admin" && showDeleteDialog && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg">
+                        <h2 className="text-lg font-bold mb-4 text-red-600 flex items-center gap-2">
+                            <FiTrash2 /> Delete Student
+                        </h2>
+                        <p className="mb-4">
+                            Are you sure you want to delete this student?
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                                onClick={() => setShowDeleteDialog(false)}
+                                disabled={deleteStudentMutation.isPending}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                                onClick={handleDeleteStudent}
+                                disabled={deleteStudentMutation.isPending}
+                            >
+                                {deleteStudentMutation.isPending
+                                    ? "Deleting..."
+                                    : "Delete"}
+                            </button>
+                        </div>
+                        {deleteStudentMutation.isError && (
+                            <div className="text-red-500 mt-2 text-sm">
+                                Failed to delete student.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

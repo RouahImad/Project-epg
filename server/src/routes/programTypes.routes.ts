@@ -96,6 +96,7 @@ router.patch(
                 });
                 return;
             }
+            
 
             const success = await updateMajorType(programTypeId, {
                 name,
@@ -187,49 +188,6 @@ router.get(
             res.status(200).json(majors);
         } catch (error) {
             console.error("Get majors for program type error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
-    }
-);
-
-/**
- * @route   POST /program-types/:id/majors
- * @desc    Add a new major under a program type
- * @access  Super Admin Only
- */
-router.post(
-    "/:id/majors",
-    authenticateJWT,
-    checkRole("super_admin"),
-    async (req: Request, res: Response) => {
-        try {
-            const majorTypeId = parseInt(req.params.id);
-            const { name, price, duration, description } = req.body || {};
-
-            // Validate input
-            if (Number.isNaN(majorTypeId) || !name || !price || isNaN(price)) {
-                res.status(400).json({ message: "Invalid input" });
-                return;
-            }
-
-            const success = await insertMajor({
-                name,
-                majorTypeId,
-                price,
-                duration,
-                description,
-            });
-
-            if (!success) {
-                res.status(400).json({
-                    message: "Failed to create major",
-                });
-                return;
-            }
-
-            res.status(201).json({ message: "Major created successfully" });
-        } catch (error) {
-            console.error("Create major error:", error);
             res.status(500).json({ message: "Server error" });
         }
     }

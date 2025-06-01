@@ -1,9 +1,10 @@
 import React from "react";
 import { FiDollarSign } from "react-icons/fi";
+import type { Payment } from "../../types";
 
 interface StudentPaymentsProps {
     isLoading: boolean;
-    payments: any[];
+    payments: Payment[];
 }
 
 const StudentPayments: React.FC<StudentPaymentsProps> = ({
@@ -31,9 +32,9 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                             Paid At
                         </th>
                     </tr>
-                </thead>
+                </thead>{" "}
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {payments.map((payment: any) => (
+                    {payments.map((payment: Payment) => (
                         <tr key={payment.id}>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 {payment.majorId}

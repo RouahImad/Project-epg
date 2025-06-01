@@ -3,16 +3,14 @@ import { db } from "../config/database";
 import { MajorType } from "../types/index";
 
 export const getMajorTypes = async (): Promise<MajorType[]> => {
-    const [rows] = await db.query("SELECT * FROM major_types");
+    const [rows] = await db.query("SELECT * FROM majorTypes");
     return rows as MajorType[];
 };
 
 export const getMajorTypeById = async (
     id: number
 ): Promise<MajorType | null> => {
-    const [row] = await db.query("SELECT * FROM major_types WHERE id = ?", [
-        id,
-    ]);
+    const [row] = await db.query("SELECT * FROM majorTypes WHERE id = ?", [id]);
     const majorTypes = row as MajorType[];
 
     return majorTypes.length > 0 ? majorTypes[0] : null;
@@ -25,7 +23,7 @@ export const insertMajorType = async (
 
     try {
         await db.query(
-            "INSERT INTO major_types (name, description) VALUES (?, ?)",
+            "INSERT INTO majorTypes (name, description) VALUES (?, ?)",
             [name, description]
         );
         return true;
@@ -59,10 +57,10 @@ export const updateMajorType = async (
     configs.values = configs.values.slice(0, -2); // Remove the last comma and space
 
     try {
-        await db.query(
-            `UPDATE major_types SET ${configs.values} WHERE id = ?`,
-            [...configs.passed, id]
-        );
+        await db.query(`UPDATE majorTypes SET ${configs.values} WHERE id = ?`, [
+            ...configs.passed,
+            id,
+        ]);
         return true;
     } catch (error) {
         console.error("Error updating major type:", error);
@@ -72,7 +70,7 @@ export const updateMajorType = async (
 
 export const deleteMajorType = async (id: number): Promise<boolean> => {
     try {
-        await db.query("DELETE FROM major_types WHERE id = ?", [id]);
+        await db.query("DELETE FROM majorTypes WHERE id = ?", [id]);
         return true;
     } catch (error) {
         console.error("Error deleting major type:", error);

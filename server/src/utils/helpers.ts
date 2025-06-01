@@ -1,3 +1,5 @@
+import { LogsWithUserName } from "../types/User.types";
+
 export const formatDate = (
     date?: Date | string,
     format: "YYYY-MM-DD" | "MM-DD-YYYY" = "YYYY-MM-DD"
@@ -17,3 +19,20 @@ export const isValidDate = (date: string): boolean => {
     const parsedDate = new Date(date);
     return !isNaN(parsedDate.getTime());
 };
+
+export const formatActivities = (logs: LogsWithUserName[]) =>
+    logs
+        .sort(
+            (a, b) =>
+                new Date(b.timestamp).getTime() -
+                new Date(a.timestamp).getTime()
+        )
+        .map((activity) => ({
+            userId: activity.userId,
+            userName: activity.username,
+            action: activity.action,
+            entityType: activity.entityType,
+            entityId: activity.entityId,
+            details: activity.details,
+            timestamp: new Date(activity.timestamp).toLocaleString(),
+        }));

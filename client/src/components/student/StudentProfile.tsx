@@ -7,10 +7,11 @@ import {
     FiMapPin,
     FiCalendar,
 } from "react-icons/fi";
+import type { Student } from "../../types";
 
 interface StudentProfileProps {
-    student: any;
-    onUpdateProfile?: () => void; // Add optional callback prop
+    student: Student;
+    onUpdateProfile?: () => void;
 }
 
 const StudentProfile: React.FC<StudentProfileProps> = ({

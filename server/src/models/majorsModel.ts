@@ -6,7 +6,22 @@ export const getMajors = async (): Promise<Major[]> => {
     const [rows] = await db.query("SELECT * FROM majors");
     return rows as Major[];
 };
+export const getMajorsGroupedByType = async (): Promise<
+    Record<number, Major[]>
+> => {
+    const majors = await getMajors();
 
+    const groupedMajors: Record<number, Major[]> = {};
+
+    majors.forEach((major) => {
+        if (!groupedMajors[major.majorTypeId]) {
+            groupedMajors[major.majorTypeId] = [];
+        }
+        groupedMajors[major.majorTypeId].push(major);
+    });
+
+    return groupedMajors;
+};
 export const getMajorsByTypeId = async (
     majorTypeId: MajorType["id"]
 ): Promise<Major[]> => {

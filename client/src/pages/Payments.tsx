@@ -2,6 +2,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { paymentsApi } from "../services/api";
 import { useNavigate } from "react-router";
+import type { Payment } from "../types";
 import { FiArrowLeft, FiDollarSign } from "react-icons/fi";
 
 const Payments = () => {
@@ -59,9 +60,9 @@ const Payments = () => {
                                     Paid At
                                 </th>
                             </tr>
-                        </thead>
+                        </thead>{" "}
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {paymentsQuery.data.map((payment: any) => (
+                            {paymentsQuery.data.map((payment: Payment) => (
                                 <tr key={payment.id}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {payment.id}
