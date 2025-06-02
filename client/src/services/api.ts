@@ -8,7 +8,7 @@ import type {
     Tax,
     Company,
     StudentMajor,
-} from "../types/index";
+} from "../types/";
 import type {
     AuthApi,
     TokenService,

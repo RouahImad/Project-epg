@@ -21,11 +21,11 @@ const StudentDetails = lazy(() => import("../pages/students/StudentDetails"));
 const Payments = lazy(() => import("../pages/Payments"));
 
 // Admin section
-// const Admin = lazy(() => import("../pages/admin/Admin"));
 const Users = lazy(() => import("../pages/admin/Users"));
 const Company = lazy(() => import("../pages/admin/Company"));
 const Programs = lazy(() => import("../pages/admin/Programs"));
 const Logs = lazy(() => import("../pages/admin/Logs"));
+const Taxes = lazy(() => import("../pages/admin/Taxes"));
 
 // Error/utility pages
 const Forbidden = lazy(() => import("../utils/Forbidden"));
@@ -54,7 +54,7 @@ const AppRoutes = () => {
                             replace
                         />
                     }
-                />{" "}
+                />
                 {/* 📊 Dashboard - primarily for super admins */}
                 <Route
                     path="/dashboard"
@@ -128,6 +128,16 @@ const AppRoutes = () => {
                             allowedRoles={ROUTE_GROUPS.SUPER_ADMIN_ONLY}
                         >
                             <Logs />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/taxes"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={ROUTE_GROUPS.SUPER_ADMIN_ONLY}
+                        >
+                            <Taxes />
                         </ProtectedRoute>
                     }
                 />

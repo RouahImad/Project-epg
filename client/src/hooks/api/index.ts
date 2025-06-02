@@ -26,8 +26,9 @@ export {
     useUpdateStudent,
     useDeleteStudent,
     useStudentMajors,
-    useUpdateStudentMajor,
     useAddStudentMajor,
+    useUpdateStudentMajor,
+    useDeleteStudentMajor,
 } from "./useStudentsApi";
 
 // Programs and Majors hooks

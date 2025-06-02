@@ -1,5 +1,6 @@
-import type { Student } from "../types";
 import { FiMapPin, FiCalendar } from "react-icons/fi";
+import type { Student } from "../../types";
+import { formatDate } from "../../utils/helpers";
 
 const StudentCard = ({ student }: { student: Student }) => {
     return (
@@ -63,9 +64,7 @@ const StudentCard = ({ student }: { student: Student }) => {
                         {student.dateOfBirth && (
                             <p className="text-sm text-gray-600 flex items-center">
                                 <FiCalendar className="h-4 w-4 mr-1 text-gray-500" />
-                                {new Date(
-                                    student.dateOfBirth
-                                ).toLocaleDateString()}
+                                {formatDate(student.dateOfBirth)}
                             </p>
                         )}
                     </div>

@@ -25,6 +25,16 @@ export interface Payment {
     handledByUserId: User["id"];
 }
 
+export interface PaymentDetails extends Payment {
+    studentName: string;
+    majorName: string;
+    handledByUserName: string;
+}
+
+export interface PaymentWithTaxes extends PaymentDetails {
+    taxes?: Tax[] | undefined;
+}
+
 export interface Receipt {
     id: number;
     paymentId: Payment["id"];

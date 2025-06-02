@@ -23,7 +23,7 @@ export interface Major {
     name: string;
     majorTypeId: MajorType["id"];
     price: number;
-    duration: number;
+    duration: string;
     description: string;
     createdAt: Date;
 }
@@ -32,4 +32,10 @@ export interface StudentMajor {
     studentId: Student["id"];
     majorId: Major["id"];
     enrollmentDate: Date;
+    enrolledBy: User["id"];
+}
+
+export interface StudentMajorDetails extends StudentMajor {
+    majorName: Major["name"];
+    enrollerName: User["fullName"];
 }

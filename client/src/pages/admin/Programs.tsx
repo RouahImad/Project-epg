@@ -36,7 +36,6 @@ const Programs = () => {
     // Program Types state
     const { data: programTypes, isLoading, isError, error } = useProgramTypes();
     const createProgramType = useCreateProgramType();
-    const updateProgramType = useUpdateProgramType(0);
     const deleteProgramType = useDeleteProgramType();
 
     const [showAdd, setShowAdd] = useState(false);
@@ -57,7 +56,6 @@ const Programs = () => {
         error: majorsError,
     } = useMajors();
     const createMajor = useCreateMajor();
-    const updateMajor = useUpdateMajor(0);
     const deleteMajor = useDeleteMajor();
 
     const [showAddMajor, setShowAddMajor] = useState(false);
@@ -160,7 +158,9 @@ const Programs = () => {
                 editId={editProgramType?.id}
                 form={form}
                 handleFormChange={handleFormChange}
-                updateProgramType={updateProgramType}
+                updateProgramType={useUpdateProgramType(
+                    editProgramType?.id || 0
+                )}
                 handleEditSubmit={() => setShowEdit(false)}
             />
             <DeleteProgramTypeDialog
@@ -184,7 +184,7 @@ const Programs = () => {
                 setShowEditMajor={setShowEditMajor}
                 majorForm={majorForm}
                 handleMajorFormChange={handleMajorFormChange}
-                updateMajor={updateMajor}
+                updateMajor={useUpdateMajor(editMajor?.id || 0)}
                 editMajor={editMajor}
                 handleEditMajorSubmit={() => setShowEditMajor(false)}
                 majorTypes={programTypes}

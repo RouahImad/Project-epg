@@ -64,11 +64,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({ message: "Internal server error" });
 });
 
-// Handle 404 routes
-// app.use((req: Request, res: Response) => {
-//     res.status(404).json({ message: "Endpoint not found" });
-// });
-
 app.listen(config.port, (err) => {
     if (err) {
         console.error("Error starting server:", err);

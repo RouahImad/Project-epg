@@ -1,4 +1,4 @@
-import { LogsWithUserName } from "../types/User.types";
+import { LogsWithUserName } from "../types/";
 
 export const formatDate = (
     date?: Date | string,

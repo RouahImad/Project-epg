@@ -1,6 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Receipt } from "../types/index";
+import { Receipt } from "../types/";
 
 export const getReceipts = async (): Promise<Receipt[]> => {
     const [rows] = await db.query("SELECT * FROM receipts");

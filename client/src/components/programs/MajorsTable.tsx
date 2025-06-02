@@ -2,7 +2,7 @@ import { FiAward, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 import type { Major, MajorType } from "../../types";
 
 interface MajorsTableProps {
-    majors: Major[] | undefined;
+    majors: Major[] | [] | undefined;
     isLoading: boolean;
     isError: boolean;
     error: any;
@@ -91,36 +91,44 @@ const MajorsTable = ({
                                 <td className="px-3 py-2">{major.price}</td>
                                 <td className="px-3 py-2">{major.duration}</td>
                                 <td className="px-3 py-2">
-                                    {major.description}
+                                    {major.description &&
+                                    major.description.length > 60 ? (
+                                        <span
+                                            title={major.description}
+                                            className="cursor-pointer"
+                                        >
+                                            {major.description.slice(0, 60)}...
+                                        </span>
+                                    ) : (
+                                        major.description
+                                    )}
                                 </td>
-                                {(onEditMajor || onDeleteMajor) && (
-                                    <td className="px-3 py-2 flex gap-2">
-                                        {onEditMajor && (
-                                            <button
-                                                className="text-blue-600 hover:text-blue-800"
-                                                onClick={() =>
-                                                    onEditMajor(major)
-                                                }
-                                                title="Edit"
-                                                type="button"
-                                            >
-                                                <FiEdit2 />
-                                            </button>
-                                        )}
-                                        {onDeleteMajor && (
-                                            <button
-                                                className="text-red-500 hover:text-red-700"
-                                                onClick={() =>
-                                                    onDeleteMajor(major.id)
-                                                }
-                                                title="Delete"
-                                                type="button"
-                                            >
-                                                <FiTrash2 />
-                                            </button>
-                                        )}
-                                    </td>
-                                )}
+                                <td className="px-3 py-2 flex gap-2">
+                                    {/* Update Action */}
+                                    {onEditMajor && (
+                                        <button
+                                            className="text-blue-600 hover:text-blue-800"
+                                            onClick={() => onEditMajor(major)}
+                                            title="Edit"
+                                            type="button"
+                                        >
+                                            <FiEdit2 />
+                                        </button>
+                                    )}
+                                    {/* Delete Action */}
+                                    {onDeleteMajor && (
+                                        <button
+                                            className="text-red-500 hover:text-red-700"
+                                            onClick={() =>
+                                                onDeleteMajor(major.id)
+                                            }
+                                            title="Delete"
+                                            type="button"
+                                        >
+                                            <FiTrash2 />
+                                        </button>
+                                    )}
+                                </td>
                             </tr>
                         ))}
                     </tbody>

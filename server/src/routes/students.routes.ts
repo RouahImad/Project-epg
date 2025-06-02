@@ -16,7 +16,7 @@ import {
     deleteStudentMajor,
 } from "../models/studentMajorsModel";
 import { getMajorById } from "../models/majorsModel";
-import { Student, RequestWithUser } from "../types";
+import { RequestWithUser } from "../types";
 
 const router = Router();
 
@@ -56,7 +56,7 @@ router.post(
                 return;
             }
 
-            if(!req.user) {
+            if (!req.user) {
                 res.status(401).json({ message: "User not authenticated" });
                 return;
             }
@@ -218,26 +218,21 @@ router.get(
             }
 
             // Get student majors
-            const studentMajors = await getStudentMajors();
-            const studentMajorsFiltered = studentMajors.filter(
-                (sm) => sm.studentId === studentId
-            );
+            const studentMajors = await getStudentMajorById(studentId);
 
-            // Get major details for each enrollment
-            const majorDetailsPromises = studentMajorsFiltered.map(
-                async (sm) => {
-                    const major = await getMajorById(sm.majorId);
-                    return {
-                        majorId: sm.majorId,
-                        majorName: major ? major.name : "Unknown",
-                        enrollmentDate: sm.enrollmentDate,
-                    };
-                }
-            );
+            if (!studentMajors || studentMajors.length === 0) {
+                res.status(404).json({
+                    message: "No majors found for this student",
+                });
+                return;
+            }
 
-            const majorsWithDetails = await Promise.all(majorDetailsPromises);
+            const formattedMajors = studentMajors.map((major) => ({
+                ...major,
+                enrollmentDate: formatDate(major.enrollmentDate, "YYYY-MM-DD"),
+            }));
 
-            res.status(200).json(majorsWithDetails);
+            res.status(200).json(formattedMajors);
         } catch (error) {
             console.error("Get student majors error:", error);
             res.status(500).json({ message: "Server error" });
@@ -253,16 +248,22 @@ router.get(
 router.post(
     "/:id/majors",
     authenticateJWT,
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const studentId = req.params.id;
-            const { majorId } = req.body || {};
+            const { majorId, userId } = req.body || {};
 
             // Validate input
             if (!studentId || !majorId) {
                 res.status(400).json({
                     message: "Student ID and Major ID are required",
                 });
+                return;
+            }
+
+            // Validate userId if provided
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -296,6 +297,7 @@ router.post(
             const success = await insertStudentMajor({
                 studentId,
                 majorId,
+                enrolledBy: req.user.id || userId,
             });
 
             if (!success) {
@@ -318,17 +320,16 @@ router.post(
 /**
  * @route   PATCH /students/:id/majors/:historyId
  * @desc    Update a specific year-major record
- * @access  Super Admin Only
+ * @access  Admin (regular user/staff)
  */
 router.patch(
     "/:id/majors/:majorId",
     authenticateJWT,
-    checkRole("super_admin"),
     async (req: Request, res: Response) => {
         try {
             const studentId = req.params.id;
             const majorId = parseInt(req.params.majorId);
-            const { newMajorId, enrollmentDate } = req.body || {};
+            const { enrollmentDate } = req.body || {};
 
             // Validate input
             if (!studentId || Number.isNaN(majorId)) {
@@ -336,7 +337,6 @@ router.patch(
                 return;
             }
 
-            // Check if student-major relationship exists
             const enrollment = await getStudentMajorById(studentId, majorId);
             if (!enrollment) {
                 res.status(404).json({
@@ -345,21 +345,17 @@ router.patch(
                 return;
             }
 
-            // Validate new major if provided
-            if (newMajorId) {
-                const newMajor = await getMajorById(newMajorId);
-                if (!newMajor) {
-                    res.status(404).json({ message: "New major not found" });
-                    return;
-                }
+            // Validate enrollment date if provided
+            if (enrollmentDate && !isValidDate(enrollmentDate)) {
+                res.status(400).json({
+                    message: "Invalid enrollment date format",
+                });
+                return;
             }
 
             // Update student major
             const success = await updateStudentMajor(studentId, majorId, {
-                majorId: newMajorId,
-                enrollmentDate: enrollmentDate
-                    ? new Date(enrollmentDate)
-                    : undefined,
+                enrollmentDate: new Date(enrollmentDate),
             });
 
             if (!success) {

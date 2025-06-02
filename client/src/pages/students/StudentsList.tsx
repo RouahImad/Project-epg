@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import AddStudentForm from "../../components/student/AddStudentForm";
+import AddStudentForm from "../../components/student/dialogs/AddStudentForm";
 import { useCreateStudent, useStudents } from "../../hooks/api/useStudentsApi";
 import StudentCard from "../../components/student/StudentCard";
 import { FiSearch, FiX, FiPlus, FiUsers } from "react-icons/fi";
+import { useNavigate } from "react-router";
 
 const StudentsList = () => {
     const [showAddDialog, setShowAddDialog] = useState(false);
@@ -12,6 +13,8 @@ const StudentsList = () => {
     const { data: students, isLoading, isError, error } = useStudents();
     const createStudentMutation = useCreateStudent();
 
+    const navigate = useNavigate();
+
     const handleAddStudent = (studentData: {
         id: string;
         fullName: string;
@@ -20,7 +23,12 @@ const StudentsList = () => {
         address?: string;
         dateOfBirth?: any;
     }) => {
-        createStudentMutation.mutate(studentData);
+        createStudentMutation.mutate(studentData, {
+            onSuccess: (_, vars) => {
+                setSearchTerm("");
+                navigate("/students/" + vars.id); // Navigate to the new student's detail page
+            },
+        });
         setShowAddDialog(false);
     };
 

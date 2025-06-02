@@ -142,7 +142,7 @@ const Logs = () => {
                                     Timestamp
                                 </th>
                             </tr>
-                        </thead>{" "}
+                        </thead>
                         <tbody>
                             {filteredLogs.length > 0 ? (
                                 filteredLogs.map(

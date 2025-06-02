@@ -86,13 +86,18 @@ export const useStudentMajors = (studentId: string) =>
 /**
  * Hook to add a major to a student
  */
-export const useAddStudentMajor = (studentId: string) => {
+export const useAddStudentMajor = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (majorId: number) =>
-            studentsApi.addStudentMajor(studentId, majorId),
-        onSuccess: () => {
+        mutationFn: ({
+            studentId,
+            majorId,
+        }: {
+            studentId: string;
+            majorId: number;
+        }) => studentsApi.addStudentMajor(studentId, majorId),
+        onSuccess: (_, { studentId }) => {
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.students.majors(studentId),
             });
@@ -106,14 +111,50 @@ export const useAddStudentMajor = (studentId: string) => {
 /**
  * Hook to update a student's major
  */
-export const useUpdateStudentMajor = (studentId: string, majorId: number) => {
+export const useUpdateStudentMajor = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: Partial<StudentMajor>) =>
-            studentsApi.updateStudentMajor(studentId, majorId, data),
-        onSuccess: () => {
+        mutationFn: ({
+            studentId,
+            majorId,
+            data,
+        }: {
+            studentId: string;
+            majorId: number;
+            data: Omit<StudentMajor, "studentId" | "majorId" | "enrolledBy">;
+        }) => studentsApi.updateStudentMajor(studentId, majorId, data),
+        onSuccess: (_, { studentId }) => {
             queryClient.invalidateQueries({
+                queryKey: QueryKeys.students.majors(studentId),
+            });
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.students.detail(studentId),
+            });
+        },
+    });
+};
+
+/**
+ * Hook to delete a student's major
+ */
+
+export const useDeleteStudentMajor = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({
+            studentId,
+            majorId,
+        }: {
+            studentId: string;
+            majorId: number;
+        }) => studentsApi.deleteStudentMajor(studentId, majorId),
+        onSuccess: (_, { studentId }) => {
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.students.majors(studentId),
+            });
+            queryClient.removeQueries({
                 queryKey: QueryKeys.students.majors(studentId),
             });
             queryClient.invalidateQueries({

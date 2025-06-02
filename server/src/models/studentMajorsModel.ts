@@ -1,22 +1,39 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
 import { formatDate } from "../utils/helpers";
-import { Major, Student, StudentMajor } from "../types/index";
+import { Major, Student, StudentMajor, StudentMajorDetails } from "../types/";
 
-export const getStudentMajors = async (): Promise<StudentMajor[]> => {
-    const [rows] = await db.query("SELECT * FROM studentMajors");
-    return rows as StudentMajor[];
+export const getStudentMajors = async (): Promise<StudentMajorDetails[]> => {
+    const [rows] = await db.query(
+        `SELECT sm.*, majors.name as majorName, users.fullName AS enrollerName
+        FROM studentMajors sm 
+        JOIN majors ON sm.majorId = majors.id
+        JOIN users ON sm.enrolledBy = users.id`
+    );
+    return rows as StudentMajorDetails[];
 };
 
 export const getStudentMajorById = async (
     studentId: Student["id"],
-    majorId: Major["id"]
-): Promise<StudentMajor[] | null> => {
+    majorId?: Major["id"]
+): Promise<StudentMajorDetails[] | null> => {
+    let configs = {
+        values: "studentId = ?",
+        passed: [studentId] as (number | string)[],
+    };
+    if (majorId) {
+        configs.values += " AND majorId = ?";
+        configs.passed.push(majorId);
+    }
     const [row] = await db.query(
-        "SELECT * FROM studentMajors WHERE studentId = ? AND majorId = ?",
-        [studentId, majorId]
+        `SELECT sm.*, majors.name as majorName, users.fullName AS enrollerName
+        FROM studentMajors sm
+            JOIN majors ON sm.majorId = majors.id
+            JOIN users ON sm.enrolledBy = users.id
+        WHERE ${configs.values}`,
+        configs.passed
     );
-    const studentMajors = row as StudentMajor[];
+    const studentMajors = row as StudentMajorDetails[];
 
     return studentMajors.length > 0 ? studentMajors : null;
 };
@@ -24,13 +41,13 @@ export const getStudentMajorById = async (
 export const insertStudentMajor = async (
     studentMajor: WithOptional<StudentMajor, "enrollmentDate">
 ): Promise<boolean> => {
-    const { studentId, majorId } = studentMajor;
+    const { studentId, majorId, enrolledBy } = studentMajor;
     const enrollmentDate = formatDate(undefined, "YYYY-MM-DD");
 
     try {
         await db.query(
-            "INSERT INTO studentMajors (studentId, majorId, enrollmentDate) VALUES (?, ?, ?)",
-            [studentId, majorId, enrollmentDate]
+            "INSERT INTO studentMajors (studentId, majorId, enrolledBy, enrollmentDate) VALUES (?, ?, ?, ?)",
+            [studentId, majorId, enrolledBy, enrollmentDate]
         );
         return true;
     } catch (error) {
@@ -42,32 +59,16 @@ export const insertStudentMajor = async (
 export const updateStudentMajor = async (
     studentId: Student["id"],
     majorId: Major["id"],
-    studentMajor: Partial<Omit<StudentMajor, "studentId">>
+    studentMajor: Omit<StudentMajor, "studentId" | "majorId" | "enrolledBy">
 ): Promise<boolean> => {
-    const { majorId: newMajorId, enrollmentDate } = studentMajor;
-
-    if (!newMajorId && !enrollmentDate) return false;
-
-    let configs = {
-        values: "",
-        passed: [] as (number | Date)[],
-    };
-
-    if (newMajorId && newMajorId !== majorId) {
-        configs.values += "majorId = ?, ";
-        configs.passed.push(newMajorId);
-    }
-    if (enrollmentDate) {
-        configs.values += "enrollmentDate = ?, ";
-        configs.passed.push(enrollmentDate);
-    }
-
-    configs.values = configs.values.slice(0, -2); // Remove the last comma and space
+    const { enrollmentDate } = studentMajor;
 
     try {
         await db.query(
-            `UPDATE studentMajors SET ${configs.values} WHERE studentId = ? AND majorId = ?`,
-            [...configs.passed, studentId, majorId]
+            `UPDATE studentMajors 
+            SET enrollmentDate = ?
+            WHERE studentId = ? AND majorId = ?`,
+            [enrollmentDate, studentId, majorId]
         );
         return true;
     } catch (error) {

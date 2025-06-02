@@ -11,7 +11,7 @@ import {
 import { getMajorTaxesByMajorId } from "../models/majorTaxesModel";
 import { getTaxById } from "../models/taxesModel";
 import { getMajorById } from "../models/majorsModel";
-import { Payment, Tax, RequestWithUser } from "../types/index";
+import { RequestWithUser, PaymentWithTaxes } from "../types/";
 
 const router = Router();
 
@@ -20,9 +20,7 @@ const router = Router();
  * @desc    Get all payments
  * @access  Admin (regular user/staff)
  */
-interface PaymentWithTaxes extends Payment {
-    taxes?: Tax[] | undefined;
-}
+
 router.get("/", authenticateJWT, async (req: Request, res: Response) => {
     try {
         // logic to get payments
@@ -118,7 +116,7 @@ router.post(
                 req.body || {};
 
             // Validate input
-            if (!studentId || !majorId || !amountPaid || !handledByUserId) {
+            if (!studentId || !majorId || !amountPaid) {
                 res.status(400).json({ message: "All fields are required" });
                 return;
             }

@@ -8,6 +8,7 @@ import {
     FiCalendar,
 } from "react-icons/fi";
 import type { Student } from "../../types";
+import { formatDate } from "../../utils/helpers";
 
 interface StudentProfileProps {
     student: Student;
@@ -42,9 +43,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({
         </p>
         <p className="text-gray-600 flex items-center gap-2">
             <FiCalendar className="text-gray-400" /> Date of Birth:{" "}
-            {student.dateOfBirth
-                ? new Date(student.dateOfBirth).toLocaleDateString()
-                : "N/A"}
+            {formatDate(student.dateOfBirth)}
         </p>
         {/* Update Profile button */}
         {onUpdateProfile && (

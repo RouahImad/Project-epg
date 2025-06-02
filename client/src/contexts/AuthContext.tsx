@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { tokenService } from "../services/api";
 import { useCurrentUser } from "../hooks/api/useAuthApi";
-import type { User } from "../types/index";
+import type { User } from "../types/";
 
 interface AuthContextType {
     user: User | null;

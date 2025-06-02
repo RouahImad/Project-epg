@@ -1,9 +1,10 @@
 import { FiUser, FiEdit2, FiSave, FiX } from "react-icons/fi";
+import type { User } from "../../types";
 
 interface Props {
     open: boolean;
     isEdit: boolean;
-    form: any;
+    form: Partial<User>;
     setForm: (form: any) => void;
     onClose: () => void;
     onSubmit: (e: React.FormEvent) => void;

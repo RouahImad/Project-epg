@@ -5,17 +5,25 @@ import {
     useStudentMajors,
     useUpdateStudent,
     useDeleteStudent,
+    useAddStudentMajor,
+    useUpdateStudentMajor,
+    useDeleteStudentMajor,
 } from "../../hooks/api/useStudentsApi";
 import { useMajors } from "../../hooks/api/useMajorsApi";
-import { usePaymentsByStudent } from "../../hooks/api/usePaymentsApi";
+import {
+    useCreatePayment,
+    usePaymentsByStudent,
+} from "../../hooks/api/usePaymentsApi";
 import StudentProfile from "../../components/student/StudentProfile";
 import StudentMajors from "../../components/student/StudentMajors";
 import StudentPayments from "../../components/student/StudentPayments";
-import EnrollMajorDialog from "../../components/student/EnrollMajorDialog";
-import UpdateStudentDialog from "../../components/student/UpdateStudentDialog";
+import EnrollMajorDialog from "../../components/student/dialogs/EnrollMajorDialog";
+import UpdateStudentDialog from "../../components/student/dialogs/UpdateStudentDialog";
 import { useAuth } from "../../contexts/AuthContext";
 import { FiArrowLeft, FiTrash2 } from "react-icons/fi";
-import type { Student } from "../../types";
+import type { Student, StudentMajor, StudentMajorDetails } from "../../types";
+import EditMajorDialog from "../../components/student/dialogs/EditMajorDialog";
+import { formatDate } from "../../utils/helpers";
 
 const StudentDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -25,6 +33,11 @@ const StudentDetails = () => {
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [updateForm, setUpdateForm] = useState<any>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [editMajor, setEditMajor] = useState<StudentMajorDetails | null>(
+        null
+    );
+    const [showEditMajorDialog, setShowEditMajorDialog] = useState(false);
+    const [deleteMajorId, setDeleteMajorId] = useState<number | null>(null);
     const navigate = useNavigate();
 
     const {
@@ -48,8 +61,11 @@ const StudentDetails = () => {
     const updateStudentMutation = useUpdateStudent(id as string);
     const { userRole } = useAuth();
     const deleteStudentMutation = useDeleteStudent();
+    const addStudentMajorMutation = useAddStudentMajor();
+    const addPaymentMutation = useCreatePayment();
+    const updateStudentMajorMutation = useUpdateStudentMajor();
+    const deleteStudentMajorMutation = useDeleteStudentMajor();
 
-    // --- Loading/Error States ---
     if (isLoadingStudent) {
         return (
             <div className="flex justify-center items-center min-h-[60vh]">
@@ -60,7 +76,56 @@ const StudentDetails = () => {
             </div>
         );
     }
-    if (isStudentError) {
+    if (isStudentError || !student) {
+        if (!student || (studentError as any)?.response?.status === 404) {
+            return (
+                <div className="flex justify-center items-center min-h-[85vh]">
+                    <div className="p-8 max-w-md w-full text-center">
+                        <div className="flex justify-center mb-4">
+                            <svg
+                                width="56"
+                                height="56"
+                                fill="none"
+                                viewBox="0 0 56 56"
+                            >
+                                <circle
+                                    cx="28"
+                                    cy="28"
+                                    r="28"
+                                    fill="#F87171"
+                                    fillOpacity="0.15"
+                                />
+                                <path
+                                    d="M36 36L20 20M20 36L36 20"
+                                    stroke="#EF4444"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                        </div>
+                        <h3 className="text-red-700 font-extrabold mb-2 text-2xl tracking-tight">
+                            Student Not Found
+                        </h3>
+                        <p className="text-gray-700 mb-6 text-base">
+                            The student you are looking for does not exist, may
+                            have been removed, or the link is incorrect.
+                        </p>
+                        <button
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow transition-all duration-150"
+                            onClick={() => {
+                                navigate(-1);
+                            }}
+                        >
+                            Go Back
+                        </button>
+                        <div className="mt-6 text-xs text-gray-400">
+                            Error code:{" "}
+                            <span className="font-mono text-red-400">404</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
         return (
             <div className="flex justify-center items-center min-h-[60vh]">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
@@ -78,12 +143,63 @@ const StudentDetails = () => {
             </div>
         );
     }
-    if (!student) return <div>Student not found</div>;
 
     // --- Handlers ---
-    const handleEnrollStudent = () => {
-        // TODO: implement enroll logic
-        setShowEnrollDialog(false);
+    const handleEnrollStudent = async (data: {
+        majorId: number;
+        paidAmount: number;
+    }) => {
+        if (!student?.id || !data.majorId) return;
+
+        // Helper to close dialog and reset state
+        const finish = () => {
+            setShowEnrollDialog(false);
+            setSelectedMajorId(null);
+        };
+
+        // Enroll student in major
+        addStudentMajorMutation.mutate(
+            { studentId: student.id, majorId: data.majorId },
+            {
+                onSuccess: () => {
+                    // Only record payment if paidAmount > 0
+                    if (data.paidAmount > 0) {
+                        addPaymentMutation.mutate(
+                            {
+                                studentId: student.id,
+                                majorId: data.majorId,
+                                amountPaid: data.paidAmount,
+                            },
+                            {
+                                onSuccess: (data, vars) => {
+                                    console.clear();
+                                    console.log("Recording payment for:", vars);
+
+                                    console.log(
+                                        "Payment recorded successfully:",
+                                        data
+                                    );
+                                    finish();
+                                },
+                                onError: (error) => {
+                                    console.error(
+                                        "Failed to record payment:",
+                                        error
+                                    );
+                                    finish();
+                                },
+                            }
+                        );
+                    } else {
+                        finish();
+                    }
+                },
+                onError: (error) => {
+                    console.error("Failed to enroll student:", error);
+                    finish();
+                },
+            }
+        );
     };
 
     const handleOpenUpdateProfile = () => {
@@ -145,6 +261,47 @@ const StudentDetails = () => {
         });
     };
 
+    // --- Handlers for majors ---
+    const handleEditMajor = (major: StudentMajorDetails) => {
+        setEditMajor(major);
+        setShowEditMajorDialog(true);
+    };
+
+    const handleUpdateMajor = (
+        data: Omit<StudentMajor, "studentId" | "majorId" | "enrolledBy">
+    ) => {
+        if (!editMajor) return;
+        updateStudentMajorMutation.mutate(
+            {
+                studentId: id as string,
+                majorId: editMajor.majorId,
+                data,
+            },
+            {
+                onSuccess: () => {
+                    setShowEditMajorDialog(false);
+                    setEditMajor(null);
+                },
+            }
+        );
+    };
+
+    const handleDeleteMajor = (majorId: number) => {
+        setDeleteMajorId(majorId);
+    };
+
+    const confirmDeleteMajor = () => {
+        if (!id || deleteMajorId == null) return;
+        deleteStudentMajorMutation.mutate(
+            { studentId: id as string, majorId: deleteMajorId },
+            {
+                onSuccess: () => {
+                    setDeleteMajorId(null);
+                },
+            }
+        );
+    };
+
     return (
         <div className="container mx-auto px-4 py-6">
             <button
@@ -199,11 +356,7 @@ const StudentDetails = () => {
                             </p>
                             <p className="text-gray-700">
                                 <strong>Date of Birth:</strong>{" "}
-                                {student.dateOfBirth
-                                    ? new Date(
-                                          student.dateOfBirth
-                                      ).toLocaleDateString()
-                                    : "N/A"}
+                                {formatDate(student.dateOfBirth)}
                             </p>
                         </div>
                     </div>
@@ -258,6 +411,8 @@ const StudentDetails = () => {
                     <StudentMajors
                         isLoading={isLoadingMajors}
                         studentMajors={studentMajors || []}
+                        onEditMajor={handleEditMajor}
+                        onDeleteMajor={handleDeleteMajor}
                     />
                 )}
                 {activeTab === "payments" && (
@@ -325,6 +480,56 @@ const StudentDetails = () => {
                         {deleteStudentMutation.isError && (
                             <div className="text-red-500 mt-2 text-sm">
                                 Failed to delete student.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+            {/* Edit Major Dialog */}
+            {showEditMajorDialog && editMajor && (
+                <EditMajorDialog
+                    open={showEditMajorDialog}
+                    major={editMajor}
+                    isPending={updateStudentMajorMutation.isPending}
+                    onClose={() => {
+                        setShowEditMajorDialog(false);
+                        setEditMajor(null);
+                    }}
+                    onSubmit={handleUpdateMajor}
+                />
+            )}
+            {/* Delete Major Dialog */}
+            {deleteMajorId !== null && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg">
+                        <h2 className="text-lg font-bold mb-4 text-red-600 flex items-center gap-2">
+                            <FiTrash2 /> Remove Major
+                        </h2>
+                        <p className="mb-4">
+                            Are you sure you want to remove this major
+                            enrollment?
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                                onClick={() => setDeleteMajorId(null)}
+                                disabled={deleteStudentMajorMutation.isPending}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                                onClick={confirmDeleteMajor}
+                                disabled={deleteStudentMajorMutation.isPending}
+                            >
+                                {deleteStudentMajorMutation.isPending
+                                    ? "Deleting..."
+                                    : "Delete"}
+                            </button>
+                        </div>
+                        {deleteStudentMajorMutation.isError && (
+                            <div className="text-red-500 mt-2 text-sm">
+                                Failed to remove major.
                             </div>
                         )}
                     </div>

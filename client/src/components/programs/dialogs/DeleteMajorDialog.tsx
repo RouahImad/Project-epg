@@ -1,10 +1,12 @@
 import { FiTrash2 } from "react-icons/fi";
 import type { UseMutationResult } from "@tanstack/react-query";
+import type { ApiResponse } from "../../../types/api.types";
 
 interface DeleteMajorDialogProps {
     deleteMajorId: number | null;
     setDeleteMajorId: (id: number | null) => void;
-    deleteMajor: UseMutationResult<void, Error, number>;
+    deleteMajor: UseMutationResult<ApiResponse<null>, Error, number>;
+    // UseMutationResult<ApiResponse<null>, Error, number, unknown>;
 }
 
 const DeleteMajorDialog = ({

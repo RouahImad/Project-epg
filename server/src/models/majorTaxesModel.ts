@@ -1,8 +1,8 @@
 import { db } from "../config/database";
-import { Major, MajorTax, Tax } from "../types/index";
+import { Major, MajorTax, Tax } from "../types/";
 
 export const getMajorTaxes = async (): Promise<MajorTax[]> => {
-    const [rows] = await db.query("SELECT * FROM major_taxes");
+    const [rows] = await db.query("SELECT * FROM majorTaxes");
     return rows as MajorTax[];
 };
 
@@ -10,7 +10,7 @@ export const getMajorTaxesByMajorId = async (
     majorId: Major["id"]
 ): Promise<MajorTax[]> => {
     const [rows] = await db.query(
-        "SELECT * FROM major_taxes WHERE majorId = ?",
+        "SELECT * FROM majorTaxes WHERE majorId = ?",
         [majorId]
     );
     return rows as MajorTax[];
@@ -21,7 +21,7 @@ export const getMajorTaxById = async (
     taxId: Tax["id"]
 ): Promise<MajorTax | null> => {
     const [row] = await db.query(
-        "SELECT * FROM major_taxes WHERE majorId = ? AND taxId = ?",
+        "SELECT * FROM majorTaxes WHERE majorId = ? AND taxId = ?",
         [majorId, taxId]
     );
     const majorTaxes = row as MajorTax[];
@@ -34,7 +34,7 @@ export const insertMajorTax = async (majorTax: MajorTax): Promise<boolean> => {
 
     try {
         await db.query(
-            "INSERT INTO major_taxes (majorId, taxId) VALUES (?, ?)",
+            "INSERT INTO majorTaxes (majorId, taxId) VALUES (?, ?)",
             [majorId, taxId]
         );
         return true;
@@ -70,7 +70,7 @@ export const updateMajorTax = async (
 
     try {
         await db.query(
-            `UPDATE major_taxes SET ${configs.values} WHERE majorId = ? AND taxId = ?`,
+            `UPDATE majorTaxes SET ${configs.values} WHERE majorId = ? AND taxId = ?`,
             [...configs.passed, majorId, taxId]
         );
         return true;
@@ -86,7 +86,7 @@ export const deleteMajorTax = async (
 ): Promise<boolean> => {
     try {
         await db.query(
-            "DELETE FROM major_taxes WHERE majorId = ? AND taxId = ?",
+            "DELETE FROM majorTaxes WHERE majorId = ? AND taxId = ?",
             [majorId, taxId]
         );
         return true;

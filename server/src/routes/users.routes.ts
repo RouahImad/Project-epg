@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { authenticateJWT, checkRole } from "../middlewares/auth";
-import { User } from "../types/User.types";
+import { User } from "../types/";
 import {
     getUsers,
     getUserById,

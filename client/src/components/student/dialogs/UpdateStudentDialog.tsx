@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import type { Student } from "../../types/index";
+import type { Student } from "../../types/";
 import {
     FiUser,
     FiMail,
@@ -31,7 +31,6 @@ const UpdateStudentDialog: React.FC<UpdateStudentDialogProps> = ({
 }) => {
     const [showNoChangeMsg, setShowNoChangeMsg] = useState(false);
 
-    // Compare form and initialData to check if any field has changed
     const isChanged = useMemo(() => {
         if (!form || !initialData) return false;
         return (

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { FiX, FiUser, FiLock } from "react-icons/fi";
 import { authApi } from "../services/api";
-import type { User } from '../types/User.types';
+import type { User } from "../types/";
 
 interface Props {
     open: boolean;

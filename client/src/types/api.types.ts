@@ -1,3 +1,4 @@
+import type { StudentMajorDetails } from "./Academic.types";
 import type {
     User,
     Student,
@@ -67,7 +68,7 @@ export interface StudentsApi {
     deleteStudent: (studentId: string) => Promise<ApiResponse<null>>;
 
     // Student Majors
-    getStudentMajors: (studentId: string) => Promise<StudentMajor[]>;
+    getStudentMajors: (studentId: string) => Promise<StudentMajorDetails[]>;
     addStudentMajor: (
         studentId: string,
         majorId: number
@@ -75,7 +76,7 @@ export interface StudentsApi {
     updateStudentMajor: (
         studentId: string,
         majorId: number,
-        data: Partial<StudentMajor>
+        data: Omit<StudentMajor, "studentId" | "majorId" | "enrolledBy">
     ) => Promise<StudentMajor>;
     deleteStudentMajor: (
         studentId: string,
@@ -152,15 +153,6 @@ export interface CompanyApi {
     getCompanyInfo: () => Promise<Company>;
     updateCompanyInfo: (companyData: Partial<Company>) => Promise<Company>;
 }
-
-// Dashboard API Types
-// export interface DashboardStats {
-//     totalStudents: number;
-//     totalRevenue: number;
-//     paymentsThisMonth: number;
-//     recentActivities: Activity[];
-//     // Add any other dashboard statistics as needed
-// }
 
 export type AdminDashboardData = {
     myIncome: number;

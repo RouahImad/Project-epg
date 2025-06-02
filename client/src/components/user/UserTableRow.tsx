@@ -1,5 +1,5 @@
 import { FiEdit2, FiMail, FiShield, FiTrash2 } from "react-icons/fi";
-import type { User } from "../../types/index";
+import type { User } from "../../types/";
 
 // Helper to get initials from name
 // const getInitials = (name: string) =>

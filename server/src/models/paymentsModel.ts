@@ -1,25 +1,47 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Payment } from "../types/index";
+import { Payment, PaymentDetails } from "../types/";
 
-export const getPayments = async (): Promise<Payment[]> => {
-    const [rows] = await db.query("SELECT * FROM payments");
-    return rows as Payment[];
+export const getPayments = async (): Promise<PaymentDetails[]> => {
+    const [rows] =
+        await db.query(`SELECT p.*, s.fullName AS studentName, m.name AS majorName, u.fullName AS handledByUserName
+                        FROM payments p
+                        JOIN students s ON p.studentId = s.id
+                        JOIN majors m ON p.majorId = m.id
+                        JOIN users u ON p.handledByUserId = u.id`);
+    return rows as PaymentDetails[];
 };
 
-export const getPaymentById = async (id: number): Promise<Payment | null> => {
-    const [row] = await db.query("SELECT * FROM payments WHERE id = ?", [id]);
-    const payments = row as Payment[];
+export const getPaymentById = async (
+    id: number
+): Promise<PaymentDetails | null> => {
+    const [row] = await db.query(
+        `SELECT p.*, s.fullName AS studentName, m.name AS majorName, u.fullName AS handledByUserName
+         FROM payments p
+         JOIN students s ON p.studentId = s.id
+         JOIN majors m ON p.majorId = m.id
+         JOIN users u ON p.handledByUserId = u.id
+         WHERE p.id = ?`,
+        [id]
+    );
+    const payments = row as PaymentDetails[];
 
     return payments.length > 0 ? payments[0] : null;
 };
 
-export const getPaymentsByUser = async (userId: number): Promise<Payment[]> => {
+export const getPaymentsByUser = async (
+    userId: number
+): Promise<PaymentDetails[]> => {
     const [rows] = await db.query(
-        "SELECT * FROM payments WHERE handledByUserId = ?",
+        `SELECT p.*, s.fullName AS studentName, m.name AS majorName, u.fullName AS handledByUserName
+         FROM payments p
+            JOIN students s ON p.studentId = s.id
+            JOIN majors m ON p.majorId = m.id
+            JOIN users u ON p.handledByUserId = u.id
+            WHERE p.handledByUserId = ?`,
         [userId]
     );
-    return rows as Payment[];
+    return rows as PaymentDetails[];
 };
 
 export const insertPayment = async (

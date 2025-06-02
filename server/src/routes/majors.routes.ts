@@ -13,7 +13,7 @@ import {
     getMajorTaxesByMajorId,
     insertMajorTax,
 } from "../models/majorTaxesModel";
-import { getTaxById, getTaxes } from "../models/taxesModel";
+import { getTaxById } from "../models/taxesModel";
 import { getMajorTypeById } from "../models/majorTypesModel";
 
 const router = Router();
@@ -104,8 +104,7 @@ router.post(
                 return;
             }
 
-            // Ensure price and duration are valid numbers
-            if (isNaN(price) || isNaN(duration)) {
+            if (isNaN(price)) {
                 res.status(400).json({
                     message: "Price and duration must be numbers",
                 });
@@ -164,8 +163,7 @@ router.patch(
                 return;
             }
 
-            // Ensure price and duration are valid numbers
-            if (isNaN(price) || isNaN(duration)) {
+            if (isNaN(price)) {
                 res.status(400).json({
                     message: "Price and duration must be numbers",
                 });

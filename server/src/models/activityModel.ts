@@ -1,6 +1,5 @@
 import { db } from "../config/database";
-import { ActivityLog, User } from "../types/index";
-import { LogsWithUserName } from "../types/User.types";
+import { ActivityLog, User, LogsWithUserName } from "../types/";
 
 export const getActivities = async (): Promise<LogsWithUserName[]> => {
     const [rows] = await db.query(

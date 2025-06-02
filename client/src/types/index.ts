@@ -10,7 +10,13 @@
 export type { User, ActivityLog, LogsWithUserName } from "./User.types";
 
 // Re-export all types from Academic.types.ts
-export type { Student, MajorType, Major, StudentMajor } from "./Academic.types";
+export type {
+    Student,
+    MajorType,
+    Major,
+    StudentMajor,
+    StudentMajorDetails,
+} from "./Academic.types";
 
 // Re-export all types from Financial.types.ts
 export type {

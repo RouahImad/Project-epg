@@ -29,6 +29,7 @@ const EditProgramTypeDialog = ({
                     onSubmit={(e) => {
                         if (!editId) return;
                         e.preventDefault();
+
                         updateProgramType.mutate(
                             { ...form, id: editId },
                             {

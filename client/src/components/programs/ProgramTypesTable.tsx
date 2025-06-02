@@ -59,7 +59,16 @@ const ProgramTypesTable = ({
                                     {type.name}
                                 </td>
                                 <td className="px-3 py-2">
-                                    {type.description || (
+                                    {type.description.length > 0 ? (
+                                        type.description.length > 150 ? (
+                                            <span title={type.description}>
+                                                {type.description.slice(0, 150)}
+                                                ...
+                                            </span>
+                                        ) : (
+                                            type.description
+                                        )
+                                    ) : (
                                         <span className="text-gray-400 italic">
                                             —
                                         </span>
