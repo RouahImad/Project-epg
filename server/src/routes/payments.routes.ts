@@ -131,7 +131,7 @@ router.post(
                 res.status(404).json({ message: "Major not found" });
                 return;
             }
-            let total = Number(major.price);
+            let total = Number(major.price || 0);
             const majorTaxes = await getMajorTaxesByMajorId(majorId);
 
             if (majorTaxes && majorTaxes.length > 0) {
@@ -140,7 +140,7 @@ router.post(
                 );
 
                 total += taxList.reduce(
-                    (sum, tax) => sum + Number(tax?.amount),
+                    (sum, tax) => sum + Number(tax?.amount || 0),
                     0
                 );
             }
@@ -248,7 +248,10 @@ router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
             return;
         }
         // Update payment details
-        const total = payment.amountPaid + (payment.remainingAmount || 0);
+        const total =
+            Number(payment.amountPaid || 0) +
+            Number(payment.remainingAmount || 0);
+
         if (amountPaid > total) {
             res.status(400).json({
                 message: "Amount paid exceeds total amount due",

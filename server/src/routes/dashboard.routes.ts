@@ -24,7 +24,7 @@ router.get("/", authenticateJWT, async (req: Request, res: Response) => {
 
         // Calculate total payments
         const totalPayments = payments.reduce(
-            (sum, payment) => sum + payment.amountPaid,
+            (sum, payment) => sum + Number(payment.amountPaid || 0),
             0
         );
 
@@ -82,7 +82,7 @@ router.get(
 
             // Calculate total income (sum of all payments)
             const totalIncome = payments.reduce(
-                (sum, payment) => sum + payment.amountPaid,
+                (sum, payment) => sum + Number(payment.amountPaid || 0),
                 0
             );
 
@@ -91,7 +91,7 @@ router.get(
 
             // Outstanding balance (sum of all remaining amounts)
             const outstandingBalance = payments.reduce(
-                (sum, payment) => sum + (payment.remainingAmount || 0),
+                (sum, payment) => sum + Number(payment.remainingAmount || 0),
                 0
             );
 
@@ -116,7 +116,8 @@ router.get(
                     date.getMonth() + 1
                 ).padStart(2, "0")}`;
                 incomeByMonth[monthKey] =
-                    (incomeByMonth[monthKey] || 0) + payment.amountPaid;
+                    (incomeByMonth[monthKey] || 0) +
+                    Number(payment.amountPaid || 0);
             });
             const incomeOverTime = Object.entries(incomeByMonth)
                 .sort(([a], [b]) => a.localeCompare(b))
@@ -127,7 +128,7 @@ router.get(
                 program: major.name,
                 total: payments
                     .filter((p) => p.majorId === major.id)
-                    .reduce((sum, p) => sum + p.amountPaid, 0),
+                    .reduce((sum, p) => sum + Number(p.amountPaid || 0), 0),
             }));
 
             // Top staff (by payment amount handled)
@@ -234,7 +235,8 @@ router.get(
                 ],
             };
 
-            res.status(200).json(dummy);
+            // res.status(200).json(dummy);
+            res.status(200).json(result);
         } catch (error) {
             console.error("Get admin dashboard stats error:", error);
             res.status(500).json({ message: "Server error" });
@@ -264,7 +266,7 @@ router.get(
 
             // Calculate income and outstanding payments
             const myIncome = myPayments.reduce(
-                (sum, payment) => sum + payment.amountPaid,
+                (sum, payment) => sum + Number(payment.amountPaid || 0),
                 0
             );
             const myOutstandingPayments = myPayments.reduce(
@@ -294,7 +296,8 @@ router.get(
                     date.getMonth() + 1
                 ).padStart(2, "0")}`;
                 paymentsByMonth[monthKey] =
-                    (paymentsByMonth[monthKey] || 0) + payment.amountPaid;
+                    (paymentsByMonth[monthKey] || 0) +
+                    Number(payment.amountPaid || 0);
             });
 
             // Outstanding payments by month (for line/bar chart)
@@ -407,8 +410,8 @@ router.get(
                 },
             };
 
-            res.status(200).json(dummy);
-            // res.status(200).json(adminDashboardData);
+            // res.status(200).json(dummy);
+            res.status(200).json(adminDashboardData);
         } catch (error) {
             console.error("Get admin dashboard stats error:", error);
             res.status(500).json({ message: "Server error" });

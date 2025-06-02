@@ -9,7 +9,6 @@ import {
 } from "../models/studentsModel";
 import { formatDate, isValidDate } from "../utils/helpers";
 import {
-    getStudentMajors,
     getStudentMajorById,
     insertStudentMajor,
     updateStudentMajor,
