@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FiBookOpen, FiX } from "react-icons/fi";
-import type { Major } from "../../types/";
+import { formatMoney } from "../../../utils/helpers";
+import type { Major } from "../../../types";
+import { useMajorTaxes } from "../../../hooks/api/useMajorsApi";
 
 interface EnrollMajorDialogProps {
     open: boolean;
@@ -21,6 +23,10 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
     onClose,
     onSubmit,
 }) => {
+    const { data: taxes = [], isLoading: taxesLoading } = useMajorTaxes(
+        selectedMajorId ?? 0
+    );
+
     const [step, setStep] = useState(1);
     const [paidAmount, setPaidAmount] = useState<number>(0);
     React.useEffect(() => {
@@ -30,15 +36,58 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
         }
     }, [open]);
 
+    const selectedMajor = useMemo(
+        () =>
+            selectedMajorId != null
+                ? majors.find((m) => m.id === selectedMajorId)
+                : null,
+        [selectedMajorId, majors]
+    );
+
+    const price = useMemo(
+        () => Number(selectedMajor?.price ?? 0),
+        [selectedMajor]
+    );
+
+    const taxesTotal = useMemo(
+        () =>
+            taxes.reduce(
+                (sum: number, tax) => sum + Number(tax.amount ?? 0),
+                0
+            ),
+        [taxes]
+    );
+
+    const total = useMemo(() => price + taxesTotal, [price, taxesTotal]);
+
+    const outstanding = useMemo(() => total - paidAmount, [total, paidAmount]);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (step === 1) {
+            if (selectedMajorId) setStep(2);
+        } else if (step === 2) {
+            if (selectedMajorId && paidAmount >= 0) {
+                onSubmit({
+                    majorId: selectedMajorId,
+                    paidAmount: paidAmount,
+                });
+                onClose();
+            }
+        }
+    };
+
     if (!open) return null;
 
-    const selectedMajor =
-        selectedMajorId != null
-            ? majors.find((m) => m.id === selectedMajorId)
-            : null;
-
-    const price = selectedMajor ? Number(selectedMajor.price) : 0;
-    const outstanding = Math.max(price - paidAmount, 0);
+    if (isLoading) {
+        return (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-xl p-8 w-full max-w-lg relative shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
+                    <p className="text-gray-500">Loading majors...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -61,25 +110,8 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                     <FiBookOpen className="text-blue-500" />
                     Enroll in Major
                 </h2>
-                {isLoading ? (
-                    <p className="text-gray-500">Loading majors...</p>
-                ) : majors && majors.length > 0 ? (
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            if (step === 1) {
-                                if (selectedMajorId) setStep(2);
-                            } else if (step === 2) {
-                                if (selectedMajorId && paidAmount >= 0) {
-                                    onSubmit({
-                                        majorId: selectedMajorId,
-                                        paidAmount: paidAmount,
-                                    });
-                                    onClose();
-                                }
-                            }
-                        }}
-                    >
+                {majors && majors.length > 0 ? (
+                    <form onSubmit={handleSubmit}>
                         {step === 1 && (
                             <>
                                 <select
@@ -111,7 +143,7 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                                             <span className="font-semibold text-blue-700">
                                                 Price:
                                             </span>{" "}
-                                            {selectedMajor.price}DH
+                                            {formatMoney(selectedMajor.price)}
                                         </div>
                                         <div className="mb-1">
                                             <span className="font-semibold text-blue-700">
@@ -171,8 +203,43 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                                         <span className="font-semibold text-blue-700">
                                             Price:
                                         </span>{" "}
-                                        {selectedMajor.price}DH
+                                        {formatMoney(selectedMajor.price)}
                                     </div>
+                                    <div className="mb-2">
+                                        <span className="font-semibold text-blue-700">
+                                            Taxes:
+                                        </span>{" "}
+                                        {taxesLoading ? (
+                                            <span className="italic text-gray-400">
+                                                Loading taxes...
+                                            </span>
+                                        ) : taxes.length === 0 ? (
+                                            <span className="italic text-gray-400">
+                                                No taxes
+                                            </span>
+                                        ) : (
+                                            <ul className="list-disc ml-6">
+                                                {taxes.map((tax: any) => (
+                                                    <li key={tax.id}>
+                                                        <span className="font-medium">
+                                                            {tax.name}:
+                                                        </span>{" "}
+                                                        {formatMoney(
+                                                            tax.amount
+                                                        )}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                    {taxes.length > 0 && (
+                                        <div className="mb-2">
+                                            <span className="font-semibold text-blue-700">
+                                                Total Taxes:
+                                            </span>{" "}
+                                            {formatMoney(taxesTotal)}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-gray-700 mb-2 font-medium">
@@ -181,7 +248,7 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                                     <input
                                         type="number"
                                         min={0}
-                                        max={price}
+                                        max={total}
                                         step="any"
                                         className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
                                         value={paidAmount}
@@ -202,10 +269,17 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                                         className={
                                             outstanding > 0
                                                 ? "text-red-600"
-                                                : "text-green-600"
+                                                : outstanding < 0
+                                                ? "text-green-600"
+                                                : "text-gray-700"
                                         }
                                     >
-                                        {outstanding}DH
+                                        {formatMoney(outstanding)}
+                                        {outstanding < 0 && (
+                                            <span className="ml-2 text-xs text-green-700">
+                                                (Overpaid)
+                                            </span>
+                                        )}
                                     </span>
                                 </div>
                                 <div className="flex justify-between mt-4">
@@ -223,7 +297,7 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                                             isNaN(paidAmount) ||
                                             paidAmount === 0 ||
                                             paidAmount < 0 ||
-                                            paidAmount > price ||
+                                            paidAmount > total ||
                                             !selectedMajorId
                                         }
                                     >

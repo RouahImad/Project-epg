@@ -1,26 +1,25 @@
 import { useState } from "react";
+import { FiPlus } from "react-icons/fi";
+import { IoSchool } from "react-icons/io5";
 import {
     useProgramTypes,
     useCreateProgramType,
     useUpdateProgramType,
     useDeleteProgramType,
-} from "../../hooks/api";
-import {
     useMajors,
     useCreateMajor,
     useUpdateMajor,
     useDeleteMajor,
-} from "../../hooks/api/useMajorsApi";
-import { FiPlus } from "react-icons/fi";
-import { IoSchool } from "react-icons/io5";
-import MajorsTable from "../../components/programs/MajorsTable";
+} from "../../hooks/api";
 import ProgramTypesTable from "../../components/programs/ProgramTypesTable";
+import MajorsTable from "../../components/programs/MajorsTable";
 import AddProgramTypeDialog from "../../components/programs/dialogs/AddProgramTypeDialog";
 import EditProgramTypeDialog from "../../components/programs/dialogs/EditProgramTypeDialog";
 import DeleteProgramTypeDialog from "../../components/programs/dialogs/DeleteProgramTypeDialog";
 import AddMajorDialog from "../../components/programs/dialogs/AddMajorDialog";
 import EditMajorDialog from "../../components/programs/dialogs/EditMajorDialog";
 import DeleteMajorDialog from "../../components/programs/dialogs/DeleteMajorDialog";
+import ManageMajorTaxesDialog from "../../components/programs/dialogs/ManageMajorTaxesDialog";
 import type { Major, MajorType } from "../../types";
 
 const initialProgramType = { name: "", description: "" };
@@ -66,6 +65,11 @@ const Programs = () => {
     >(initialMajor);
     const [deleteMajorId, setDeleteMajorId] = useState<number | null>(null);
 
+    // Add state for manage taxes dialog
+    const [showManageTaxes, setShowManageTaxes] = useState(false);
+    const [selectedMajorForTaxes, setSelectedMajorForTaxes] =
+        useState<Major | null>(null);
+
     // Handlers for program types
     const handleOpenAdd = () => {
         setForm(initialProgramType);
@@ -108,6 +112,11 @@ const Programs = () => {
         setMajorForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleOpenManageTaxes = (major: Major) => {
+        setSelectedMajorForTaxes(major);
+        setShowManageTaxes(true);
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
@@ -138,9 +147,10 @@ const Programs = () => {
                 isLoading={isMajorsLoading}
                 isError={isMajorsError}
                 error={majorsError}
+                onAddMajor={handleOpenAddMajor}
                 onEditMajor={handleOpenEditMajor}
                 onDeleteMajor={setDeleteMajorId}
-                onAddMajor={handleOpenAddMajor}
+                onManageTaxes={handleOpenManageTaxes}
                 majorTypes={programTypes}
             />
             {/* Dialogs for Program Types */}
@@ -193,6 +203,12 @@ const Programs = () => {
                 deleteMajorId={deleteMajorId}
                 setDeleteMajorId={setDeleteMajorId}
                 deleteMajor={deleteMajor}
+            />
+            {/* Tax Management Dialog */}
+            <ManageMajorTaxesDialog
+                isOpen={showManageTaxes}
+                onClose={() => setShowManageTaxes(false)}
+                major={selectedMajorForTaxes}
             />
         </div>
     );

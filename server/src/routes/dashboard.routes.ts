@@ -338,7 +338,7 @@ router.get(
 
             const dummy = {
                 myIncome: 5000,
-                myStudentsCount: 3,
+                myStudentsCount: 9,
                 myOutstandingPayments: 1200,
                 myActivityCount: 8,
                 recentActions: [
@@ -400,9 +400,9 @@ router.get(
                         "2025-06": 300,
                     },
                     studentsByMonth: {
-                        "2025-04": 1,
+                        "2025-04": 3,
                         "2025-05": 1,
-                        "2025-06": 1,
+                        "2025-06": 5,
                     },
                 },
             };

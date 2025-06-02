@@ -1,59 +1,9 @@
 // hooks/api/useProgramsApi.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { majorsApi, programTypesApi } from "../../services/api";
+import { programTypesApi } from "../../services/api";
 import { QueryKeys } from "./types";
 import type { MajorType } from "../../types";
 
-/**
- * Hook to get taxes for a major
- */
-export const useMajorTaxes = (majorId: number) =>
-    useQuery({
-        queryKey: QueryKeys.majors.taxes(majorId),
-        queryFn: () => majorsApi.getTaxesForMajor(majorId),
-        enabled: !!majorId,
-    });
-
-/**
- * Hook to add a tax to a major
- */
-export const useAddTaxToMajor = (majorId: number) => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (taxId: number) => majorsApi.addTaxToMajor(majorId, taxId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.majors.taxes(majorId),
-            });
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.majors.detail(majorId),
-            });
-        },
-    });
-};
-
-/**
- * Hook to remove a tax from a major
- */
-export const useRemoveTaxFromMajor = (majorId: number) => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (taxId: number) =>
-            majorsApi.removeTaxFromMajor(majorId, taxId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.majors.taxes(majorId),
-            });
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.majors.detail(majorId),
-            });
-        },
-    });
-};
-
-// ==================== PROGRAM TYPES HOOKS ====================
 /**
  * Hook to get all program types
  */

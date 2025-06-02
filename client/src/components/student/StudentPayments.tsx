@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiDollarSign, FiSearch } from "react-icons/fi";
 import type { PaymentWithTaxes } from "../../types";
-import { formatDate } from "../../utils/helpers";
+import { formatDate, formatMoney } from "../../utils/helpers";
 
 interface StudentPaymentsProps {
     isLoading: boolean;
@@ -85,10 +85,14 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                                 {payment.majorName}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                {payment.amountPaid}DH
+                                                {formatMoney(
+                                                    payment.amountPaid
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                {payment.remainingAmount}DH
+                                                {formatMoney(
+                                                    payment.remainingAmount || 0
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap truncate">
                                                 {payment.handledByUserName}

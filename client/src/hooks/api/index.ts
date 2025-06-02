@@ -33,11 +33,6 @@ export {
 
 // Programs and Majors hooks
 export {
-    // Tax
-    useMajorTaxes,
-    useAddTaxToMajor,
-    useRemoveTaxFromMajor,
-
     // Program Types
     useProgramTypes,
     useMajorsByProgramType,
@@ -45,6 +40,7 @@ export {
     useUpdateProgramType,
     useDeleteProgramType,
 } from "./useProgramsApi";
+
 export * from "./useMajorsApi";
 
 // Taxes hooks

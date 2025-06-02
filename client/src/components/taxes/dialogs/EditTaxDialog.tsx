@@ -32,6 +32,15 @@ const EditTaxDialog: React.FC<EditTaxDialogProps> = ({
         e.preventDefault();
         if (!editTax) return;
 
+        if (
+            taxForm.name === editTax.name &&
+            taxForm.amount === String(editTax.amount) &&
+            taxForm.description === editTax.description
+        ) {
+            setShowEditTax(false);
+            return;
+        }
+
         updateTax.mutate(
             {
                 name: taxForm.name,

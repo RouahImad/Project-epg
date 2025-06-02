@@ -171,14 +171,7 @@ const StudentDetails = () => {
                                 amountPaid: data.paidAmount,
                             },
                             {
-                                onSuccess: (data, vars) => {
-                                    console.clear();
-                                    console.log("Recording payment for:", vars);
-
-                                    console.log(
-                                        "Payment recorded successfully:",
-                                        data
-                                    );
+                                onSuccess: () => {
                                     finish();
                                 },
                                 onError: (error) => {

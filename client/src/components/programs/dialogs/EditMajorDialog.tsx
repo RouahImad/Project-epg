@@ -46,6 +46,19 @@ const EditMajorDialog = ({
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (!majorForm.majorTypeId) return;
+
+                        if (
+                            majorForm.name === editMajor.name &&
+                            majorForm.price === String(editMajor.price) &&
+                            majorForm.duration === editMajor.duration &&
+                            majorForm.description === editMajor.description &&
+                            majorForm.majorTypeId ===
+                                String(editMajor.majorTypeId)
+                        ) {
+                            setShowEditMajor(false);
+                            return;
+                        }
+
                         updateMajor.mutate(
                             {
                                 ...majorForm,

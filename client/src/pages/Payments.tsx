@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { paymentsApi } from "../services/api";
 import { useNavigate } from "react-router";
 import { FiArrowLeft, FiDollarSign, FiSearch } from "react-icons/fi";
-import { formatDate } from "../utils/helpers";
+import { formatDate, formatMoney } from "../utils/helpers";
 
 const Payments = () => {
     const { user, userRole } = useAuth();
@@ -123,10 +123,14 @@ const Payments = () => {
                                                 {payment.majorName}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                {payment.amountPaid}DH
+                                                {formatMoney(
+                                                    payment.amountPaid
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                {payment.remainingAmount}DH
+                                                {formatMoney(
+                                                    payment.remainingAmount || 0
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap truncate">
                                                 {payment.handledByUserName}

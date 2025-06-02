@@ -59,7 +59,10 @@ apiClient.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        console.error("API Error:", error);
+        // Log the error for debugging if not a 404 error
+        if (error.response && error.response.status !== 404) {
+            console.error("API Error:", error);
+        }
 
         // Handle 401 (Unauthorized) or 403 (Forbidden) responses
         if (

@@ -32,6 +32,9 @@ export const useCreatePayment = () => {
         onSuccess: () => {
             // Invalidate the payments query to refresh the list
             queryClient.invalidateQueries({ queryKey: QueryKeys.payments.all });
+            queryClient.refetchQueries({
+                queryKey: [QueryKeys.payments.all],
+            });
         },
     });
 };

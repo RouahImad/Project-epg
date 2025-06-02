@@ -7,6 +7,7 @@ import {
     FiSearch,
 } from "react-icons/fi";
 import type { Tax } from "../../types";
+import { formatMoney } from "../../utils/helpers";
 
 interface TaxesTableProps {
     taxes: Tax[] | undefined;
@@ -103,7 +104,7 @@ const TaxesTable: React.FC<TaxesTableProps> = ({
                                         {tax.name}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {tax.amount}DH
+                                        {formatMoney(tax.amount)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap truncate">
                                         {tax.description || (

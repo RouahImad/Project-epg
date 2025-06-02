@@ -3,6 +3,11 @@ import DashboardCharts from "./DashboardCharts";
 import { FiTrendingUp, FiUsers, FiActivity, FiAward } from "react-icons/fi";
 import type { SuperDashboardData } from "../../types/api.types";
 import { useNavigate } from "react-router";
+import {
+    formatLargeNumber,
+    formatMoney,
+    formatMoneyCompact,
+} from "../../utils/helpers";
 
 interface Props {
     data: SuperDashboardData;
@@ -10,35 +15,40 @@ interface Props {
 
 const SuperAdminDashboardContent = ({ data }: Props) => {
     const navigate = useNavigate();
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-2">
                 <FiTrendingUp className="text-indigo-500" /> Dashboard
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                {/* Enhanced Stat Cards with better UI/UX */}
+                {/* Enhanced Stat Cards with better UI/UX and compact number display */}
                 <StatCard
                     icon="dollar"
                     label="Total Income"
-                    value={data.totalIncome.toLocaleString()}
+                    value={formatMoneyCompact(data.totalIncome)}
+                    tooltip={formatMoney(data.totalIncome)}
                     className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-green-50 to-white"
                 />
                 <StatCard
                     icon="users"
                     label="Students"
-                    value={data.studentCount}
+                    value={formatLargeNumber(data.studentCount)}
+                    tooltip={data.studentCount.toLocaleString()}
                     className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-blue-50 to-white"
                 />
                 <StatCard
                     icon="user"
                     label="Staff"
-                    value={data.staffCount}
+                    value={formatLargeNumber(data.staffCount)}
+                    tooltip={data.staffCount.toLocaleString()}
                     className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-indigo-50 to-white"
                 />
                 <StatCard
                     icon="activity"
                     label="Outstanding"
-                    value={data.outstandingBalance.toLocaleString()}
+                    value={formatMoneyCompact(data.outstandingBalance)}
+                    tooltip={formatMoney(data.outstandingBalance)}
                     className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-yellow-50 to-white"
                 />
             </div>

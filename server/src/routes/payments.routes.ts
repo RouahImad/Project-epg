@@ -131,17 +131,19 @@ router.post(
                 res.status(404).json({ message: "Major not found" });
                 return;
             }
-            let total = major.price;
+            let total = Number(major.price);
             const majorTaxes = await getMajorTaxesByMajorId(majorId);
 
-            majorTaxes.forEach(async (majorTax) => {
-                const taxPromises = getTaxById(majorTax.taxId);
-                const tax = await Promise.resolve(taxPromises);
+            if (majorTaxes && majorTaxes.length > 0) {
+                const taxList = await Promise.all(
+                    majorTaxes.map((majorTax) => getTaxById(majorTax.taxId))
+                );
 
-                if (!tax) return;
-                total += tax.amount;
-                return tax;
-            });
+                total += taxList.reduce(
+                    (sum, tax) => sum + Number(tax?.amount),
+                    0
+                );
+            }
 
             if (amountPaid > total) {
                 res.status(400).json({
