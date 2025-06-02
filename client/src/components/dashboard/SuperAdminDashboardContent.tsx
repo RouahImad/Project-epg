@@ -22,34 +22,33 @@ const SuperAdminDashboardContent = ({ data }: Props) => {
                 <FiTrendingUp className="text-indigo-500" /> Dashboard
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                {/* Enhanced Stat Cards with better UI/UX and compact number display */}
                 <StatCard
                     icon="dollar"
                     label="Total Income"
                     value={formatMoneyCompact(data.totalIncome)}
                     tooltip={formatMoney(data.totalIncome)}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-green-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-green-50 to-white"
                 />
                 <StatCard
                     icon="users"
                     label="Students"
                     value={formatLargeNumber(data.studentCount)}
                     tooltip={data.studentCount.toLocaleString()}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-blue-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-blue-50 to-white"
                 />
                 <StatCard
                     icon="user"
                     label="Staff"
                     value={formatLargeNumber(data.staffCount)}
                     tooltip={data.staffCount.toLocaleString()}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-indigo-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-indigo-50 to-white"
                 />
                 <StatCard
                     icon="activity"
                     label="Outstanding"
                     value={formatMoneyCompact(data.outstandingBalance)}
                     tooltip={formatMoney(data.outstandingBalance)}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-yellow-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-yellow-50 to-white"
                 />
             </div>
             <DashboardCharts role="super_admin" data={data} />
@@ -178,8 +177,15 @@ const SuperAdminDashboardContent = ({ data }: Props) => {
                                             <td className="py-1 pr-2">
                                                 {staff.userName}
                                             </td>
-                                            <td className="py-1 pr-2">
-                                                {staff.income.toLocaleString()}
+                                            <td
+                                                className="py-1 pr-2"
+                                                title={formatMoney(
+                                                    staff.income
+                                                )}
+                                            >
+                                                {formatMoneyCompact(
+                                                    staff.income
+                                                )}
                                             </td>
                                             <td className="py-1">
                                                 {staff.joinedAt}
@@ -208,25 +214,31 @@ const SuperAdminDashboardContent = ({ data }: Props) => {
                     </button>
                 </div>
                 <ul>
-                    {data.recentActivity.map((act, idx) => (
-                        <li
-                            key={idx}
-                            className="py-2 border-b last:border-b-0 text-sm"
-                        >
-                            <span className="font-medium text-gray-700">
-                                {act.userName}
-                            </span>{" "}
-                            {act.action} - {act.entityType} #{act.entityId}{" "}
-                            <span className="text-gray-400">
-                                ({act.timestamp})
-                            </span>
-                            {act.details && (
-                                <span className="ml-2 text-gray-500 italic">
-                                    {act.details}
-                                </span>
-                            )}
+                    {data.recentActivity.length === 0 ? (
+                        <li className="px-1.5 py-2 text-gray-500 text-center italic">
+                            No recent activity
                         </li>
-                    ))}
+                    ) : (
+                        data.recentActivity.map((act, idx) => (
+                            <li
+                                key={idx}
+                                className="py-2 border-b last:border-b-0 text-sm"
+                            >
+                                <span className="font-medium text-gray-700">
+                                    {act.userName}
+                                </span>{" "}
+                                {act.action} - {act.entityType} #{act.entityId}{" "}
+                                <span className="text-gray-400">
+                                    ({act.timestamp})
+                                </span>
+                                {act.details && (
+                                    <span className="ml-2 text-gray-500 italic">
+                                        {act.details}
+                                    </span>
+                                )}
+                            </li>
+                        ))
+                    )}
                 </ul>
             </div>
         </div>

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { FiDollarSign, FiSearch } from "react-icons/fi";
+import { FiDollarSign, FiSearch, FiEdit2 } from "react-icons/fi";
 import type { PaymentWithTaxes } from "../../types";
 import { formatDate, formatMoney } from "../../utils/helpers";
+import { useUpdatePayment } from "../../hooks/api/usePaymentsApi";
+import EditPaymentDialog from "./dialogs/EditPaymentDialog";
 
 interface StudentPaymentsProps {
     isLoading: boolean;
@@ -13,6 +15,18 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
     payments,
 }) => {
     const [searchTerm, setSearchTerm] = useState("");
+    const [editPayment, setEditPayment] = useState<PaymentWithTaxes | null>(
+        null
+    );
+    const [editForm, setEditForm] = useState<{
+        amountPaid: number;
+        remainingAmount: number;
+    }>({
+        amountPaid: 0,
+        remainingAmount: 0,
+    });
+
+    const updatePayment = useUpdatePayment();
 
     const filteredPayments = payments.filter(
         (payment) =>
@@ -23,6 +37,42 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase())
     );
+
+    const openEditDialog = (payment: PaymentWithTaxes) => {
+        setEditPayment(payment);
+        setEditForm({
+            amountPaid: payment.amountPaid,
+            remainingAmount: payment.remainingAmount || 0,
+        });
+    };
+
+    const closeEditDialog = () => {
+        setEditPayment(null);
+    };
+
+    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setEditForm((prev) => ({
+            ...prev,
+            [name]: name === "amountPaid" ? Number(value || 0) : value,
+        }));
+    };
+
+    const handleEditSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editPayment) return;
+        updatePayment.mutate(
+            {
+                id: editPayment.id,
+                amountPaid: editForm.amountPaid,
+            },
+            {
+                onSuccess: () => {
+                    closeEditDialog();
+                },
+            }
+        );
+    };
 
     return (
         <div className="p-6">
@@ -76,6 +126,9 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
                                             Paid At
                                         </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -100,11 +153,33 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 {formatDate(payment.paidAt)}
                                             </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <button
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                    title="Edit Payment"
+                                                    type="button"
+                                                    onClick={() =>
+                                                        openEditDialog(payment)
+                                                    }
+                                                >
+                                                    <FiEdit2 />
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
+                    )}
+                    {/* Edit Payment Dialog */}
+                    {editPayment && (
+                        <EditPaymentDialog
+                            editForm={editForm}
+                            handleEditChange={handleEditChange}
+                            handleEditSubmit={handleEditSubmit}
+                            closeEditDialog={closeEditDialog}
+                            updatePayment={updatePayment}
+                        />
                     )}
                 </>
             ) : (

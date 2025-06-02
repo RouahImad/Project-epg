@@ -45,14 +45,14 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
     );
 
     const price = useMemo(
-        () => Number(selectedMajor?.price ?? 0),
+        () => Number(selectedMajor?.price || 0),
         [selectedMajor]
     );
 
     const taxesTotal = useMemo(
         () =>
             taxes.reduce(
-                (sum: number, tax) => sum + Number(tax.amount ?? 0),
+                (sum: number, tax) => sum + Number(tax.amount || 0),
                 0
             ),
         [taxes]
@@ -255,7 +255,7 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                                         onChange={(e) => {
                                             const val = e.target.value;
                                             setPaidAmount(
-                                                Math.max(0, Number(val))
+                                                Math.max(0, Number(val || 0))
                                             );
                                         }}
                                         required

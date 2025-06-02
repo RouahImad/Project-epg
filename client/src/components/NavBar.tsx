@@ -35,10 +35,8 @@ const NavBar = () => {
     }, [logoutMutation, navigate, setUser]);
 
     useEffect(() => {
-        // Handle closing admin menu on outside click
         if (!adminMenuOpen) return;
         const handleClickOutside = (event: MouseEvent) => {
-            // Desktop admin menu
             if (
                 adminMenuOpen &&
                 adminMenuRef.current &&
@@ -53,23 +51,6 @@ const NavBar = () => {
         };
     }, [adminMenuOpen]);
 
-    // Keyboard accessibility for desktop admin menu
-    useEffect(() => {
-        if (!adminMenuOpen) return;
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Escape") setAdminMenuOpen(false);
-            if (
-                (event.key === "Enter" || event.key === " ") &&
-                document.activeElement === adminMenuRef.current
-            ) {
-                setAdminMenuOpen((v) => !v);
-            }
-        };
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [adminMenuOpen]);
-
-    // Handle closing user menu on outside click (mobile)
     useEffect(() => {
         if (!userMenuOpen) return;
         const handleClickOutside = (event: MouseEvent) => {
@@ -163,7 +144,6 @@ const NavBar = () => {
                     <FiUsers className="h-5 w-5" /> Students
                 </NavLink>
 
-                {/* SUPER_ADMIN ONLY: Unified Mega Menu for all screens */}
                 {userRole === "super_admin" && (
                     <div
                         className="relative"
@@ -194,7 +174,6 @@ const NavBar = () => {
                 )}
             </div>
             <div className="flex items-center gap-5">
-                {/* Desktop: show Profile and Logout separately */}
                 <div className="hidden md:flex items-center gap-5">
                     {user && (
                         <NavLink to="/profile" className={navLinkStyle}>
@@ -211,7 +190,6 @@ const NavBar = () => {
                     </button>
                 </div>
 
-                {/* Mobile: group Profile and Logout in a submenu */}
                 <div className="md:hidden relative" ref={userMenuRef}>
                     <button
                         type="button"

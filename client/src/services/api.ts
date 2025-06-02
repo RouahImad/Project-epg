@@ -59,8 +59,11 @@ apiClient.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        // Log the error for debugging if not a 404 error
-        if (error.response && error.response.status !== 404) {
+        // Log the error for debugging if not a 40x type error
+        if (
+            error.response &&
+            (error.response.status < 400 || error.response.status >= 500)
+        ) {
             console.error("API Error:", error);
         }
 
@@ -225,8 +228,8 @@ export const paymentsApi: PaymentsApi = {
     createPayment: (paymentData: Partial<Payment>) =>
         apiClient.post("/payments", paymentData),
 
-    updatePayment: (paymentId: number, paymentData: Partial<Payment>) =>
-        apiClient.patch(`/payments/${paymentId}`, paymentData),
+    updatePayment: (paymentId: number, amountPaid: Payment["amountPaid"]) =>
+        apiClient.patch(`/payments/${paymentId}`, { amountPaid }),
 
     deletePayment: (paymentId: number) =>
         apiClient.delete(`/payments/${paymentId}`),

@@ -33,7 +33,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
 
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div className="bg-white rounded-xl shadow p-6">
+                <div className="bg-white rounded-xl shadow p-6 h-fit">
                     <h3 className="font-semibold mb-4">Income Over Time</h3>
                     {hasIncomeData ? (
                         <ResponsiveContainer width="100%" height={250}>

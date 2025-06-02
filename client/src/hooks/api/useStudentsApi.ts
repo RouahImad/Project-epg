@@ -52,6 +52,9 @@ export const useUpdateStudent = (studentId: string) => {
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.students.detail(studentId),
             });
+            queryClient.refetchQueries({
+                queryKey: QueryKeys.students.detail(studentId),
+            });
         },
     });
 };
@@ -103,6 +106,9 @@ export const useAddStudentMajor = () => {
             });
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.students.detail(studentId),
+            });
+            queryClient.refetchQueries({
+                queryKey: QueryKeys.students.majors(studentId),
             });
         },
     });

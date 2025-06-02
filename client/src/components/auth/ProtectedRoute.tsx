@@ -21,20 +21,8 @@ const ProtectedRoute = ({
     const { isLoading } = useCurrentUser();
     const { userRole, isAuthenticated: authContextAuthenticated } = useAuth();
 
-    // Check authentication from both token and context
     const userIsAuthenticated = isAuthenticated() && authContextAuthenticated; // Show loading state when checking authentication status
-    // if (isLoading) {
-    //     return (
-    //         <div className="flex items-center justify-center h-screen">
-    //             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-    //             <p className="ml-3 text-indigo-600">
-    //                 Verifying authentication...
-    //             </p>
-    //         </div>
-    //     );
-    // }
 
-    // Check role-based access if roles are specified and user is authenticated
     if (
         userIsAuthenticated &&
         allowedRoles.length > 0 &&

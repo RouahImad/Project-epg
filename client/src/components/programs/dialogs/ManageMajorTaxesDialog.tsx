@@ -85,7 +85,7 @@ const ManageMajorTaxesDialog: React.FC<ManageMajorTaxesDialogProps> = ({
     // Calculate total cost safely
     const majorPrice =
         typeof major.price === "number" ? major.price : parseFloat(major.price);
-    const totalCost = majorPrice + totalTaxAmount;
+    const totalCost = Number(majorPrice || 0) + totalTaxAmount;
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">

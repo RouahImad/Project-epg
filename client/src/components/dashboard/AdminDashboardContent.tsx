@@ -13,10 +13,6 @@ interface Props {
 }
 
 const AdminDashboardContent = ({ data }: Props) => {
-    // Format large numbers with abbreviations for cleaner display
-
-    // Format money values for display in stat cards
-
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-2">
@@ -28,28 +24,28 @@ const AdminDashboardContent = ({ data }: Props) => {
                     label="My Income"
                     value={formatMoneyCompact(data.myIncome)}
                     tooltip={formatMoney(data.myIncome)}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-green-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-green-50 to-white"
                 />
                 <StatCard
                     icon="users"
                     label="My Students"
                     value={formatLargeNumber(data.myStudentsCount)}
                     tooltip={data.myStudentsCount.toLocaleString()}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-blue-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-blue-50 to-white"
                 />
                 <StatCard
                     icon="activity"
                     label="Outstanding"
                     value={formatMoneyCompact(data.myOutstandingPayments)}
                     tooltip={formatMoney(data.myOutstandingPayments)}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-yellow-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-yellow-50 to-white"
                 />
                 <StatCard
                     icon="user"
                     label="My Activity"
                     value={formatLargeNumber(data.myActivityCount)}
                     tooltip={data.myActivityCount.toLocaleString()}
-                    className="hover:shadow-lg transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-indigo-50 to-white"
+                    className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-indigo-50 to-white"
                 />
             </div>
 
@@ -81,33 +77,46 @@ const AdminDashboardContent = ({ data }: Props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.recentActions.map((act, idx) => (
-                                <tr
-                                    key={idx}
-                                    className="border-b last:border-b-0 hover:bg-gray-50 transition"
-                                >
-                                    <td className="px-3 py-2">
-                                        {act.userName}
-                                    </td>
-                                    <td className="px-3 py-2">{act.action}</td>
-                                    <td className="px-3 py-2">
-                                        {act.entityType}
-                                    </td>
-                                    <td className="px-3 py-2">
-                                        {act.entityId}
-                                    </td>
-                                    <td className="px-3 py-2">
-                                        {act.details || (
-                                            <span className="text-gray-400 italic">
-                                                —
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-3 py-2 text-gray-400">
-                                        {act.timestamp}
+                            {data.recentActions.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={6}
+                                        className="px-3 py-4 text-center text-gray-400"
+                                    >
+                                        No recent actions found.
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                data.recentActions.map((act, idx) => (
+                                    <tr
+                                        key={idx}
+                                        className="border-b last:border-b-0 hover:bg-gray-50 transition"
+                                    >
+                                        <td className="px-3 py-2">
+                                            {act.userName}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {act.action}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {act.entityType}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {act.entityId}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {act.details || (
+                                                <span className="text-gray-400 italic">
+                                                    —
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-400">
+                                            {act.timestamp}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>

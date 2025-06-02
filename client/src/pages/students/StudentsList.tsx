@@ -26,7 +26,7 @@ const StudentsList = () => {
         createStudentMutation.mutate(studentData, {
             onSuccess: (_, vars) => {
                 setSearchTerm("");
-                navigate("/students/" + vars.id); // Navigate to the new student's detail page
+                navigate("/students/" + vars.id);
             },
         });
         setShowAddDialog(false);
@@ -126,7 +126,7 @@ const StudentsList = () => {
 
             {/* Student card grid */}
             {filteredStudents?.length ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:mx-10">
                     {filteredStudents.map((student) => (
                         <StudentCard key={student.id} student={student} />
                     ))}

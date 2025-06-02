@@ -134,7 +134,7 @@ export interface PaymentsApi {
     createPayment: (paymentData: Partial<Payment>) => Promise<ApiResponse<any>>;
     updatePayment: (
         paymentId: number,
-        paymentData: Partial<Payment>
+        amountPaid: Payment["amountPaid"]
     ) => Promise<ApiResponse<any>>;
     deletePayment: (paymentId: number) => Promise<ApiResponse<null>>;
     getPaymentsByUser: (userId: number) => Promise<PaymentWithTaxes[]>;
