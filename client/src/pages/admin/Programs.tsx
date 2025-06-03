@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiPlus } from "react-icons/fi";
+import { FiArrowLeft, FiPlus } from "react-icons/fi";
 import { IoSchool } from "react-icons/io5";
 import {
     useProgramTypes,
@@ -21,6 +21,7 @@ import EditMajorDialog from "../../components/programs/dialogs/EditMajorDialog";
 import DeleteMajorDialog from "../../components/programs/dialogs/DeleteMajorDialog";
 import ManageMajorTaxesDialog from "../../components/programs/dialogs/ManageMajorTaxesDialog";
 import type { Major, MajorType } from "../../types";
+import { useNavigate } from "react-router";
 
 const initialProgramType = { name: "", description: "" };
 const initialMajor = {
@@ -117,13 +118,24 @@ const Programs = () => {
         setShowManageTaxes(true);
     };
 
+    const navigate = useNavigate();
+
     return (
         <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                    <IoSchool className="text-blue-500" />
-                    Program Types & Majors
-                </h2>
+                <div className="flex items-center mb-6">
+                    <button
+                        className="mr-3 text-gray-500 hover:text-blue-600"
+                        onClick={() => navigate(-1)}
+                        aria-label="Back"
+                    >
+                        <FiArrowLeft size={22} />
+                    </button>
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                        <IoSchool className="text-blue-500" />
+                        Program Types & Majors
+                    </h2>
+                </div>
                 <button
                     className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded flex items-center gap-2 shadow"
                     onClick={handleOpenAdd}

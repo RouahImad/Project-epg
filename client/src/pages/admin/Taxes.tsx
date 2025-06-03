@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiDollarSign } from "react-icons/fi";
+import { FiArrowLeft, FiDollarSign } from "react-icons/fi";
 import {
     useTaxes,
     useCreateTax,
@@ -11,6 +11,7 @@ import AddTaxDialog from "../../components/taxes/dialogs/AddTaxDialog";
 import EditTaxDialog from "../../components/taxes/dialogs/EditTaxDialog";
 import DeleteTaxDialog from "../../components/taxes/dialogs/DeleteTaxDialog";
 import type { Tax } from "../../types";
+import { useNavigate } from "react-router";
 
 const initialTaxForm = {
     name: "",
@@ -52,9 +53,18 @@ const Taxes = () => {
         setTaxForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const navigate = useNavigate();
+
     return (
         <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+            <div className="flex items-center mb-6">
+                <button
+                    className="mr-3 text-gray-500 hover:text-blue-600"
+                    onClick={() => navigate(-1)}
+                    aria-label="Back"
+                >
+                    <FiArrowLeft size={22} />
+                </button>
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                     <FiDollarSign className="text-green-500" />
                     Tax Management

@@ -5,12 +5,13 @@ import {
     useUpdateUser,
     useDeleteUser,
 } from "../../hooks/api";
-import { FiUser, FiSearch, FiX, FiPlus } from "react-icons/fi";
+import { FiUser, FiSearch, FiX, FiPlus, FiArrowLeft } from "react-icons/fi";
 import UserFormDialog from "../../components/user/UserFormDialog";
 import DeleteUserDialog from "../../components/user/DeleteUserDialog";
 import UserTableRow from "../../components/user/UserTableRow";
 import { useAuth } from "../../contexts/AuthContext";
 import type { User } from "../../types";
+import { useNavigate } from "react-router";
 
 export const initialForm = {
     fullName: "",
@@ -158,12 +159,23 @@ const Users = () => {
         );
     }
 
+    const navigate = useNavigate();
+
     return (
         <div className="container mx-auto px-6 sm:px-8 py-8 md:max-w-[85vw]">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <FiUser className="text-blue-500" /> Users
-                </h1>
+                <div className="flex items-center mb-6">
+                    <button
+                        className="mr-3 text-gray-500 hover:text-blue-600"
+                        onClick={() => navigate(-1)}
+                        aria-label="Back"
+                    >
+                        <FiArrowLeft size={22} />
+                    </button>
+                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                        <FiUser className="text-blue-500" /> Users
+                    </h1>
+                </div>
                 <div className="flex gap-2 w-full md:w-auto">
                     <div className="relative flex-1">
                         <input

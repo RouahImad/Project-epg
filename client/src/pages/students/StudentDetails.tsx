@@ -18,10 +18,11 @@ import StudentPayments from "../../components/student/StudentPayments";
 import EnrollMajorDialog from "../../components/student/dialogs/EnrollMajorDialog";
 import UpdateStudentDialog from "../../components/student/dialogs/UpdateStudentDialog";
 import { useAuth } from "../../contexts/AuthContext";
-import { FiArrowLeft, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft, FiPlus, FiTrash2 } from "react-icons/fi";
 import type { Student, StudentMajor, StudentMajorDetails } from "../../types";
 import EditMajorDialog from "../../components/student/dialogs/EditMajorDialog";
 import { formatDate } from "../../utils/helpers";
+import type React from "react";
 
 const StudentDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -294,7 +295,7 @@ const StudentDetails = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 md:max-w-[85vw]">
             <button
                 className="mr-3 mb-4 text-gray-500 hover:text-blue-600"
                 onClick={() => navigate(-1)}
@@ -311,9 +312,10 @@ const StudentDetails = () => {
                         </h1>
                         <div className="flex gap-2">
                             <button
-                                className="bg-blue-500 text-white px-2.5 py-1.5 rounded"
+                                className="bg-green-500 text-white px-2.5 py-1.5 rounded flex items-center gap-1"
                                 onClick={() => setShowEnrollDialog(true)}
                             >
+                                <FiPlus />
                                 Enroll
                             </button>
                             {userRole === "super_admin" && (

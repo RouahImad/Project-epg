@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { FiActivity, FiSearch, FiX } from "react-icons/fi";
+import { FiActivity, FiArrowLeft, FiSearch, FiX } from "react-icons/fi";
 import type { LogsWithUserName } from "../../types";
 import { useActivityLogs } from "../../hooks/api/";
 import { formatDateTime } from "../../utils/helpers";
+import { useNavigate } from "react-router";
 
 const Logs = () => {
     const [search, setSearch] = useState("");
@@ -52,11 +53,22 @@ const Logs = () => {
             return matchesSearch && matchesAction && matchesEntity;
         }) || [];
 
+    const navigate = useNavigate();
+
     return (
         <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <FiActivity className="text-pink-500" /> Logs
-            </h2>
+            <div className="flex items-center mb-6">
+                <button
+                    className="mr-3 text-gray-500 hover:text-blue-600"
+                    onClick={() => navigate(-1)}
+                    aria-label="Back"
+                >
+                    <FiArrowLeft size={22} />
+                </button>
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <FiActivity className="text-pink-500" /> Logs
+                </h2>
+            </div>
             {/* Search and Filters */}
             <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
                 <div className="relative w-full md:w-1/3 mr-auto">

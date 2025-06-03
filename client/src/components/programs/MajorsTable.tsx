@@ -41,7 +41,7 @@ const MajorsTable = ({
                 <h3 className="text-lg font-bold">Majors</h3>
 
                 <button
-                    className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded flex items-center gap-1 shadow"
+                    className="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded flex items-center gap-1 shadow"
                     onClick={onAddMajor}
                     type="button"
                     disabled={!majorTypes || majorTypes.length === 0}

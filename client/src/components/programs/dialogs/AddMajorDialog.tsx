@@ -145,7 +145,7 @@ const AddMajorDialog = ({
                     </div>
                     <button
                         type="submit"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 w-full justify-center font-semibold shadow transition"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 w-full justify-center font-semibold shadow transition"
                         disabled={addMajor.isPending || !majorForm.majorTypeId}
                     >
                         <FiSave /> {addMajor.isPending ? "Saving..." : "Save"}
