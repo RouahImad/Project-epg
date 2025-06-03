@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router";
-import { useLogin, useCurrentUser } from "../../hooks/api/useAuthApi";
+import { useLogin, useCurrentUser } from "../../hooks/api/";
 import { isAuthenticated } from "../../utils/authUtils";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiLogIn } from "react-icons/fi";
 import { BiErrorCircle } from "react-icons/bi";

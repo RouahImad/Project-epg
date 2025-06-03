@@ -14,15 +14,16 @@ interface Props {
 
 const AdminDashboardContent = ({ data }: Props) => {
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-2">
                 <FiTrendingUp className="text-indigo-500" /> Dashboard
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid max-[486px]:grid-cols-1 max-[886px]:grid-cols-2 min-[886px]:grid-cols-4 gap-6 mb-8">
+                {/* md:grid-cols-4  */}
                 <StatCard
                     icon="dollar"
                     label="My Income"
-                    value={formatMoneyCompact(data.myIncome)}
+                    value={formatMoneyCompact(data.myIncome, 1)}
                     tooltip={formatMoney(data.myIncome)}
                     className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-green-50 to-white"
                 />
@@ -36,7 +37,7 @@ const AdminDashboardContent = ({ data }: Props) => {
                 <StatCard
                     icon="activity"
                     label="Outstanding"
-                    value={formatMoneyCompact(data.myOutstandingPayments)}
+                    value={formatMoneyCompact(data.myOutstandingPayments, 1)}
                     tooltip={formatMoney(data.myOutstandingPayments)}
                     className="hover:shadow-md transition-shadow duration-200 border border-gray-100 bg-gradient-to-br from-yellow-50 to-white"
                 />

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { FiBookOpen, FiX } from "react-icons/fi";
 import { formatMoney } from "../../../utils/helpers";
 import type { Major } from "../../../types";
-import { useMajorTaxes } from "../../../hooks/api/useMajorsApi";
+import { useMajorTaxes } from "../../../hooks/api/";
 
 interface EnrollMajorDialogProps {
     open: boolean;

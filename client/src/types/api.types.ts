@@ -93,15 +93,11 @@ export interface ProgramTypesApi {
         data: Partial<MajorType>
     ) => Promise<MajorType>;
     deleteProgramType: (typeId: number) => Promise<ApiResponse<null>>;
-
-    // Majors under program type
-    getMajorsByProgramType: (typeId: number) => Promise<Major[]>;
 }
 
 // Majors API Types
 export interface MajorsApi {
     getMajors: () => Promise<Major[]>;
-    getMajorById: (majorId: number) => Promise<Major>;
     getMajorsGroupedByType: () => Promise<Record<number, Major[]>>;
     updateMajor: (majorId: number, data: Partial<Major>) => Promise<Major>;
     deleteMajor: (majorId: number) => Promise<ApiResponse<null>>;
@@ -130,7 +126,6 @@ export interface TaxesApi {
 // Payments API Types
 export interface PaymentsApi {
     getPayments: () => Promise<PaymentWithTaxes[]>;
-    getPaymentById: (paymentId: number) => Promise<PaymentWithTaxes>;
     createPayment: (paymentData: Partial<Payment>) => Promise<ApiResponse<any>>;
     updatePayment: (
         paymentId: number,
@@ -143,9 +138,7 @@ export interface PaymentsApi {
 // Receipts API Types
 export interface ReceiptsApi {
     getReceipts: () => Promise<Receipt[]>;
-    getReceiptById: (receiptId: number) => Promise<Receipt>;
     generateReceipt: (paymentId: number) => Promise<Receipt>;
-    deleteReceipt: (receiptId: number) => Promise<ApiResponse<null>>;
 }
 
 // Company Info API Types

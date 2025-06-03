@@ -14,17 +14,6 @@ export const useMajors = () =>
     });
 
 /**
- * Hook to get majors by type
- */
-
-export const useMajor = (majorId: number) =>
-    useQuery({
-        queryKey: QueryKeys.majors.detail(majorId),
-        queryFn: () => majorsApi.getMajorById(majorId),
-        enabled: !!majorId,
-    });
-
-/**
  * Hook to get majors grouped by type
  */
 

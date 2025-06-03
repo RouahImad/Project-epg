@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FiDollarSign, FiSearch, FiEdit2 } from "react-icons/fi";
 import type { PaymentWithTaxes } from "../../types";
 import { formatDate, formatMoney } from "../../utils/helpers";
-import { useUpdatePayment } from "../../hooks/api/usePaymentsApi";
+import { useUpdatePayment } from "../../hooks/api/";
 import EditPaymentDialog from "./dialogs/EditPaymentDialog";
 
 interface StudentPaymentsProps {

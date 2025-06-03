@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { activityLogsApi } from "../../services/api";
 import { FiActivity, FiSearch, FiX } from "react-icons/fi";
 import type { LogsWithUserName } from "../../types";
+import { useActivityLogs } from "../../hooks/api/";
+import { formatDateTime } from "../../utils/helpers";
 
 const Logs = () => {
     const [search, setSearch] = useState("");
     const [actionFilter, setActionFilter] = useState("");
     const [entityFilter, setEntityFilter] = useState("");
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ["activityLogs"],
-        queryFn: activityLogsApi.getActivityLogs,
-    });
+    const { data, isLoading, isError, error } = useActivityLogs();
 
     // Get unique actions and entities for filter dropdowns
     const actions =
@@ -56,7 +53,7 @@ const Logs = () => {
         }) || [];
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <FiActivity className="text-pink-500" /> Logs
             </h2>
@@ -173,7 +170,7 @@ const Logs = () => {
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 text-gray-400">
-                                                {log.timestamp.toLocaleString()}
+                                                {formatDateTime(log.timestamp)}
                                             </td>
                                         </tr>
                                     )

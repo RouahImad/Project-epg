@@ -13,6 +13,16 @@ export const usePayments = () =>
     });
 
 /**
+ * Hook to get payments for a specific user.
+ */
+export const usePaymentsByUser = (userId: number) =>
+    useQuery({
+        queryKey: [QueryKeys.payments.byUser, userId],
+        queryFn: () => paymentsApi.getPaymentsByUser(userId),
+        enabled: !!userId,
+    });
+
+/**
  * Hook to get payments for a specific student.
  */
 export const usePaymentsByStudent = (studentId: string) =>
@@ -24,7 +34,7 @@ export const usePaymentsByStudent = (studentId: string) =>
             return allPayments.filter((p) => p.studentId === studentId);
         },
         enabled: !!studentId,
-    });
+    }); // warning
 
 /**
  * Hook to create a new payment.

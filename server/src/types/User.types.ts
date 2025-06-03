@@ -9,12 +9,6 @@ export interface User {
     banned: boolean;
 }
 
-// export interface Activity {
-//     id: number;
-//     userId: User["id"];
-//     action: string;
-//     timestamp: Date;
-// }
 export const ACTIVITY_ACTIONS = {
     CREATE_STUDENT: "create_student",
     UPDATE_STUDENT: "update_student",
@@ -40,7 +34,7 @@ export interface ActivityLog {
         | "company"
         | "user";
     entityId: string | number;
-    details?: string
+    details?: string;
     timestamp: Date;
 }
 export interface LogsWithUserName extends ActivityLog {

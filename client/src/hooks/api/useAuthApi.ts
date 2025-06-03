@@ -53,7 +53,6 @@ export const useCurrentUser = () =>
         queryFn: authApi.getCurrentUser,
         retry: 1,
         retryDelay: 1000,
-        // Don't attempt to fetch user if there's no token
         enabled: !!tokenService.getToken(),
         staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
         refetchOnWindowFocus: true, // Refresh when window gets focus

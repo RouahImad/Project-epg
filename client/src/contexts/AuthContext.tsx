@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { tokenService } from "../services/api";
-import { useCurrentUser } from "../hooks/api/useAuthApi";
+import { useCurrentUser } from "../hooks/api/";
 import type { User } from "../types/";
 
 interface AuthContextType {

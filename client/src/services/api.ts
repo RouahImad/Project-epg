@@ -59,7 +59,6 @@ apiClient.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        // Log the error for debugging if not a 40x type error
         if (
             error.response &&
             (error.response.status < 400 || error.response.status >= 500)
@@ -173,17 +172,11 @@ export const programTypesApi: ProgramTypesApi = {
 
     deleteProgramType: (typeId: number) =>
         apiClient.delete(`/program-types/${typeId}`),
-
-    // Majors under program type
-    getMajorsByProgramType: (typeId: number) =>
-        apiClient.get(`/program-types/${typeId}/majors`),
 };
 
 // Majors API
 export const majorsApi: MajorsApi = {
     getMajors: () => apiClient.get("/majors"),
-
-    getMajorById: (majorId: number) => apiClient.get(`/majors/${majorId}`),
 
     getMajorsGroupedByType: () => apiClient.get("/majors/grouped"),
 
@@ -222,9 +215,6 @@ export const taxesApi: TaxesApi = {
 export const paymentsApi: PaymentsApi = {
     getPayments: () => apiClient.get("/payments"),
 
-    getPaymentById: (paymentId: number) =>
-        apiClient.get(`/payments/${paymentId}`),
-
     createPayment: (paymentData: Partial<Payment>) =>
         apiClient.post("/payments", paymentData),
 
@@ -242,14 +232,8 @@ export const paymentsApi: PaymentsApi = {
 export const receiptsApi: ReceiptsApi = {
     getReceipts: () => apiClient.get("/receipts"),
 
-    getReceiptById: (receiptId: number) =>
-        apiClient.get(`/receipts/${receiptId}`),
-
     generateReceipt: (paymentId: number) =>
-        apiClient.post(`/receipts/generate/${paymentId}`),
-
-    deleteReceipt: (receiptId: number) =>
-        apiClient.delete(`/receipts/${receiptId}`),
+        apiClient.post("/receipts/", { paymentId }),
 };
 
 // Company Info API
@@ -261,7 +245,6 @@ export const companyApi: CompanyApi = {
 
 // Dashboard API
 export const dashboardApi: DashboardApi = {
-    // getDashboardStats: () => apiClient.get("/dashboard"),
     getSuperStats: () => apiClient.get("/dashboard/super"),
     getAdminStats: () => apiClient.get("/dashboard/admin"),
 };

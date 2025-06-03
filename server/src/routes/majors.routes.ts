@@ -51,39 +51,6 @@ router.get("/grouped", authenticateJWT, async (req: Request, res: Response) => {
 });
 
 /**
- * @route   GET /majors/:majorId
- * @desc    Get a single major
- * @access  Admin (regular user/staff)
- */
-router.get(
-    "/:majorId",
-    authenticateJWT,
-    async (req: Request, res: Response) => {
-        try {
-            const majorId = parseInt(req.params.majorId);
-
-            // Validate input
-            if (Number.isNaN(majorId)) {
-                res.status(400).json({ message: "Invalid major ID" });
-                return;
-            }
-
-            const major = await getMajorById(majorId);
-
-            if (!major) {
-                res.status(404).json({ message: "Major not found" });
-                return;
-            }
-
-            res.status(200).json(major);
-        } catch (error) {
-            console.error("Get major error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
-    }
-);
-
-/**
  * @route   POST /majors
  * @desc    Create a new major
  * @access  Super Admin Only
@@ -232,12 +199,11 @@ router.delete(
 /**
  * @route   GET /majors/:majorId/taxes
  * @desc    Get taxes for a major
- * @access  Super Admin Only
+ * @access  Admin
  */
 router.get(
     "/:majorId/taxes",
     authenticateJWT,
-    checkRole("super_admin"),
     async (req: Request, res: Response) => {
         try {
             const majorId = parseInt(req.params.majorId);

@@ -8,12 +8,10 @@ import {
     useAddStudentMajor,
     useUpdateStudentMajor,
     useDeleteStudentMajor,
-} from "../../hooks/api/useStudentsApi";
-import { useMajors } from "../../hooks/api/useMajorsApi";
-import {
+    useMajors,
     useCreatePayment,
     usePaymentsByStudent,
-} from "../../hooks/api/usePaymentsApi";
+} from "../../hooks/api/";
 import StudentProfile from "../../components/student/StudentProfile";
 import StudentMajors from "../../components/student/StudentMajors";
 import StudentPayments from "../../components/student/StudentPayments";

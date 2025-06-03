@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { UIProvider } from "./contexts/UIContext";
 import AppRoutes from "./router/App.routes";
 
 const AppContent = () => {
@@ -33,11 +32,9 @@ const AppContent = () => {
 
 const App = () => {
     return (
-        <UIProvider>
-            <AuthProvider>
-                <AppContent />
-            </AuthProvider>
-        </UIProvider>
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
     );
 };
 

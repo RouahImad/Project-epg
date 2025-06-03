@@ -159,7 +159,7 @@ const Users = () => {
     }
 
     return (
-        <div className="container mx-auto px-2 sm:px-4 py-8">
+        <div className="container mx-auto px-6 sm:px-8 py-8 md:max-w-[85vw]">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     <FiUser className="text-blue-500" /> Users

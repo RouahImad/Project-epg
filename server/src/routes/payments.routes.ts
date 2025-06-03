@@ -1,7 +1,6 @@
 import { Router, Request, Response } from "express";
-import { authenticateJWT, checkRole } from "../middlewares/auth";
+import { authenticateJWT } from "../middlewares/auth";
 import {
-    deletePayment,
     getPaymentById,
     getPayments,
     getPaymentsByUser,
@@ -174,45 +173,6 @@ router.post(
 );
 
 /**
- * @route   GET /payments/:id
- * @desc    Get single payment
- * @access  Admin (regular user/staff)
- */
-router.get("/:id", authenticateJWT, async (req: Request, res: Response) => {
-    try {
-        const paymentId = parseInt(req.params.id);
-
-        // Validate input
-        if (Number.isNaN(paymentId)) {
-            res.status(400).json({ message: "Invalid payment ID" });
-            return;
-        }
-
-        const payment = await getPaymentById(paymentId);
-        if (!payment) {
-            res.status(404).json({ message: "Payment not found" });
-            return;
-        }
-        const paymentWithTaxes: PaymentWithTaxes = { ...payment };
-        paymentWithTaxes.taxes = [];
-        const majorTaxes = await getMajorTaxesByMajorId(payment.majorId);
-
-        if (majorTaxes.length > 0) {
-            const taxPromises = majorTaxes.map((majorTax) =>
-                getTaxById(majorTax.taxId)
-            );
-            const taxes = await Promise.all(taxPromises);
-            paymentWithTaxes.taxes = taxes.filter((tax) => tax !== null);
-        }
-
-        res.status(200).json(paymentWithTaxes);
-    } catch (error) {
-        console.error("Get payment error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-/**
  * @route   PATCH /payments/:id
  * @desc    Update payment
  * @access  Admin (regular user/staff)
@@ -275,39 +235,5 @@ router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
-/**
- * @route   DELETE /payments/:id
- * @desc    Delete payment
- * @access  Super Admin Only
- */
-router.delete(
-    "/:id",
-    authenticateJWT,
-    checkRole("super_admin"),
-    async (req: Request, res: Response) => {
-        try {
-            const paymentId = parseInt(req.params.id);
-
-            // Validate input
-            if (Number.isNaN(paymentId)) {
-                res.status(400).json({ message: "Invalid payment ID" });
-                return;
-            }
-
-            const success = await deletePayment(paymentId);
-
-            if (!success) {
-                res.status(400).json({ message: "Failed to delete payment" });
-                return;
-            }
-
-            res.status(200).json({ message: "Payment deleted successfully" });
-        } catch (error) {
-            console.error("Delete payment error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
-    }
-);
 
 export default router;

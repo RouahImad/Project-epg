@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import type { ReactNode } from "react";
 import { Navigate } from "react-router";
-import { useCurrentUser } from "../../hooks/api/useAuthApi";
+import { useCurrentUser } from "../../hooks/api/";
 import { isAuthenticated } from "../../utils/authUtils";
 import { useAuth } from "../../contexts/AuthContext";
 import NavBar from "../NavBar";

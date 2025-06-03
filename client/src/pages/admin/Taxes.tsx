@@ -53,7 +53,7 @@ const Taxes = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                     <FiDollarSign className="text-green-500" />

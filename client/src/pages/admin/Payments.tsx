@@ -1,28 +1,17 @@
 import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
-import { paymentsApi } from "../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { FiArrowLeft, FiDollarSign, FiSearch } from "react-icons/fi";
-import { formatDate, formatMoney } from "../utils/helpers";
+import { formatDate, formatMoney } from "../../utils/helpers";
+import { usePayments, usePaymentsByUser } from "../../hooks/api";
 
 const Payments = () => {
-    const { user, userRole } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
 
-    const paymentsQuery = useQuery({
-        queryKey: ["allPayments", userRole, user?.id],
-        queryFn: async () => {
-            if (!user) return [];
-            if (userRole === "super_admin") {
-                return paymentsApi.getPayments();
-            } else {
-                return paymentsApi.getPaymentsByUser(user.id);
-            }
-        },
-        enabled: !!user,
-    });
+    const paymentsQuery =
+        user?.role == "admin" ? usePaymentsByUser(user.id) : usePayments();
 
     // Filter payments based on search term
     const filteredPayments = paymentsQuery.data
@@ -40,7 +29,7 @@ const Payments = () => {
         : [];
 
     return (
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 md:max-w-[85vw]">
             <div className="flex items-center mb-6">
                 <button
                     className="mr-3 text-gray-500 hover:text-blue-600"

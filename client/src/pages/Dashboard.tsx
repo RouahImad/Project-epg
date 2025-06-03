@@ -1,24 +1,19 @@
 import { useAuth } from "../contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
-import { dashboardApi } from "../services/api";
 import SuperAdminDashboardContent from "../components/dashboard/SuperAdminDashboardContent";
 import AdminDashboardContent from "../components/dashboard/AdminDashboardContent";
 import type {
     AdminDashboardData,
     SuperDashboardData,
 } from "../types/api.types";
+import { useAdminDashboardStats, useSuperDashboardStats } from "../hooks/api/";
 
 const Dashboard = () => {
     const { userRole } = useAuth();
 
-    // Fetch dashboard data based on role
-    const dashboardQuery = useQuery<SuperDashboardData | AdminDashboardData>({
-        queryKey: ["dashboard", userRole],
-        queryFn: () =>
-            userRole === "super_admin"
-                ? dashboardApi.getSuperStats()
-                : dashboardApi.getAdminStats(),
-    });
+    const dashboardQuery =
+        userRole === "super_admin"
+            ? useSuperDashboardStats()
+            : useAdminDashboardStats();
 
     if (dashboardQuery.isLoading) {
         return (

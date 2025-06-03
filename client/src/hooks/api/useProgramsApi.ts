@@ -14,16 +14,6 @@ export const useProgramTypes = () =>
     });
 
 /**
- * Hook to get majors by program type
- */
-export const useMajorsByProgramType = (programTypeId: number) =>
-    useQuery({
-        queryKey: QueryKeys.programTypes.majors(programTypeId),
-        queryFn: () => programTypesApi.getMajorsByProgramType(programTypeId),
-        enabled: !!programTypeId,
-    });
-
-/**
  * Hook to create a program type
  */
 export const useCreateProgramType = () => {

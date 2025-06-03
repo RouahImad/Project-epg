@@ -130,7 +130,8 @@ router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
         if (!student) {
             res.status(404).json({ message: "Student not found" });
             return;
-        } // Prepare update data
+        }
+        // Prepare update data
         const updateData: any = {};
         updateData.id = newId == student.id ? null : newId;
         updateData.fullName = fullName == student.fullName ? null : fullName;

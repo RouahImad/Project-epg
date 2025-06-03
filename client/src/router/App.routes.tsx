@@ -12,7 +12,7 @@ const Dashboard = lazy(() => import("../pages/Dashboard"));
 const Profile = lazy(() => import("../pages/Profile"));
 const StudentsList = lazy(() => import("../pages/students/StudentsList"));
 const StudentDetails = lazy(() => import("../pages/students/StudentDetails"));
-const Payments = lazy(() => import("../pages/Payments"));
+const Payments = lazy(() => import("../pages/admin/Payments"));
 const AdminUsers = lazy(() => import("../pages/admin/Users"));
 const AdminCompany = lazy(() => import("../pages/admin/Company"));
 const AdminPrograms = lazy(() => import("../pages/admin/Programs"));

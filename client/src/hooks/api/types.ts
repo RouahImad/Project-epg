@@ -28,6 +28,14 @@ export const QueryKeys = {
     },
     payments: {
         all: ["payments"],
+        byUser: (userId: string) => ["payments", "byUser", userId],
         byStudent: (studentId: string) => ["payments", "byStudent", studentId],
+    },
+    dashboard: {
+        super: ["dashboard", "super"],
+        admin: ["dashboard", "admin"],
+    },
+    logs: {
+        all: ["logs"],
     },
 };

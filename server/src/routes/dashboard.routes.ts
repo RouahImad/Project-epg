@@ -11,58 +11,6 @@ import { formatActivities } from "../utils/helpers";
 const router = Router();
 
 /**
- * @route   GET /dashboard
- * @desc    General stats: student count, payment totals, etc.
- * @access  Admin (regular user/staff)
- */
-router.get("/", authenticateJWT, async (req: Request, res: Response) => {
-    try {
-        // Get actual dashboard stats
-        const students = await getStudents();
-        const payments = await getPayments();
-        const majors = await getMajors();
-
-        // Calculate total payments
-        const totalPayments = payments.reduce(
-            (sum, payment) => sum + Number(payment.amountPaid || 0),
-            0
-        );
-
-        // Get recent payments (last 5)
-        const recentPayments = [...payments]
-            .sort(
-                (a, b) =>
-                    new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime()
-            )
-            .slice(0, 5);
-
-        // Count students per major
-        const studentsByMajor = majors.map((major) => {
-            const count = payments.filter(
-                (payment) => payment.majorId === major.id
-            ).length;
-            return {
-                majorId: major.id,
-                majorName: major.name,
-                studentCount: count,
-            };
-        });
-
-        const dashboardData = {
-            studentCount: students.length,
-            totalPayments,
-            recentPayments,
-            studentsByMajor,
-        };
-
-        res.status(200).json(dashboardData);
-    } catch (error) {
-        console.error("Get dashboard stats error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-/**
  * @route   GET /dashboard/super
  * @desc    Super admin-level stats
  * @access  Super Admin Only
@@ -176,66 +124,6 @@ router.get(
                 recentActivity,
             };
 
-            const dummy = {
-                totalIncome: 12000,
-                studentCount: 4,
-                outstandingBalance: 3000,
-                staffCount: 2,
-                systemStats: {
-                    totalUsers: 5,
-                    activeUsers: 4,
-                    totalMajors: 3,
-                    averagePaymentAmount: 2400,
-                },
-                charts: {
-                    incomeOverTime: [
-                        { month: "2024-04", amount: 4000 },
-                        { month: "2024-05", amount: 8000 },
-                    ],
-                    paymentsByProgram: [
-                        { program: "Computer Science", total: 6000 },
-                        { program: "Business", total: 4000 },
-                        { program: "Engineering", total: 2000 },
-                    ],
-                },
-                sortedStaff: [
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        income: 7000,
-                        joinedAt: "01/01/2023",
-                    },
-                    {
-                        userId: 3,
-                        userName: "Bob Johnson",
-                        income: 5000,
-                        joinedAt: "02/15/2023",
-                    },
-                ],
-                recentActivity: [
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        action: "Created Payment",
-                        entityType: "Payment",
-                        entityId: 101,
-                        details: "Payment of $2000 for student 1",
-                        timestamp: "5/31/2025, 10:00:00 AM",
-                    },
-                    {
-                        userId: 3,
-                        userName: "Bob Johnson",
-                        action: "Updated Student",
-                        entityType: "Student",
-                        entityId: 2,
-                        details: "Changed email address",
-                        timestamp: "5/30/2025, 3:45:00 PM",
-                    },
-                    // ... up to 10 recent activities
-                ],
-            };
-
-            // res.status(200).json(dummy);
             res.status(200).json(result);
         } catch (error) {
             console.error("Get admin dashboard stats error:", error);
@@ -339,78 +227,6 @@ router.get(
                 },
             };
 
-            const dummy = {
-                myIncome: 5000,
-                myStudentsCount: 9,
-                myOutstandingPayments: 1200,
-                myActivityCount: 8,
-                recentActions: [
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        action: "Created Payment",
-                        entityType: "Payment",
-                        entityId: 201,
-                        details: "Payment of $1500 for student 5",
-                        timestamp: "6/1/2025, 9:00:00 AM",
-                    },
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        action: "Updated Student",
-                        entityType: "Student",
-                        entityId: 5,
-                        details: "Changed phone number",
-                        timestamp: "5/30/2025, 2:30:00 PM",
-                    },
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        action: "Added Note",
-                        entityType: "Student",
-                        entityId: 3,
-                        details: "Added note about payment plan",
-                        timestamp: "5/29/2025, 4:15:00 PM",
-                    },
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        action: "Created Student",
-                        entityType: "Student",
-                        entityId: 6,
-                        details: "Registered new student",
-                        timestamp: "5/28/2025, 11:00:00 AM",
-                    },
-                    {
-                        userId: 2,
-                        userName: "Alice Smith",
-                        action: "Updated Payment",
-                        entityType: "Payment",
-                        entityId: 202,
-                        details: "Updated payment status",
-                        timestamp: "5/27/2025, 3:45:00 PM",
-                    },
-                ],
-                charts: {
-                    paymentsByMonth: {
-                        "2025-04": 1200,
-                        "2025-05": 1800,
-                        "2025-06": 2000,
-                    },
-                    outstandingByMonth: {
-                        "2025-04": 400,
-                        "2025-05": 500,
-                        "2025-06": 300,
-                    },
-                    studentsByMonth: {
-                        "2025-04": 3,
-                        "2025-05": 1,
-                        "2025-06": 5,
-                    },
-                },
-            };
-
-            // res.status(200).json(dummy);
             res.status(200).json(adminDashboardData);
         } catch (error) {
             console.error("Get admin dashboard stats error:", error);

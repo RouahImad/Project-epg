@@ -6,7 +6,6 @@ import {
     insertMajorType,
     updateMajorType,
 } from "../models/majorTypesModel";
-import { getMajorsByTypeId } from "../models/majorsModel";
 
 const router = Router();
 
@@ -151,41 +150,6 @@ router.delete(
             });
         } catch (error) {
             console.error("Delete program type error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
-    }
-);
-
-/**
- * @route   GET /program-types/:id/majors
- * @desc    Get all majors for a program type
- * @access  Super Admin Only
- */
-router.get(
-    "/:id/majors",
-    authenticateJWT,
-    checkRole("super_admin"),
-    async (req: Request, res: Response) => {
-        try {
-            const programTypeId = parseInt(req.params.id);
-
-            // Validate input
-            if (Number.isNaN(programTypeId)) {
-                res.status(400).json({ message: "Invalid program type ID" });
-                return;
-            }
-
-            const majors = await getMajorsByTypeId(programTypeId);
-
-            if (!majors || majors.length === 0) {
-                res.status(404).json({
-                    message: "No majors found for this program type",
-                });
-                return;
-            }
-            res.status(200).json(majors);
-        } catch (error) {
-            console.error("Get majors for program type error:", error);
             res.status(500).json({ message: "Server error" });
         }
     }

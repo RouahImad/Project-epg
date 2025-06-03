@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
-import { useLogout } from "../hooks/api/useAuthApi";
+import { useLogout } from "../hooks/api/";
 import { IoSchool } from "react-icons/io5";
 
 const NavBar = () => {

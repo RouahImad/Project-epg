@@ -51,7 +51,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                             </LineChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className="text-gray-400 text-center py-12">
+                        <div className="text-gray-400 text-center py-12 text-pretty">
                             Not enough data to display chart.
                         </div>
                     )}
@@ -82,7 +82,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className="text-gray-400 text-center py-12">
+                        <div className="text-gray-400 text-center py-12 text-pretty">
                             No program payment data available.
                         </div>
                     )}
@@ -128,7 +128,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                         </LineChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="text-gray-400 text-center py-12">
+                    <div className="text-gray-400 text-center py-12 text-pretty">
                         Not enough payment data.
                     </div>
                 )}
@@ -146,7 +146,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                         </BarChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="text-gray-400 text-center py-12">
+                    <div className="text-gray-400 text-center py-12 text-pretty">
                         No outstanding data.
                     </div>
                 )}
@@ -169,7 +169,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                         </LineChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="text-gray-400 text-center py-12">
+                    <div className="text-gray-400 text-center py-12 text-pretty">
                         No student data.
                     </div>
                 )}

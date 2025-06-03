@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import AddStudentForm from "../../components/student/dialogs/AddStudentForm";
-import { useCreateStudent, useStudents } from "../../hooks/api/useStudentsApi";
+import { useCreateStudent, useStudents } from "../../hooks/api/";
 import StudentCard from "../../components/student/StudentCard";
 import { FiSearch, FiX, FiPlus, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router";

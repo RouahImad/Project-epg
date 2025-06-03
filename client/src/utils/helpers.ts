@@ -19,11 +19,11 @@ export const formatDateTime = (date: string | Date): string => {
     });
 };
 
-export const formatMoney = (amount: number) => {
+export const formatMoney = (amount: number, dig: number = 2) => {
     return new Intl.NumberFormat("fr-MA", {
         style: "currency",
         currency: "MAD",
-        minimumFractionDigits: 2,
+        minimumFractionDigits: dig,
         maximumFractionDigits: 2,
     }) // output ex: from 1234.56 to 1,234.56 MAD
         .format(amount)
@@ -36,12 +36,12 @@ export const formatLargeNumber = (num: number): string => {
     return num.toString(); //output ex: 1234 to 1.2K
 };
 
-export const formatMoneyCompact = (amount: number): string => {
+export const formatMoneyCompact = (amount: number, dig: number = 2): string => {
     if (amount >= 1000000) {
         return `${(amount / 1000000).toFixed(1)}M DH`;
     } else if (amount >= 1000) {
         return `${(amount / 1000).toFixed(1)}K DH`;
     } else {
-        return formatMoney(amount);
+        return formatMoney(amount, dig);
     }
 }; // output ex: from 1234.56 to 1.2K DH
