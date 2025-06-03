@@ -23,6 +23,8 @@ import type { Student, StudentMajor, StudentMajorDetails } from "../../types";
 import EditMajorDialog from "../../components/student/dialogs/EditMajorDialog";
 import { formatDate } from "../../utils/helpers";
 import type React from "react";
+import ReceiptPrintDialog from "../../components/common/ReceiptPrintDialog";
+import { useMajorTaxes } from "../../hooks/api/";
 
 const StudentDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -37,6 +39,12 @@ const StudentDetails = () => {
     );
     const [showEditMajorDialog, setShowEditMajorDialog] = useState(false);
     const [deleteMajorId, setDeleteMajorId] = useState<number | null>(null);
+    const [showReceipt, setShowReceipt] = useState(false);
+    const [receiptData, setReceiptData] = useState<{
+        major: any;
+        paidAmount: number;
+        taxes: any[];
+    } | null>(null);
     const navigate = useNavigate();
 
     const {
@@ -52,6 +60,10 @@ const StudentDetails = () => {
 
     // Fetch all majors for enroll dialog
     const { data: majors, isLoading: isLoadingMajorsList } = useMajors();
+    // For taxes of the selected major
+    const { data: taxesForReceipt = [] } = useMajorTaxes(
+        receiptData?.major?.id ?? 0
+    );
 
     // Fetch payments for this student
     const { data: payments, isLoading: isLoadingPayments } =
@@ -171,6 +183,16 @@ const StudentDetails = () => {
                             },
                             {
                                 onSuccess: () => {
+                                    // Show receipt dialog after payment
+                                    const major = majors?.find(
+                                        (m) => m.id === data.majorId
+                                    );
+                                    setReceiptData({
+                                        major,
+                                        paidAmount: data.paidAmount,
+                                        taxes: [],
+                                    });
+                                    setShowReceipt(true);
                                     finish();
                                 },
                                 onError: (error) => {
@@ -527,6 +549,18 @@ const StudentDetails = () => {
                         )}
                     </div>
                 </div>
+            )}
+            {/* Receipt Print Dialog */}
+            {showReceipt && receiptData && (
+                <ReceiptPrintDialog
+                    open={showReceipt}
+                    onClose={() => setShowReceipt(false)}
+                    studentId={student.id}
+                    studentName={student.fullName}
+                    major={receiptData.major}
+                    paidAmount={receiptData.paidAmount}
+                    taxes={taxesForReceipt}
+                />
             )}
         </div>
     );

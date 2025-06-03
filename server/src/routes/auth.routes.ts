@@ -6,6 +6,8 @@ import { authenticateJWT } from "../middlewares/auth";
 import { getUserByEmail, getUserById, updateUser } from "../models/usersModel";
 import { config } from "../config/config";
 import { RequestWithUser } from "../types";
+import { AddActivity } from "../utils/helpers";
+import { ACTIVITY_ACTIONS } from "../types/User.types";
 
 const router = Router();
 
@@ -156,6 +158,15 @@ router.patch(
                 res.status(400).json({ message: "Failed to update profile" });
                 return;
             }
+
+            // Log activity
+            await AddActivity({
+                userId,
+                action: ACTIVITY_ACTIONS.UPDATE_PROFILE,
+                entityType: "user",
+                entityId: userId,
+                details: `Updated profile for user #${userId} (${fullName})`,
+            });
 
             res.status(200).json({ message: "Profile updated successfully" });
         } catch (error) {

@@ -4,9 +4,11 @@ import {
     FiTrash2,
     FiPlus,
     FiDollarSign,
+    FiSearch,
 } from "react-icons/fi";
 import type { Major, MajorType } from "../../types";
 import { formatMoney } from "../../utils/helpers";
+import { useState } from "react";
 
 interface MajorsTableProps {
     majors: Major[] | [] | undefined;
@@ -31,15 +33,32 @@ const MajorsTable = ({
     onManageTaxes,
     majorTypes,
 }: MajorsTableProps) => {
+    const [searchTerm, setSearchTerm] = useState("");
     if (isError) {
         console.error("Error loading majors:", error);
     }
+    const filteredMajors = majors?.filter(
+        (major) =>
+            major.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (majorTypes &&
+                majorTypes.some(
+                    (type) =>
+                        type.id === major.majorTypeId &&
+                        type.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                )) ||
+            (major.description &&
+                major.description
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()))
+    );
+
     return (
         <div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
             <div className="flex items-center gap-2 mb-4">
                 <FiAward className="text-blue-500" />
                 <h3 className="text-lg font-bold">Majors</h3>
-
                 <button
                     className="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded flex items-center gap-1 shadow"
                     onClick={onAddMajor}
@@ -49,12 +68,24 @@ const MajorsTable = ({
                     <FiPlus /> Add Major
                 </button>
             </div>
+            <div className="mb-3 flex items-center">
+                <div className="relative w-full max-w-md">
+                    <input
+                        type="text"
+                        placeholder="Search majors..."
+                        className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                </div>
+            </div>
             {isLoading ? (
                 <div className="text-gray-500">Loading majors...</div>
             ) : isError ? (
                 <div className="text-red-500">Failed to load majors.</div>
             ) : majors && majors.length > 0 ? (
-                <div className="overflow-x-auto">
+                <div className="max-h-[340px] overflow-y-auto">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="bg-gray-50">
@@ -79,7 +110,7 @@ const MajorsTable = ({
                             </tr>
                         </thead>
                         <tbody>
-                            {majors.map((major) => (
+                            {(filteredMajors ?? majors).map((major) => (
                                 <tr
                                     key={major.id}
                                     className="border-b last:border-b-0"

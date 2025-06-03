@@ -23,7 +23,9 @@ interface Props {
 const DashboardCharts: React.FC<Props> = ({ role, data }) => {
     if (role === "super_admin") {
         const superData = data as SuperDashboardData;
-        const incomeData = superData.charts.incomeOverTime;
+        const incomeData = [...superData.charts.incomeOverTime].sort(
+            (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+        );
         const programData = superData.charts.paymentsByProgram;
 
         const hasIncomeData =
@@ -57,7 +59,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                     )}
                 </div>
                 <div className="bg-white rounded-xl shadow p-6">
-                    <h3 className="font-semibold mb-4">Payments by Program</h3>
+                    <h3 className="font-semibold mb-4">Payments by Major</h3>
                     {hasProgramData ? (
                         <ResponsiveContainer width="100%" height={250}>
                             <BarChart data={programData}>
@@ -93,16 +95,23 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
 
     // admin
     const adminData = data as AdminDashboardData;
-    // Convert object data to array for recharts
-    const paymentsByMonthArr = Object.entries(
-        adminData.charts.paymentsByMonth
-    ).map(([month, amount]) => ({ month, amount }));
+    const paymentsByMonthArr = Object.entries(adminData.charts.paymentsByMonth)
+        .map(([month, amount]) => ({ month, amount }))
+        .sort(
+            (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+        );
     const outstandingByMonthArr = Object.entries(
         adminData.charts.outstandingByMonth
-    ).map(([month, amount]) => ({ month, amount }));
-    const studentsByMonthArr = Object.entries(
-        adminData.charts.studentsByMonth
-    ).map(([month, count]) => ({ month, count }));
+    )
+        .map(([month, amount]) => ({ month, amount }))
+        .sort(
+            (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+        );
+    const studentsByMonthArr = Object.entries(adminData.charts.studentsByMonth)
+        .map(([month, count]) => ({ month, count }))
+        .sort(
+            (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+        );
 
     const hasPayments = paymentsByMonthArr.length > 1;
     const hasOutstanding = outstandingByMonthArr.length > 0;

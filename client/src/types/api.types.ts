@@ -7,10 +7,10 @@ import type {
     StudentMajor,
     Tax,
     Payment,
-    PaymentWithTaxes,
     Receipt,
     Company,
     LogsWithUserName,
+    PaymentDetails,
 } from "./index";
 
 // Authentication Types
@@ -125,14 +125,14 @@ export interface TaxesApi {
 
 // Payments API Types
 export interface PaymentsApi {
-    getPayments: () => Promise<PaymentWithTaxes[]>;
+    getPayments: () => Promise<PaymentDetails[]>;
+    getPaymentsByUser: (userId: number) => Promise<PaymentDetails[]>;
     createPayment: (paymentData: Partial<Payment>) => Promise<ApiResponse<any>>;
     updatePayment: (
         paymentId: number,
         amountPaid: Payment["amountPaid"]
     ) => Promise<ApiResponse<any>>;
     deletePayment: (paymentId: number) => Promise<ApiResponse<null>>;
-    getPaymentsByUser: (userId: number) => Promise<PaymentWithTaxes[]>;
 }
 
 // Receipts API Types
@@ -152,15 +152,7 @@ export type AdminDashboardData = {
     myStudentsCount: number;
     myOutstandingPayments: number;
     myActivityCount: number;
-    recentActions: {
-        userId: number | string;
-        userName: string;
-        action: string;
-        entityType: string;
-        entityId: number | string;
-        details: string;
-        timestamp: string;
-    }[];
+    recentActions: LogsWithUserName[];
     charts: {
         paymentsByMonth: Record<string, number>;
         outstandingByMonth: Record<string, number>;
@@ -189,15 +181,7 @@ export type SuperDashboardData = {
         income: number;
         joinedAt: string;
     }[];
-    recentActivity: {
-        userId: number;
-        userName: string;
-        action: string;
-        entityType: string;
-        entityId: number | string;
-        details: string;
-        timestamp: string;
-    }[];
+    recentActivity: LogsWithUserName[];
 };
 
 export interface DashboardApi {

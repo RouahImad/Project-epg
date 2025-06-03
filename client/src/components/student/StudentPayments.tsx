@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { FiDollarSign, FiSearch, FiEdit2 } from "react-icons/fi";
-import type { PaymentWithTaxes } from "../../types";
+import type { PaymentDetails } from "../../types";
 import { formatDate, formatMoney } from "../../utils/helpers";
 import { useUpdatePayment } from "../../hooks/api/";
 import EditPaymentDialog from "./dialogs/EditPaymentDialog";
+import ReceiptPrintDialog from "../common/ReceiptPrintDialog";
 
 interface StudentPaymentsProps {
     isLoading: boolean;
-    payments: PaymentWithTaxes[];
+    payments: PaymentDetails[];
 }
 
 const StudentPayments: React.FC<StudentPaymentsProps> = ({
@@ -15,9 +16,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
     payments,
 }) => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [editPayment, setEditPayment] = useState<PaymentWithTaxes | null>(
-        null
-    );
+    const [editPayment, setEditPayment] = useState<PaymentDetails | null>(null);
     const [editForm, setEditForm] = useState<{
         amountPaid: number;
         remainingAmount: number;
@@ -25,6 +24,11 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
         amountPaid: 0,
         remainingAmount: 0,
     });
+    const [showReceipt, setShowReceipt] = useState(false);
+    const [receiptData, setReceiptData] = useState<{
+        payment: PaymentDetails;
+        taxes: any[];
+    } | null>(null);
 
     const updatePayment = useUpdatePayment();
 
@@ -38,7 +42,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                 .includes(searchTerm.toLowerCase())
     );
 
-    const openEditDialog = (payment: PaymentWithTaxes) => {
+    const openEditDialog = (payment: PaymentDetails) => {
         setEditPayment(payment);
         setEditForm({
             amountPaid: payment.amountPaid,
@@ -153,7 +157,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 {formatDate(payment.paidAt)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                                                 <button
                                                     className="text-blue-600 hover:text-blue-800"
                                                     title="Edit Payment"
@@ -163,6 +167,20 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                                     }
                                                 >
                                                     <FiEdit2 />
+                                                </button>
+                                                <button
+                                                    className="text-green-600 hover:text-green-800"
+                                                    title="Print Receipt"
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setReceiptData({
+                                                            payment,
+                                                            taxes: [],
+                                                        });
+                                                        setShowReceipt(true);
+                                                    }}
+                                                >
+                                                    🖨️
                                                 </button>
                                             </td>
                                         </tr>
@@ -179,6 +197,25 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                             handleEditSubmit={handleEditSubmit}
                             closeEditDialog={closeEditDialog}
                             updatePayment={updatePayment}
+                        />
+                    )}
+                    {/* Receipt Print Dialog */}
+                    {showReceipt && receiptData && (
+                        <ReceiptPrintDialog
+                            open={showReceipt}
+                            onClose={() => setShowReceipt(false)}
+                            studentId={receiptData.payment.studentId}
+                            studentName={receiptData.payment.studentName}
+                            major={{
+                                name: receiptData.payment.majorName,
+                                price:
+                                    receiptData.payment.amountPaid +
+                                    Number(
+                                        receiptData.payment.remainingAmount || 0
+                                    ),
+                            }}
+                            paidAmount={receiptData.payment.amountPaid}
+                            taxes={receiptData.payment.taxes || []}
                         />
                     )}
                 </>

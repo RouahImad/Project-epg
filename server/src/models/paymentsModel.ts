@@ -1,6 +1,6 @@
 import { WithOptional } from "../config/config";
 import { db } from "../config/database";
-import { Payment, PaymentDetails } from "../types/";
+import { Payment, PaymentDetails, Tax } from "../types/";
 
 export const getPayments = async (): Promise<PaymentDetails[]> => {
     const [rows] =
@@ -9,6 +9,21 @@ export const getPayments = async (): Promise<PaymentDetails[]> => {
                         JOIN students s ON p.studentId = s.id
                         JOIN majors m ON p.majorId = m.id
                         JOIN users u ON p.handledByUserId = u.id`);
+
+    (rows as Array<PaymentDetails & { taxes: string | Tax[] }>).forEach(
+        (row) => {
+            if (row.taxes) {
+                try {
+                    row.taxes = JSON.parse(row.taxes as string) as Tax[];
+                } catch (error) {
+                    console.error("Error parsing taxes JSON:", error);
+                    row.taxes = [];
+                }
+            } else {
+                row.taxes = [];
+            }
+        }
+    );
     return rows as PaymentDetails[];
 };
 
@@ -41,23 +56,48 @@ export const getPaymentsByUser = async (
             WHERE p.handledByUserId = ?`,
         [userId]
     );
+
+    (rows as Array<PaymentDetails & { taxes: string | Tax[] }>).forEach(
+        (row) => {
+            if (row.taxes) {
+                try {
+                    row.taxes = JSON.parse(row.taxes as string) as Tax[];
+                } catch (error) {
+                    console.error("Error parsing taxes JSON:", error);
+                    row.taxes = [];
+                }
+            } else {
+                row.taxes = [];
+            }
+        }
+    );
+
     return rows as PaymentDetails[];
 };
 
 export const insertPayment = async (
-    payment: WithOptional<Payment, "id" | "paidAt">
+    payment: WithOptional<Payment, "id" | "paidAt"> & {
+        taxes: Pick<Tax, "name" | "amount">[];
+    }
 ): Promise<boolean> => {
-    const { studentId, majorId, amountPaid, remainingAmount, handledByUserId } =
-        payment;
+    const {
+        studentId,
+        majorId,
+        amountPaid,
+        remainingAmount,
+        taxes,
+        handledByUserId,
+    } = payment;
 
     try {
         await db.query(
-            "INSERT INTO payments (studentId, majorId, amountPaid, remainingAmount, handledByUserId) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO payments (studentId, majorId, amountPaid, remainingAmount, taxes, handledByUserId) VALUES (?, ?, ?, ?, ?, ?)",
             [
                 studentId,
                 majorId,
                 amountPaid,
                 remainingAmount || null,
+                taxes.length > 0 ? JSON.stringify(taxes) : null,
                 handledByUserId,
             ]
         );

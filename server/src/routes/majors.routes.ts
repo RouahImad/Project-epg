@@ -15,6 +15,9 @@ import {
 } from "../models/majorTaxesModel";
 import { getTaxById } from "../models/taxesModel";
 import { getMajorTypeById } from "../models/majorTypesModel";
+import { RequestWithUser } from "../types";
+import { AddActivity } from "../utils/helpers";
+import { ACTIVITY_ACTIONS } from "../types/User.types";
 
 const router = Router();
 
@@ -60,7 +63,7 @@ router.post(
     "/",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const { name, majorTypeId, price, duration, description } =
                 req.body || {};
@@ -78,6 +81,11 @@ router.post(
                 return;
             }
 
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
+                return;
+            }
+
             // Check if major type exists
             const majorType = await getMajorTypeById(majorTypeId);
             if (!majorType) {
@@ -85,7 +93,7 @@ router.post(
                 return;
             }
 
-            const newMajor = await insertMajor({
+            const success = await insertMajor({
                 name,
                 majorTypeId,
                 price,
@@ -93,9 +101,21 @@ router.post(
                 description,
             });
 
+            if (!success) {
+                res.status(400).json({ message: "Failed to create major" });
+                return;
+            }
+
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.CREATE_MAJOR,
+                entityType: "major",
+                entityId: majorTypeId,
+                details: `Created major: ${name} under type ${majorType.name}`,
+            });
+
             res.status(201).json({
                 message: "Major created successfully",
-                major: newMajor,
             });
         } catch (error) {
             console.error("Create major error:", error);
@@ -113,7 +133,7 @@ router.patch(
     "/:majorId",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const majorId = parseInt(req.params.majorId);
             const { name, majorTypeId, price, duration, description } =
@@ -137,6 +157,11 @@ router.patch(
                 return;
             }
 
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
+                return;
+            }
+
             const success = await updateMajor(majorId, {
                 name,
                 majorTypeId,
@@ -149,6 +174,14 @@ router.patch(
                 res.status(400).json({ message: "Failed to update major" });
                 return;
             }
+
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.UPDATE_MAJOR,
+                entityType: "major",
+                entityId: majorId,
+                details: `Updated major with ID #${majorId}`,
+            });
 
             res.status(200).json({ message: "Major updated successfully" });
         } catch (error) {
@@ -167,7 +200,7 @@ router.delete(
     "/:majorId",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const majorId = parseInt(req.params.majorId);
 
@@ -177,12 +210,25 @@ router.delete(
                 return;
             }
 
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
+                return;
+            }
+
             const success = await deleteMajor(majorId);
 
             if (!success) {
                 res.status(400).json({ message: "Failed to delete major" });
                 return;
             }
+
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.DELETE_MAJOR,
+                entityType: "major",
+                entityId: majorId,
+                details: `Deleted major with ID #${majorId}`,
+            });
 
             res.status(200).json({ message: "Major deleted successfully" });
         } catch (error) {
@@ -248,7 +294,7 @@ router.post(
     "/:majorId/taxes",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const majorId = parseInt(req.params.majorId);
             const { taxId } = req.body || {};
@@ -256,6 +302,11 @@ router.post(
             // Validate input
             if (Number.isNaN(majorId) || !taxId) {
                 res.status(400).json({ message: "Invalid input" });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -281,6 +332,14 @@ router.post(
                 return;
             }
 
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.ASSIGNED_TAX,
+                entityType: "major",
+                entityId: majorId,
+                details: `Added tax ${tax.name} to major ${major.name}`,
+            });
+
             res.status(201).json({
                 message: "Tax added to major successfully",
             });
@@ -300,7 +359,7 @@ router.delete(
     "/:majorId/taxes/:taxId",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const majorId = parseInt(req.params.majorId);
             const taxId = parseInt(req.params.taxId);
@@ -308,6 +367,11 @@ router.delete(
             // Validate input
             if (Number.isNaN(majorId) || Number.isNaN(taxId)) {
                 res.status(400).json({ message: "Invalid input" });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -320,6 +384,14 @@ router.delete(
                 });
                 return;
             }
+
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.REMOVED_TAX,
+                entityType: "major",
+                entityId: majorId,
+                details: `Removed tax with #${taxId} from major #${majorId}`,
+            });
 
             res.status(200).json({
                 message: "Tax removed from major successfully",

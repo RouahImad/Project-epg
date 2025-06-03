@@ -3,6 +3,7 @@ import DashboardCharts from "./DashboardCharts";
 import { FiTrendingUp } from "react-icons/fi";
 import type { AdminDashboardData } from "../../types/api.types";
 import {
+    formatDateTime,
     formatLargeNumber,
     formatMoney,
     formatMoneyCompact,
@@ -54,25 +55,25 @@ const AdminDashboardContent = ({ data }: Props) => {
             <div className="bg-white rounded-xl shadow p-6 mb-8">
                 <h3 className="font-semibold mb-4">Recent Actions</h3>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
+                    <table className="min-w-full text-sm border-separate border-spacing-y-1">
                         <thead>
-                            <tr className="bg-gray-50">
-                                <th className="px-3 py-2 text-left font-semibold">
+                            <tr>
+                                <th className="text-left font-semibold pb-3 px-4 whitespace-nowrap bg-white">
                                     User
                                 </th>
-                                <th className="px-3 py-2 text-left font-semibold">
+                                <th className="text-left font-semibold pb-3 px-4 whitespace-nowrap bg-white">
                                     Action
                                 </th>
-                                <th className="px-3 py-2 text-left font-semibold">
+                                <th className="text-left font-semibold pb-3 px-4 whitespace-nowrap bg-white">
                                     Entity
                                 </th>
-                                <th className="px-3 py-2 text-left font-semibold">
+                                <th className="text-left font-semibold pb-3 px-4 whitespace-nowrap bg-white">
                                     Entity ID
                                 </th>
-                                <th className="px-3 py-2 text-left font-semibold">
+                                <th className="text-left font-semibold pb-3 px-4 whitespace-nowrap bg-white">
                                     Details
                                 </th>
-                                <th className="px-3 py-2 text-left font-semibold">
+                                <th className="text-left font-semibold pb-3 px-4 whitespace-nowrap bg-white">
                                     Timestamp
                                 </th>
                             </tr>
@@ -82,7 +83,7 @@ const AdminDashboardContent = ({ data }: Props) => {
                                 <tr>
                                     <td
                                         colSpan={6}
-                                        className="px-3 py-4 text-center text-gray-400"
+                                        className="px-4 py-4 text-center text-gray-400"
                                     >
                                         No recent actions found.
                                     </td>
@@ -91,29 +92,33 @@ const AdminDashboardContent = ({ data }: Props) => {
                                 data.recentActions.map((act, idx) => (
                                     <tr
                                         key={idx}
-                                        className="border-b last:border-b-0 hover:bg-gray-50 transition"
+                                        className="bg-gray-50 hover:bg-indigo-50 transition rounded-lg shadow-sm"
                                     >
-                                        <td className="px-3 py-2">
-                                            {act.userName}
+                                        <td className="py-2 px-4 font-medium text-gray-700 max-w-[160px] truncate">
+                                            {act.username}
                                         </td>
-                                        <td className="px-3 py-2">
+                                        <td className="py-2 px-4 whitespace-nowrap">
                                             {act.action}
                                         </td>
-                                        <td className="px-3 py-2">
+                                        <td className="py-2 px-4 whitespace-nowrap">
                                             {act.entityType}
                                         </td>
-                                        <td className="px-3 py-2">
+                                        <td className="py-2 px-4">
                                             {act.entityId}
                                         </td>
-                                        <td className="px-3 py-2">
-                                            {act.details || (
-                                                <span className="text-gray-400 italic">
+                                        <td className="py-2 px-4">
+                                            {act.details ? (
+                                                <span className="text-gray-500 italic">
+                                                    {act.details}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-300">
                                                     —
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-3 py-2 text-gray-400">
-                                            {act.timestamp}
+                                        <td className="py-2 px-4 text-gray-400 whitespace-nowrap">
+                                            {formatDateTime(act.timestamp)}
                                         </td>
                                     </tr>
                                 ))

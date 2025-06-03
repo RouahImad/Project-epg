@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { FiActivity, FiArrowLeft, FiSearch, FiX } from "react-icons/fi";
-import type { LogsWithUserName } from "../../types";
 import { useActivityLogs } from "../../hooks/api/";
 import { formatDateTime } from "../../utils/helpers";
 import { useNavigate } from "react-router";
@@ -154,39 +153,37 @@ const Logs = () => {
                         </thead>
                         <tbody>
                             {filteredLogs.length > 0 ? (
-                                filteredLogs.map(
-                                    (log: LogsWithUserName, idx: number) => (
-                                        <tr
-                                            key={idx}
-                                            className="border-b last:border-b-0 hover:bg-gray-50 transition"
-                                        >
-                                            <td className="px-3 py-2">
-                                                {log.username}
-                                            </td>
-                                            <td className="px-3 py-2">
-                                                {log.action}
-                                            </td>
-                                            <td className="px-3 py-2">
-                                                {log.entityType}
-                                            </td>
-                                            <td className="px-3 py-2">
-                                                {log.entityId}
-                                            </td>
-                                            <td className="px-3 py-2">
-                                                {log.details ? (
-                                                    log.details
-                                                ) : (
-                                                    <span className="text-gray-400 italic">
-                                                        —
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-3 py-2 text-gray-400">
-                                                {formatDateTime(log.timestamp)}
-                                            </td>
-                                        </tr>
-                                    )
-                                )
+                                filteredLogs.map((log, idx: number) => (
+                                    <tr
+                                        key={idx}
+                                        className="border-b last:border-b-0 hover:bg-gray-50 transition"
+                                    >
+                                        <td className="px-3 py-2">
+                                            {log.username}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {log.action}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {log.entityType}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {log.entityId}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {log.details ? (
+                                                log.details
+                                            ) : (
+                                                <span className="text-gray-400 italic">
+                                                    —
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-400">
+                                            {formatDateTime(log.timestamp)}
+                                        </td>
+                                    </tr>
+                                ))
                             ) : (
                                 <tr>
                                     <td

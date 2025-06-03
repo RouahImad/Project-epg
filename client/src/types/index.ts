@@ -7,25 +7,13 @@
  */
 
 // Re-export all types from User.types.ts
-export type { User, ActivityLog, LogsWithUserName } from "./User.types";
+export type * from "./User.types";
 
 // Re-export all types from Academic.types.ts
-export type {
-    Student,
-    MajorType,
-    Major,
-    StudentMajor,
-    StudentMajorDetails,
-} from "./Academic.types";
+export type * from "./Academic.types";
 
 // Re-export all types from Financial.types.ts
-export type {
-    Tax,
-    MajorTax,
-    Payment,
-    PaymentWithTaxes,
-    Receipt,
-} from "./Financial.types";
+export type * from "./Financial.types";
 
 // Re-export all types from Company.types.ts
-export type { Company } from "./Company.types";
+export type * from "./Company.types";

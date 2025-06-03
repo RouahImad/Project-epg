@@ -86,7 +86,7 @@ router.get(
             payments.forEach((p) => {
                 if (!PaymentsByStaff[p.handledByUserId])
                     PaymentsByStaff[p.handledByUserId] = 0;
-                PaymentsByStaff[p.handledByUserId] += p.amountPaid;
+                PaymentsByStaff[p.handledByUserId] += Number(p.amountPaid || 0);
             });
 
             const sortedStaff = Object.entries(PaymentsByStaff)

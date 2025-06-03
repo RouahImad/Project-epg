@@ -37,7 +37,7 @@ export const insertActivity = async (
 
     try {
         await db.query(
-            "INSERT INTO activity_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO activity_logs (userId, action, entityType, entityId, details) VALUES (?, ?, ?, ?, ?)",
             [
                 userId,
                 action,
@@ -49,38 +49,6 @@ export const insertActivity = async (
         return true;
     } catch (error) {
         console.error("Error inserting activity:", error);
-        return false;
-    }
-};
-
-export const updateActivity = async (
-    id: ActivityLog["id"],
-    activity: Pick<ActivityLog, "action">
-): Promise<boolean> => {
-    const { action } = activity;
-
-    if (!action) return false;
-
-    try {
-        await db.query("UPDATE activity_logs SET action = ? WHERE id = ?", [
-            action,
-            id,
-        ]);
-        return true;
-    } catch (error) {
-        console.error("Error updating activity:", error);
-        return false;
-    }
-};
-
-export const deleteActivity = async (
-    id: ActivityLog["id"]
-): Promise<boolean> => {
-    try {
-        await db.query("DELETE FROM activity_logs WHERE id = ?", [id]);
-        return true;
-    } catch (error) {
-        console.error("Error deleting activity:", error);
         return false;
     }
 };

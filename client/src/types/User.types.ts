@@ -10,16 +10,30 @@ export interface User {
 }
 
 export const ACTIVITY_ACTIONS = {
-    CREATE_STUDENT: "create_student",
-    UPDATE_STUDENT: "update_student",
-    DELETE_STUDENT: "delete_student",
-    ADD_PAYMENT: "add_payment",
-    UPDATE_PAYMENT: "update_payment",
+    CREATE_STUDENT: "Created student",
+    UPDATE_STUDENT: "Updated student",
+    DELETE_STUDENT: "Deleted student",
+
+    ADD_PAYMENT: "Added payment",
+    UPDATE_PAYMENT: "Updated payment",
     DELETE_PAYMENT: "delete_payment",
-    ASSIGN_MAJOR: "assign_major",
-    REMOVE_MAJOR: "remove_major",
-    LOGIN: "login",
-    UPDATE_PROFILE: "update_profile",
+
+    CREATED_TAX: "Created tax",
+    UPDATED_TAX: "Updated tax",
+    DELETED_TAX: "Deleted tax",
+    ASSIGNED_TAX: "Assigned tax",
+    REMOVED_TAX: "Removed tax",
+
+    CREATE_MAJOR: "Created major",
+    UPDATE_MAJOR: "Updated major",
+    DELETE_MAJOR: "Deleted major",
+
+    ASSIGN_MAJOR: "Assigned major",
+    REMOVE_MAJOR: "Removed major",
+
+    UPDATE_PROFILE: "Updated profile",
+
+    UPDATE_COMPANY: "Updated company",
 } as const;
 
 export interface ActivityLog {
@@ -32,12 +46,12 @@ export interface ActivityLog {
         | "major"
         | "enrollment"
         | "company"
-        | "user";
+        | "user"
+        | "tax";
     entityId: string | number;
     details?: string;
     timestamp: Date;
 }
-
 export interface LogsWithUserName extends ActivityLog {
     username: User["fullName"];
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiArrowLeft, FiPlus } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 import { IoSchool } from "react-icons/io5";
 import {
     useProgramTypes,
@@ -136,13 +136,6 @@ const Programs = () => {
                         Program Types & Majors
                     </h2>
                 </div>
-                <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded flex items-center gap-2 shadow"
-                    onClick={handleOpenAdd}
-                    type="button"
-                >
-                    <FiPlus /> Add Major Type
-                </button>
             </div>
             {/* Program Types Table */}
             <ProgramTypesTable
@@ -152,6 +145,7 @@ const Programs = () => {
                 error={error}
                 onEdit={handleOpenEdit}
                 onDelete={setDeleteId}
+                onAdd={handleOpenAdd}
             />
             {/* Majors Table */}
             <MajorsTable

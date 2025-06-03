@@ -1,4 +1,5 @@
-import { LogsWithUserName } from "../types/";
+import { insertActivity } from "../models/activityModel";
+import { ActivityLog, LogsWithUserName } from "../types/";
 
 export const formatDate = (
     date?: Date | string,
@@ -29,10 +30,22 @@ export const formatActivities = (logs: LogsWithUserName[]) =>
         )
         .map((activity) => ({
             userId: activity.userId,
-            userName: activity.username,
+            username: activity.username,
             action: activity.action,
             entityType: activity.entityType,
             entityId: activity.entityId,
             details: activity.details,
             timestamp: new Date(activity.timestamp).toLocaleString(),
         }));
+
+export const AddActivity = async (
+    log: Omit<ActivityLog, "id" | "timestamp">
+) => {
+    try {
+        await insertActivity(log);
+        return true;
+    } catch (error) {
+        console.error("Error adding activity log:", error);
+        return false;
+    }
+};

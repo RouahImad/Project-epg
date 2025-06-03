@@ -7,7 +7,8 @@ import {
     updateStudent,
     deleteStudent,
 } from "../models/studentsModel";
-import { formatDate, isValidDate } from "../utils/helpers";
+import { formatDate, isValidDate, AddActivity } from "../utils/helpers";
+import { ACTIVITY_ACTIONS } from "../types/User.types";
 import {
     getStudentMajorById,
     insertStudentMajor,
@@ -77,6 +78,15 @@ router.post(
                 return;
             }
 
+            // Log activity
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.CREATE_STUDENT,
+                entityType: "student",
+                entityId: id,
+                details: `Created student ${fullName}`,
+            });
+
             res.status(201).json({ message: "Student created successfully" });
         } catch (error) {
             console.error("Create student error:", error);
@@ -112,52 +122,71 @@ router.get("/:id", authenticateJWT, async (req: Request, res: Response) => {
  * @desc    Update student info
  * @access  Admin (regular user/staff)
  */
-router.patch("/:id", authenticateJWT, async (req: Request, res: Response) => {
-    try {
-        const studentId = req.params.id;
-        const {
-            id: newId,
-            fullName,
-            email,
-            phone,
-            address,
-            dateOfBirth,
-        } = req.body || {};
+router.patch(
+    "/:id",
+    authenticateJWT,
+    async (req: RequestWithUser, res: Response) => {
+        try {
+            const studentId = req.params.id;
+            const {
+                id: newId,
+                fullName,
+                email,
+                phone,
+                address,
+                dateOfBirth,
+            } = req.body || {};
 
-        // Check if student exists
-        const student = await getStudentById(studentId);
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
+                return;
+            }
 
-        if (!student) {
-            res.status(404).json({ message: "Student not found" });
-            return;
+            // Check if student exists
+            const student = await getStudentById(studentId);
+
+            if (!student) {
+                res.status(404).json({ message: "Student not found" });
+                return;
+            }
+            // Prepare update data
+            const updateData: any = {};
+            updateData.id = newId == student.id ? null : newId;
+            updateData.fullName =
+                fullName == student.fullName ? null : fullName;
+            updateData.email = email == student.email ? null : email;
+            updateData.phone = phone == student.phone ? null : phone;
+            updateData.address = address == student.address ? null : address;
+            if (dateOfBirth)
+                updateData.dateOfBirth =
+                    dateOfBirth && isValidDate(dateOfBirth)
+                        ? formatDate(dateOfBirth, "YYYY-MM-DD")
+                        : null;
+
+            // Update student
+            const success = await updateStudent(studentId, updateData);
+
+            if (!success) {
+                res.status(400).json({ message: "Failed to update student" });
+                return;
+            }
+
+            // Log activity
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.UPDATE_STUDENT,
+                entityType: "student",
+                entityId: studentId,
+                details: `Updated student #${studentId}`,
+            });
+
+            res.status(200).json({ message: "Student updated successfully" });
+        } catch (error) {
+            console.error("Update student error:", error);
+            res.status(500).json({ message: "Server error" });
         }
-        // Prepare update data
-        const updateData: any = {};
-        updateData.id = newId == student.id ? null : newId;
-        updateData.fullName = fullName == student.fullName ? null : fullName;
-        updateData.email = email == student.email ? null : email;
-        updateData.phone = phone == student.phone ? null : phone;
-        updateData.address = address == student.address ? null : address;
-        if (dateOfBirth)
-            updateData.dateOfBirth =
-                dateOfBirth && isValidDate(dateOfBirth)
-                    ? formatDate(dateOfBirth, "YYYY-MM-DD")
-                    : null;
-
-        // Update student
-        const success = await updateStudent(studentId, updateData);
-
-        if (!success) {
-            res.status(400).json({ message: "Failed to update student" });
-            return;
-        }
-
-        res.status(200).json({ message: "Student updated successfully" });
-    } catch (error) {
-        console.error("Update student error:", error);
-        res.status(500).json({ message: "Server error" });
     }
-});
+);
 
 /**
  * @route   DELETE /students/:id
@@ -168,9 +197,14 @@ router.delete(
     "/:id",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const studentId = req.params.id;
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
+                return;
+            }
 
             // Delete student
             const success = await deleteStudent(studentId);
@@ -179,6 +213,15 @@ router.delete(
                 res.status(400).json({ message: "Failed to delete student" });
                 return;
             }
+
+            // Log activity
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.DELETE_STUDENT,
+                entityType: "student",
+                entityId: studentId,
+                details: `Deleted student #${studentId}`,
+            });
 
             res.status(200).json({ message: "Student deleted successfully" });
         } catch (error) {
@@ -307,6 +350,15 @@ router.post(
                 return;
             }
 
+            // Log activity
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.ASSIGN_MAJOR,
+                entityType: "major",
+                entityId: majorId,
+                details: `Assigned major ${major.name} to student #${studentId}`,
+            });
+
             res.status(201).json({
                 message: "Student enrolled in major successfully",
             });
@@ -325,7 +377,7 @@ router.post(
 router.patch(
     "/:id/majors/:majorId",
     authenticateJWT,
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const studentId = req.params.id;
             const majorId = parseInt(req.params.majorId);
@@ -334,6 +386,11 @@ router.patch(
             // Validate input
             if (!studentId || Number.isNaN(majorId)) {
                 res.status(400).json({ message: "Invalid input" });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -365,6 +422,15 @@ router.patch(
                 return;
             }
 
+            // Log activity
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.UPDATE_STUDENT,
+                entityType: "major",
+                entityId: majorId,
+                details: `Updated enrollment for student #${studentId}, major #${majorId}`,
+            });
+
             res.status(200).json({
                 message: "Student major enrollment updated successfully",
             });
@@ -378,13 +444,12 @@ router.patch(
 /**
  * @route   DELETE /students/:id/majors/:historyId
  * @desc    Delete major enrollment record
- * @access  Super Admin Only
+ * @access  Admin
  */
 router.delete(
     "/:id/majors/:majorId",
     authenticateJWT,
-    checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const studentId = req.params.id;
             const majorId = parseInt(req.params.majorId);
@@ -392,6 +457,11 @@ router.delete(
             // Validate input
             if (!studentId || Number.isNaN(majorId)) {
                 res.status(400).json({ message: "Invalid input" });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -413,6 +483,15 @@ router.delete(
                 });
                 return;
             }
+
+            // Log activity
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.REMOVE_MAJOR,
+                entityType: "major",
+                entityId: majorId,
+                details: `Removed major #${majorId} from student #${studentId}`,
+            });
 
             res.status(200).json({
                 message: "Student major enrollment deleted successfully",

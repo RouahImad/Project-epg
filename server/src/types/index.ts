@@ -27,7 +27,6 @@ export {
     MajorTax,
     Payment,
     PaymentDetails,
-    PaymentWithTaxes,
     Receipt,
 } from "./Financial.types";
 

@@ -7,6 +7,9 @@ import {
     insertTax,
     updateTax,
 } from "../models/taxesModel";
+import { AddActivity } from "../utils/helpers";
+import { ACTIVITY_ACTIONS } from "../types/User.types";
+import { RequestWithUser } from "../types";
 
 const router = Router();
 
@@ -40,7 +43,7 @@ router.post(
     "/",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const { name, description, amount } = req.body || {};
 
@@ -49,6 +52,11 @@ router.post(
                 res.status(400).json({
                     message: "Tax name and amount are required",
                 });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -64,6 +72,14 @@ router.post(
                 });
                 return;
             }
+
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.CREATED_TAX,
+                entityType: "tax",
+                entityId: name,
+                details: `Created tax ${name} (${amount}DH)`,
+            });
 
             res.status(201).json({ message: "Tax created successfully" });
         } catch (error) {
@@ -82,7 +98,7 @@ router.patch(
     "/:id",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const taxId = parseInt(req.params.id);
             const { name, amount, description } = req.body || {};
@@ -90,6 +106,11 @@ router.patch(
             // Validate input
             if (Number.isNaN(taxId)) {
                 res.status(400).json({ message: "Invalid tax ID" });
+                return;
+            }
+
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
                 return;
             }
 
@@ -112,6 +133,16 @@ router.patch(
                 return;
             }
 
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.UPDATED_TAX,
+                entityType: "tax",
+                entityId: taxId,
+                details: `Updated tax ${name || tax.name} (${
+                    amount || tax.amount
+                }DH)`,
+            });
+
             res.status(200).json({ message: "Tax updated successfully" });
         } catch (error) {
             console.error("Update tax error:", error);
@@ -129,7 +160,7 @@ router.delete(
     "/:id",
     authenticateJWT,
     checkRole("super_admin"),
-    async (req: Request, res: Response) => {
+    async (req: RequestWithUser, res: Response) => {
         try {
             const taxId = parseInt(req.params.id);
 
@@ -139,11 +170,24 @@ router.delete(
                 return;
             }
 
+            if (!req.user) {
+                res.status(401).json({ message: "User not authenticated" });
+                return;
+            }
+
             const success = await deleteTax(taxId);
             if (!success) {
                 res.status(400).json({ message: "Failed to delete tax" });
                 return;
             }
+
+            await AddActivity({
+                userId: req.user.id,
+                action: ACTIVITY_ACTIONS.DELETED_TAX,
+                entityType: "tax",
+                entityId: taxId,
+                details: `Deleted tax with #${taxId}`,
+            });
 
             res.status(200).json({ message: "Tax deleted successfully" });
         } catch (error) {

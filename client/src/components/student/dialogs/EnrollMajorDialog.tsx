@@ -29,6 +29,7 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
 
     const [step, setStep] = useState(1);
     const [paidAmount, setPaidAmount] = useState<number>(0);
+    const [majorSearch, setMajorSearch] = useState("");
     React.useEffect(() => {
         if (!open) {
             setStep(1);
@@ -77,6 +78,15 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
         }
     };
 
+    // Filter majors for the input+select
+    const filteredMajors = useMemo(
+        () =>
+            majors.filter((m) =>
+                m.name.toLowerCase().includes(majorSearch.toLowerCase())
+            ),
+        [majors, majorSearch]
+    );
+
     if (!open) return null;
 
     if (isLoading) {
@@ -114,23 +124,54 @@ const EnrollMajorDialog: React.FC<EnrollMajorDialogProps> = ({
                     <form onSubmit={handleSubmit}>
                         {step === 1 && (
                             <>
-                                <select
-                                    className="w-full border rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-                                    value={selectedMajorId ?? ""}
-                                    onChange={(e) =>
-                                        onSelectMajor(Number(e.target.value))
-                                    }
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        Select a major
-                                    </option>
-                                    {majors.map((major: any) => (
-                                        <option key={major.id} value={major.id}>
-                                            {major.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                {/* Input + select for major */}
+                                {/* Input for major with datalist */}
+                                <div className="mb-4">
+                                    <input
+                                        list="majors-list"
+                                        type="text"
+                                        placeholder="Type or select a major..."
+                                        className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                        value={
+                                            selectedMajor
+                                                ? selectedMajor.name
+                                                : majorSearch
+                                        }
+                                        onChange={(e) => {
+                                            setMajorSearch(e.target.value);
+                                            const found = majors.find(
+                                                (m) =>
+                                                    m.name.toLowerCase() ===
+                                                    e.target.value.toLowerCase()
+                                            );
+                                            if (found) {
+                                                onSelectMajor(found.id);
+                                            } else {
+                                                onSelectMajor(null as any);
+                                            }
+                                        }}
+                                        required
+                                    />
+                                    <datalist id="majors-list">
+                                        {filteredMajors.map((major: any) => (
+                                            <option
+                                                key={major.id}
+                                                value={major.name}
+                                            />
+                                        ))}
+                                    </datalist>
+                                    {majorSearch &&
+                                        !filteredMajors.some(
+                                            (m) =>
+                                                m.name.toLowerCase() ===
+                                                majorSearch.toLowerCase()
+                                        ) && (
+                                            <div className="text-red-500 text-sm mt-1">
+                                                Major not found. Please select
+                                                from the list.
+                                            </div>
+                                        )}
+                                </div>
                                 {selectedMajor && (
                                     <div className="mb-4 bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm">
                                         <div className="mb-1">

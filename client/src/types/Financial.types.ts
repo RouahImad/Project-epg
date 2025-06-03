@@ -21,6 +21,7 @@ export interface Payment {
     majorId: Major["id"];
     amountPaid: number;
     remainingAmount?: number;
+    taxes?: Pick<Tax, "name" | "amount">[] | undefined;
     paidAt: Date;
     handledByUserId: User["id"];
 }
@@ -29,10 +30,6 @@ export interface PaymentDetails extends Payment {
     studentName: string;
     majorName: string;
     handledByUserName: string;
-}
-
-export interface PaymentWithTaxes extends PaymentDetails {
-    taxes?: Tax[] | undefined;
 }
 
 export interface Receipt {
