@@ -10,28 +10,16 @@ import { Request } from "express";
 import { User } from "./User.types";
 
 // Re-export all types from User.types.ts
-export { User, ActivityLog, LogsWithUserName } from "./User.types";
+export * from "./User.types";
 
 // Re-export all types from Academic.types.ts
-export {
-    Student,
-    MajorType,
-    Major,
-    StudentMajor,
-    StudentMajorDetails,
-} from "./Academic.types";
+export * from "./Academic.types";
 
 // Re-export all types from Financial.types.ts
-export {
-    Tax,
-    MajorTax,
-    Payment,
-    PaymentDetails,
-    Receipt,
-} from "./Financial.types";
+export * from "./Financial.types";
 
 // Re-export all types from Company.types.ts
-export { Company } from "./Company.types";
+export * from "./Company.types";
 
 export interface RequestWithUser extends Request {
     user?: User;

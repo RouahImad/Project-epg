@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiDollarSign, FiSearch, FiEdit2 } from "react-icons/fi";
+import { FiDollarSign, FiSearch, FiEdit2, FiPrinter } from "react-icons/fi";
 import type { PaymentDetails } from "../../types";
 import { formatDate, formatMoney } from "../../utils/helpers";
 import { useUpdatePayment } from "../../hooks/api/";
@@ -180,7 +180,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                                         setShowReceipt(true);
                                                     }}
                                                 >
-                                                    🖨️
+                                                    <FiPrinter />
                                                 </button>
                                             </td>
                                         </tr>

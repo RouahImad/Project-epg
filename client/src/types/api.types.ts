@@ -7,7 +7,6 @@ import type {
     StudentMajor,
     Tax,
     Payment,
-    Receipt,
     Company,
     LogsWithUserName,
     PaymentDetails,
@@ -135,12 +134,6 @@ export interface PaymentsApi {
     deletePayment: (paymentId: number) => Promise<ApiResponse<null>>;
 }
 
-// Receipts API Types
-export interface ReceiptsApi {
-    getReceipts: () => Promise<Receipt[]>;
-    generateReceipt: (paymentId: number) => Promise<Receipt>;
-}
-
 // Company Info API Types
 export interface CompanyApi {
     getCompanyInfo: () => Promise<Company>;
@@ -203,7 +196,6 @@ export interface Api {
     majors: MajorsApi;
     taxes: TaxesApi;
     payments: PaymentsApi;
-    receipts: ReceiptsApi;
     company: CompanyApi;
     dashboard: DashboardApi;
     activityLogs: ActivityLogsApi;

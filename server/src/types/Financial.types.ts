@@ -31,10 +31,3 @@ export interface PaymentDetails extends Payment {
     majorName: string;
     handledByUserName: string;
 }
-
-export interface Receipt {
-    id: number;
-    paymentId: Payment["id"];
-    printedBy: number;
-    printedAt: Date;
-}

@@ -24,7 +24,6 @@ import EditMajorDialog from "../../components/student/dialogs/EditMajorDialog";
 import { formatDate } from "../../utils/helpers";
 import type React from "react";
 import ReceiptPrintDialog from "../../components/common/ReceiptPrintDialog";
-import { useMajorTaxes } from "../../hooks/api/";
 
 const StudentDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -60,10 +59,6 @@ const StudentDetails = () => {
 
     // Fetch all majors for enroll dialog
     const { data: majors, isLoading: isLoadingMajorsList } = useMajors();
-    // For taxes of the selected major
-    const { data: taxesForReceipt = [] } = useMajorTaxes(
-        receiptData?.major?.id ?? 0
-    );
 
     // Fetch payments for this student
     const { data: payments, isLoading: isLoadingPayments } =
@@ -183,7 +178,6 @@ const StudentDetails = () => {
                             },
                             {
                                 onSuccess: () => {
-                                    // Show receipt dialog after payment
                                     const major = majors?.find(
                                         (m) => m.id === data.majorId
                                     );
@@ -559,7 +553,7 @@ const StudentDetails = () => {
                     studentName={student.fullName}
                     major={receiptData.major}
                     paidAmount={receiptData.paidAmount}
-                    taxes={taxesForReceipt}
+                    taxes={receiptData.taxes}
                 />
             )}
         </div>

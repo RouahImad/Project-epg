@@ -18,7 +18,6 @@ import type {
     MajorsApi,
     TaxesApi,
     PaymentsApi,
-    ReceiptsApi,
     CompanyApi,
     DashboardApi,
     Api,
@@ -228,14 +227,6 @@ export const paymentsApi: PaymentsApi = {
         apiClient.get(`/payments/user/${userId}`),
 };
 
-// Receipts API
-export const receiptsApi: ReceiptsApi = {
-    getReceipts: () => apiClient.get("/receipts"),
-
-    generateReceipt: (paymentId: number) =>
-        apiClient.post("/receipts/", { paymentId }),
-};
-
 // Company Info API
 export const companyApi: CompanyApi = {
     getCompanyInfo: () => apiClient.get("/company-info"),
@@ -263,7 +254,6 @@ export default {
     majors: majorsApi,
     taxes: taxesApi,
     payments: paymentsApi,
-    receipts: receiptsApi,
     company: companyApi,
     dashboard: dashboardApi,
     token: tokenService,

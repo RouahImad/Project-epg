@@ -17,7 +17,6 @@ router.get(
     async (req: Request, res: Response) => {
         try {
             const activities = await getActivities();
-            console.log("logs:", activities);
 
             res.status(200).json(formatActivities(activities));
         } catch (error) {

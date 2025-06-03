@@ -19,7 +19,6 @@ export interface ReceiptPrintDialogProps {
 
 const ReceiptPrintDialog: React.FC<ReceiptPrintDialogProps> = (props) => {
     const { open, onClose, ...receiptProps } = props;
-    console.log("ReceiptPrintDialog props:", receiptProps);
     const printRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
         contentRef: printRef,
