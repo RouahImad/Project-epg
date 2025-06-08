@@ -49,7 +49,7 @@ const Company = () => {
                         src={
                             form.logoUrl.startsWith("/assets/")
                                 ? Logo
-                                : `/assets/${form.logoUrl.replace(/^\/+/, "")}`
+                                : form.logoUrl
                         }
                         alt="Logo"
                         className="w-16 h-16 rounded-full object-cover mr-4 border"
@@ -136,6 +136,7 @@ const Company = () => {
                         type="text"
                         name="logoUrl"
                         value={form.logoUrl || ""}
+                        placeholder="default is /assets/logo.webp"
                         onChange={handleChange}
                         disabled={!editMode}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

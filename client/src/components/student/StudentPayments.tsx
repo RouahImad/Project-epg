@@ -209,7 +209,9 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                             major={{
                                 name: receiptData.payment.majorName,
                                 price:
-                                    receiptData.payment.amountPaid +
+                                    Number(
+                                        receiptData.payment.amountPaid || 0
+                                    ) +
                                     Number(
                                         receiptData.payment.remainingAmount || 0
                                     ),

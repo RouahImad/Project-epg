@@ -71,6 +71,23 @@ router.get(
                 .sort(([a], [b]) => a.localeCompare(b))
                 .map(([month, amount]) => ({ month, amount }));
 
+            // Students registered over time (monthly)
+            const studentsByMonth: {
+                [month: string]: number;
+            } = {};
+            students.forEach((student) => {
+                if (!student.createdAt) return;
+                const date = new Date(student.createdAt);
+                const monthKey = `${date.getFullYear()}-${String(
+                    date.getMonth() + 1
+                ).padStart(2, "0")}`;
+                studentsByMonth[monthKey] =
+                    (studentsByMonth[monthKey] || 0) + 1;
+            });
+            const studentsOverTime = Object.entries(studentsByMonth)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([month, count]) => ({ month, count }));
+
             // Payments by program (major)
             const paymentsByProgram = majors.map((major) => ({
                 program: major.name,
@@ -119,6 +136,7 @@ router.get(
                 charts: {
                     incomeOverTime,
                     paymentsByProgram,
+                    studentsOverTime,
                 },
                 sortedStaff,
                 recentActivity,

@@ -162,7 +162,7 @@ const ReceiptTemplate = React.forwardRef<
                         <strong>CIN/ PASSPORT Nº :</strong> {studentId}
                     </div>
                     <div className="mb-3">
-                        <strong>Nome :</strong> {studentName}
+                        <strong>Nom et Prénom :</strong> {studentName}
                     </div>
                     <div className="mb-3">
                         <strong>Filière :</strong> {major.name}
@@ -194,7 +194,7 @@ const ReceiptTemplate = React.forwardRef<
                         )}
                     </div>
                     <div className="mb-3">
-                        <strong>Total (Montant + Impots):</strong>{" "}
+                        <strong>Total attendu :</strong>{" "}
                         {formatMoney(expectedTotal)}
                     </div>
                 </div>

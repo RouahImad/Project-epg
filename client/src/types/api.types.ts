@@ -167,6 +167,7 @@ export type SuperDashboardData = {
     charts: {
         incomeOverTime: { month: string; amount: number }[];
         paymentsByProgram: { program: string; total: number }[];
+        studentsOverTime: { month: string; count: number }[];
     };
     sortedStaff: {
         userId: number;

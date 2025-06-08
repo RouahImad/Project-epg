@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { FiX, FiUser, FiLock } from "react-icons/fi";
-import { authApi } from "../services/api";
 import type { User } from "../types/";
+import { useUpdateProfile } from "../hooks/api/useAuthApi";
 
 interface Props {
     open: boolean;
@@ -15,9 +15,10 @@ const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {
         email: user?.email || "",
         password: "",
     });
-    const [isPending, setIsPending] = useState(false);
     const [successMsg, setSuccessMsg] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
+
+    const updateProfile = useUpdateProfile();
 
     React.useEffect(() => {
         if (user) {
@@ -27,6 +28,9 @@ const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {
                 password: "",
             });
         }
+
+        setSuccessMsg("");
+        setErrorMsg("");
     }, [user, open]);
 
     const isChanged = useMemo(() => {
@@ -50,25 +54,28 @@ const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {
             setErrorMsg("Please change at least one field before saving.");
             return;
         }
-        setIsPending(true);
         setErrorMsg("");
         setSuccessMsg("");
-        try {
-            await authApi.updateProfile({
-                fullName: form.fullName,
-                email: form.email,
-                ...(form.password ? { password: form.password } : {}),
-            });
-            setSuccessMsg("Account updated successfully.");
-            setForm((prev) => ({ ...prev, password: "" }));
-        } catch (err: any) {
-            setErrorMsg(
-                err?.response?.data?.message ||
-                    "Failed to update account. Please try again."
-            );
-        } finally {
-            setIsPending(false);
-        }
+
+        const updateData = {
+            fullName: form.fullName,
+            email: form.email,
+            ...(form.password ? { password: form.password } : {}),
+        };
+
+        updateProfile.mutate(updateData, {
+            onSuccess: () => {
+                setSuccessMsg("Account updated successfully.");
+                setForm((prev) => ({ ...prev, password: "" }));
+            },
+            onError: (err: any) => {
+                setErrorMsg(
+                    err?.response?.data?.message ||
+                        "Failed to update account. Please try again."
+                );
+                console.error("Update profile error:", err);
+            },
+        });
     };
 
     if (!open) return null;
@@ -145,16 +152,18 @@ const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {
                             type="button"
                             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
                             onClick={onClose}
-                            disabled={isPending}
+                            disabled={updateProfile.isPending}
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            disabled={isPending || !isChanged}
+                            disabled={updateProfile.isPending || !isChanged}
                         >
-                            {isPending ? "Saving..." : "Save Changes"}
+                            {updateProfile.isPending
+                                ? "Saving..."
+                                : "Save Changes"}
                         </button>
                     </div>
                 </form>

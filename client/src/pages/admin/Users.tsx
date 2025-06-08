@@ -44,6 +44,7 @@ const Users = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const searchInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [showAdd, setShowAdd] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [editUser, setEditUser] = useState<User | null>(null);
@@ -158,8 +159,6 @@ const Users = () => {
             </div>
         );
     }
-
-    const navigate = useNavigate();
 
     return (
         <div className="container mx-auto px-6 sm:px-8 py-8 md:max-w-[85vw]">

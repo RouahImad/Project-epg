@@ -27,18 +27,23 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
             (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
         );
         const programData = superData.charts.paymentsByProgram;
+        const studentsData = [...superData.charts.studentsOverTime].sort(
+            (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+        );
 
         const hasIncomeData =
             Array.isArray(incomeData) && incomeData.length > 1;
         const hasProgramData =
             Array.isArray(programData) && programData.length > 0;
+        const hasStudentsData =
+            Array.isArray(studentsData) && studentsData.length > 0;
 
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
                 <div className="bg-white rounded-xl shadow p-6 h-fit">
                     <h3 className="font-semibold mb-4">Income Over Time</h3>
                     {hasIncomeData ? (
-                        <ResponsiveContainer width="100%" height={250}>
+                        <ResponsiveContainer width="100%" height={200}>
                             <LineChart data={incomeData}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="month" />
@@ -59,18 +64,45 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                     )}
                 </div>
                 <div className="bg-white rounded-xl shadow p-6">
+                    <h3 className="font-semibold mb-4">Students Over Time</h3>
+                    {hasStudentsData ? (
+                        <ResponsiveContainer width="100%" height={200}>
+                            <LineChart data={studentsData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line
+                                    type="monotone"
+                                    dataKey="count"
+                                    stroke="#ffc658"
+                                    strokeWidth={2}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="text-gray-400 text-center py-12 text-pretty">
+                            No student registration data available.
+                        </div>
+                    )}
+                </div>
+                <div className="bg-white rounded-xl shadow p-6 md:col-span-2 xl:col-span-1">
                     <h3 className="font-semibold mb-4">Payments by Major</h3>
                     {hasProgramData ? (
-                        <ResponsiveContainer width="100%" height={250}>
+                        <ResponsiveContainer width="100%" height={200}>
                             <BarChart data={programData}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="program"
-                                    tickFormatter={(name: string) =>
-                                        name.length > 10
-                                            ? name.slice(0, 8) + "…"
-                                            : name
-                                    }
+                                    tickFormatter={(name: string) => {
+                                        const maxLength = Math.max(
+                                            10,
+                                            24 / programData.length
+                                        );
+                                        return name.length > maxLength
+                                            ? name.slice(0, maxLength - 2) + "…"
+                                            : name;
+                                    }}
                                     interval={0}
                                 />
                                 <YAxis />
@@ -118,7 +150,7 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
     const hasStudents = studentsByMonthArr.length > 0;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
             <div className="bg-white rounded-xl shadow p-6">
                 <h3 className="font-semibold mb-4">Payments by Month</h3>
                 {hasPayments ? (
@@ -143,24 +175,6 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                 )}
             </div>
             <div className="bg-white rounded-xl shadow p-6">
-                <h3 className="font-semibold mb-4">Outstanding by Month</h3>
-                {hasOutstanding ? (
-                    <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={outstandingByMonthArr}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="amount" fill="#82ca9d" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                ) : (
-                    <div className="text-gray-400 text-center py-12 text-pretty">
-                        No outstanding data.
-                    </div>
-                )}
-            </div>
-            <div className="bg-white rounded-xl shadow p-6">
                 <h3 className="font-semibold mb-4">Students by Month</h3>
                 {hasStudents ? (
                     <ResponsiveContainer width="100%" height={200}>
@@ -180,6 +194,24 @@ const DashboardCharts: React.FC<Props> = ({ role, data }) => {
                 ) : (
                     <div className="text-gray-400 text-center py-12 text-pretty">
                         No student data.
+                    </div>
+                )}
+            </div>
+            <div className="bg-white rounded-xl shadow p-6 md:col-span-2 xl:col-span-1">
+                <h3 className="font-semibold mb-4">Outstanding by Month</h3>
+                {hasOutstanding ? (
+                    <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={outstandingByMonthArr}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="amount" fill="#82ca9d" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div className="text-gray-400 text-center py-12 text-pretty">
+                        No outstanding data.
                     </div>
                 )}
             </div>

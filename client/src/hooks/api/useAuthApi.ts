@@ -71,6 +71,9 @@ export const useUpdateProfile = () => {
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.auth.currentUser,
             });
+            queryClient.refetchQueries({
+                queryKey: QueryKeys.auth.currentUser,
+            });
         },
     });
 };

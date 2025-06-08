@@ -27,13 +27,13 @@ const EditProgramTypeDialog = ({
         description: "",
     });
 
-    if (!showEdit || editId === undefined) return null;
-
     React.useEffect(() => {
         if (editId) {
             setOldForm({ name: form.name, description: form.description });
         }
     }, []);
+
+    if (!showEdit || editId === undefined) return null;
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
