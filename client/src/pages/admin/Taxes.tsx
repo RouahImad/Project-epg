@@ -12,6 +12,7 @@ import EditTaxDialog from "../../components/taxes/dialogs/EditTaxDialog";
 import DeleteTaxDialog from "../../components/taxes/dialogs/DeleteTaxDialog";
 import type { Tax } from "../../types";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 
 const initialTaxForm = {
     name: "",
@@ -58,13 +59,14 @@ const Taxes = () => {
     return (
         <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
             <div className="flex items-center mb-6">
-                <button
+                <motion.button
+                    whileTap={{ scale: 0.9 }}
                     className="mr-3 text-gray-500 hover:text-blue-600"
                     onClick={() => navigate(-1)}
                     aria-label="Back"
                 >
                     <FiArrowLeft size={22} />
-                </button>
+                </motion.button>
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                     <FiDollarSign className="text-green-500" />
                     Tax Management

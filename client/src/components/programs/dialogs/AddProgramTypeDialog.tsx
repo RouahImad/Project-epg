@@ -1,6 +1,7 @@
 import { FiPlus, FiSave, FiX } from "react-icons/fi";
 import type { MajorType } from "../../../types";
 import type { UseMutationResult } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 
 interface AddProgramTypeDialogProps {
     showAdd: boolean;
@@ -36,14 +37,15 @@ const AddProgramTypeDialog = ({
                         });
                     }}
                 >
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
                         onClick={() => setShowAdd(false)}
                         type="button"
                         aria-label="Close"
                     >
                         <FiX size={22} />
-                    </button>
+                    </motion.button>
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                         <FiPlus className="text-blue-500" /> Add Program Type
                     </h2>
@@ -69,14 +71,15 @@ const AddProgramTypeDialog = ({
                             onChange={handleFormChange}
                         />
                     </div>
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         type="submit"
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 w-full justify-center"
                         disabled={createProgramType.isPending}
                     >
                         <FiSave />{" "}
                         {createProgramType.isPending ? "Saving..." : "Save"}
-                    </button>
+                    </motion.button>
                     {createProgramType.isError && (
                         <div className="text-red-500 mt-2 text-sm">
                             Failed to add program type.

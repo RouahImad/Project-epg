@@ -6,6 +6,7 @@ import {
     FiPlus,
     FiSearch,
 } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { Tax } from "../../types";
 import { formatMoney } from "../../utils/helpers";
 
@@ -46,13 +47,14 @@ const TaxesTable: React.FC<TaxesTableProps> = ({
                 <FiDollarSign className="text-green-500" />
                 <h3 className="text-lg font-bold">Taxes</h3>
 
-                <button
+                <motion.button
                     className="ml-auto bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded flex items-center gap-1 shadow"
                     onClick={onAddTax}
                     type="button"
+                    whileTap={{ scale: 0.9 }}
                 >
                     <FiPlus /> Add Tax
-                </button>
+                </motion.button>
             </div>
 
             {!isLoading && taxes && taxes.length > 0 && (
@@ -115,24 +117,26 @@ const TaxesTable: React.FC<TaxesTableProps> = ({
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex gap-2">
-                                            <button
+                                            <motion.button
                                                 className="text-blue-600 hover:text-blue-800"
                                                 onClick={() => onEditTax(tax)}
                                                 title="Edit"
                                                 type="button"
+                                                whileTap={{ scale: 0.9 }}
                                             >
                                                 <FiEdit2 />
-                                            </button>
-                                            <button
+                                            </motion.button>
+                                            <motion.button
                                                 className="text-red-500 hover:text-red-700"
                                                 onClick={() =>
                                                     onDeleteTax(tax.id)
                                                 }
                                                 title="Delete"
                                                 type="button"
+                                                whileTap={{ scale: 0.9 }}
                                             >
                                                 <FiTrash2 />
-                                            </button>
+                                            </motion.button>
                                         </div>
                                     </td>
                                 </tr>

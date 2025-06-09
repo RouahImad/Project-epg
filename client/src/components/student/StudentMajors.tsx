@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiBookOpen, FiEdit2, FiTrash2, FiSearch } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { StudentMajorDetails } from "../../types";
 import { formatDate } from "../../utils/helpers";
 
@@ -89,17 +90,20 @@ const StudentMajors: React.FC<StudentMajorsProps> = ({
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex gap-2">
-                                                    <button
+                                                    <motion.button
                                                         className="text-blue-600 hover:text-blue-800"
                                                         onClick={() =>
                                                             onEditMajor(major)
                                                         }
                                                         title="Edit"
                                                         type="button"
+                                                        whileTap={{
+                                                            scale: 0.9,
+                                                        }}
                                                     >
                                                         <FiEdit2 />
-                                                    </button>
-                                                    <button
+                                                    </motion.button>
+                                                    <motion.button
                                                         className="text-red-500 hover:text-red-700"
                                                         onClick={() =>
                                                             onDeleteMajor(
@@ -108,9 +112,12 @@ const StudentMajors: React.FC<StudentMajorsProps> = ({
                                                         }
                                                         title="Delete"
                                                         type="button"
+                                                        whileTap={{
+                                                            scale: 0.9,
+                                                        }}
                                                     >
                                                         <FiTrash2 />
-                                                    </button>
+                                                    </motion.button>
                                                 </div>
                                             </td>
                                         </tr>

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { FiX, FiUser, FiLock } from "react-icons/fi";
 import type { User } from "../types/";
 import { useUpdateProfile } from "../hooks/api/useAuthApi";
+import { motion } from "framer-motion";
 
 interface Props {
     open: boolean;
@@ -148,15 +149,17 @@ const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {
                         </div>
                     )}
                     <div className="flex justify-end">
-                        <button
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
                             type="button"
                             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
                             onClick={onClose}
                             disabled={updateProfile.isPending}
                         >
                             Cancel
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
                             type="submit"
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                             disabled={updateProfile.isPending || !isChanged}
@@ -164,7 +167,7 @@ const AccountSettingsDialog: React.FC<Props> = ({ open, onClose, user }) => {
                             {updateProfile.isPending
                                 ? "Saving..."
                                 : "Save Changes"}
-                        </button>
+                        </motion.button>
                     </div>
                 </form>
             </div>

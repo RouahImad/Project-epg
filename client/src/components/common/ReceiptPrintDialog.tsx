@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import type { Major, Tax } from "../../types";
 import ReceiptTemplate from "./ReceiptTemplate";
+import { motion } from "framer-motion";
 
 export interface ReceiptPrintDialogProps {
     open: boolean;
@@ -53,22 +54,24 @@ const ReceiptPrintDialog: React.FC<ReceiptPrintDialogProps> = (props) => {
                     </div>
                 </div>
                 <div className="flex justify-end mt-6">
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-2.5 py-1.5 rounded mr-2"
                         onClick={onClose}
                         type="button"
                         aria-label="Close"
                     >
                         Close
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded"
                         onClick={handlePrint}
                         type="button"
                     >
                         Print Receipt
-                    </button>
+                    </motion.button>
                 </div>
             </div>
         </div>

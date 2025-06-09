@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiDollarSign, FiSearch, FiEdit2, FiPrinter } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { PaymentDetails } from "../../types";
 import { formatDate, formatMoney } from "../../utils/helpers";
 import { useUpdatePayment } from "../../hooks/api/";
@@ -158,17 +159,18 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                                 {formatDate(payment.paidAt)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                                                <button
+                                                <motion.button
                                                     className="text-blue-600 hover:text-blue-800"
                                                     title="Edit Payment"
                                                     type="button"
                                                     onClick={() =>
                                                         openEditDialog(payment)
                                                     }
+                                                    whileTap={{ scale: 0.9 }}
                                                 >
                                                     <FiEdit2 />
-                                                </button>
-                                                <button
+                                                </motion.button>
+                                                <motion.button
                                                     className="text-green-600 hover:text-green-800"
                                                     title="Print Receipt"
                                                     type="button"
@@ -179,9 +181,10 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({
                                                         });
                                                         setShowReceipt(true);
                                                     }}
+                                                    whileTap={{ scale: 0.9 }}
                                                 >
                                                     <FiPrinter />
-                                                </button>
+                                                </motion.button>
                                             </td>
                                         </tr>
                                     ))}

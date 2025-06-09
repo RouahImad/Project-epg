@@ -1,6 +1,7 @@
 import { FiPlus, FiSave, FiX } from "react-icons/fi";
 import type { Major, MajorType } from "../../../types";
 import type { UseMutationResult } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 
 const AddMajorDialog = ({
     showAddMajor,
@@ -61,14 +62,15 @@ const AddMajorDialog = ({
                         );
                     }}
                 >
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
                         onClick={() => setShowAddMajor(false)}
                         type="button"
                         aria-label="Close"
                     >
                         <FiX size={24} />
-                    </button>
+                    </motion.button>
                     <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-blue-700">
                         <FiPlus className="text-blue-500" /> Add Major
                     </h2>
@@ -143,13 +145,14 @@ const AddMajorDialog = ({
                             onChange={handleMajorFormChange}
                         />
                     </div>
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         type="submit"
                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 w-full justify-center font-semibold shadow transition"
                         disabled={addMajor.isPending || !majorForm.majorTypeId}
                     >
                         <FiSave /> {addMajor.isPending ? "Saving..." : "Save"}
-                    </button>
+                    </motion.button>
                     {!majorForm.majorTypeId && (
                         <div className="text-red-500 mt-3 text-sm text-center">
                             Please select a program type to add a major.

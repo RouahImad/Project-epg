@@ -1,4 +1,5 @@
 import { FiEdit2, FiMail, FiShield, FiTrash2 } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { User } from "../../types/";
 
 const UserTableRow = ({
@@ -60,20 +61,22 @@ const UserTableRow = ({
         </td>
         <td className="py-3 px-4 whitespace-nowrap">
             <div className="flex items-center gap-2">
-                <button
+                <motion.button
                     className="text-blue-600 hover:text-blue-800"
                     onClick={() => onEdit(user)}
                     title="Edit"
+                    whileTap={{ scale: 0.9 }}
                 >
                     <FiEdit2 />
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                     className="text-red-500 hover:text-red-700"
                     onClick={() => onDelete(user.id)}
                     title="Delete"
+                    whileTap={{ scale: 0.9 }}
                 >
                     <FiTrash2 />
-                </button>
+                </motion.button>
             </div>
         </td>
     </tr>

@@ -1,4 +1,5 @@
 import { FiMapPin, FiCalendar } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { Student } from "../../types";
 import { formatDate } from "../../utils/helpers";
 import { useNavigate } from "react-router";
@@ -73,10 +74,11 @@ const StudentCard = ({ student }: { student: Student }) => {
                 </div>
             </div>
             <div className="border-t border-gray-200 px-6 py-3 bg-gray-50">
-                <button
+                <motion.button
                     onClick={() => navigate(`/students/${student.id}`)}
                     className="w-full inline-flex justify-center items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
                     type="button"
+                    whileTap={{ scale: 0.9 }}
                 >
                     <span>View Details</span>
                     <svg
@@ -93,7 +95,7 @@ const StudentCard = ({ student }: { student: Student }) => {
                             d="M14 5l7 7m0 0l-7 7m7-7H3"
                         ></path>
                     </svg>
-                </button>
+                </motion.button>
             </div>
         </div>
     );

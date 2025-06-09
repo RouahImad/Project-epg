@@ -24,6 +24,7 @@ import EditMajorDialog from "../../components/student/dialogs/EditMajorDialog";
 import { formatDate } from "../../utils/helpers";
 import type React from "react";
 import ReceiptPrintDialog from "../../components/common/ReceiptPrintDialog";
+import { motion } from "framer-motion";
 
 const StudentDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -312,14 +313,15 @@ const StudentDetails = () => {
 
     return (
         <div className="container mx-auto px-4 py-6 md:max-w-[85vw]">
-            <button
+            <motion.button
+                whileTap={{ scale: 0.9 }}
                 className="mr-3 mb-4 text-gray-500 hover:text-blue-600"
                 onClick={() => navigate(-1)}
                 aria-label="Back"
                 type="button"
             >
                 <FiArrowLeft size={22} />
-            </button>
+            </motion.button>
             <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
                 <div className="px-6 py-4">
                     <div className="flex justify-between items-center mb-4">
@@ -327,22 +329,24 @@ const StudentDetails = () => {
                             {student.fullName}
                         </h1>
                         <div className="flex gap-2">
-                            <button
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
                                 className="bg-green-500 text-white px-2.5 py-1.5 rounded flex items-center gap-1"
                                 onClick={() => setShowEnrollDialog(true)}
                             >
                                 <FiPlus />
                                 Enroll
-                            </button>
+                            </motion.button>
                             {userRole === "super_admin" && (
-                                <button
+                                <motion.button
+                                    whileTap={{ scale: 0.9 }}
                                     className="bg-red-500 text-white px-2.5 py-1.5 rounded flex items-center gap-1"
                                     onClick={() => setShowDeleteDialog(true)}
                                     type="button"
                                     title="Delete Student"
                                 >
                                     <FiTrash2 /> Delete
-                                </button>
+                                </motion.button>
                             )}
                         </div>
                     </div>
@@ -469,14 +473,16 @@ const StudentDetails = () => {
                             Are you sure you want to delete this student?
                         </p>
                         <div className="flex justify-end gap-2">
-                            <button
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
                                 className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
                                 onClick={() => setShowDeleteDialog(false)}
                                 disabled={deleteStudentMutation.isPending}
                             >
                                 Cancel
-                            </button>
-                            <button
+                            </motion.button>
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
                                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
                                 onClick={handleDeleteStudent}
                                 disabled={deleteStudentMutation.isPending}
@@ -484,7 +490,7 @@ const StudentDetails = () => {
                                 {deleteStudentMutation.isPending
                                     ? "Deleting..."
                                     : "Delete"}
-                            </button>
+                            </motion.button>
                         </div>
                         {deleteStudentMutation.isError && (
                             <div className="text-red-500 mt-2 text-sm">
@@ -519,14 +525,16 @@ const StudentDetails = () => {
                             enrollment?
                         </p>
                         <div className="flex justify-end gap-2">
-                            <button
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
                                 className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
                                 onClick={() => setDeleteMajorId(null)}
                                 disabled={deleteStudentMajorMutation.isPending}
                             >
                                 Cancel
-                            </button>
-                            <button
+                            </motion.button>
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
                                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
                                 onClick={confirmDeleteMajor}
                                 disabled={deleteStudentMajorMutation.isPending}
@@ -534,7 +542,7 @@ const StudentDetails = () => {
                                 {deleteStudentMajorMutation.isPending
                                     ? "Deleting..."
                                     : "Delete"}
-                            </button>
+                            </motion.button>
                         </div>
                         {deleteStudentMajorMutation.isError && (
                             <div className="text-red-500 mt-2 text-sm">

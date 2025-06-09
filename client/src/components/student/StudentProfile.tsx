@@ -7,6 +7,7 @@ import {
     FiMapPin,
     FiCalendar,
 } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { Student } from "../../types";
 import { formatDate } from "../../utils/helpers";
 
@@ -33,13 +34,14 @@ const StudentProfile: React.FC<StudentProfileProps> = ({
                     Student Profile
                 </span>
                 {onUpdateProfile && (
-                    <button
+                    <motion.button
                         className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition"
                         onClick={onUpdateProfile}
                         type="button"
+                        whileTap={{ scale: 0.9 }}
                     >
                         Update Profile
-                    </button>
+                    </motion.button>
                 )}
             </div>
             {/* Details Section */}

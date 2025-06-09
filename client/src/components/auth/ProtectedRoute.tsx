@@ -28,12 +28,11 @@ const ProtectedRoute = ({
         allowedRoles.length > 0 &&
         !allowedRoles.includes(userRole)
     ) {
-        return <Navigate to="/forbidden" replace />;
+        return <Navigate to="/forbidden" replace />; // Redirect to forbidden page if user role is not allowed
     }
 
-    // Redirect if not authenticated
     if (!userIsAuthenticated && !isLoading) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace />; // Redirect if not authenticated
     }
 
     // If authenticated and authorized, render children with optional navbar

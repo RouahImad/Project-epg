@@ -6,6 +6,7 @@ import {
     FiDollarSign,
     FiSearch,
 } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { Major, MajorType } from "../../types";
 import { formatMoney } from "../../utils/helpers";
 import { useState } from "react";
@@ -59,14 +60,15 @@ const MajorsTable = ({
             <div className="flex items-center gap-2 mb-4">
                 <FiAward className="text-blue-500" />
                 <h3 className="text-lg font-bold">Majors</h3>
-                <button
+                <motion.button
                     className="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded flex items-center gap-1 shadow"
                     onClick={onAddMajor}
                     type="button"
                     disabled={!majorTypes || majorTypes.length === 0}
+                    whileTap={{ scale: 0.9 }}
                 >
                     <FiPlus /> Add Major
-                </button>
+                </motion.button>
             </div>
             <div className="mb-3 flex items-center">
                 <div className="relative w-full max-w-md">
@@ -151,44 +153,47 @@ const MajorsTable = ({
                                     <td className="px-3 py-2 flex gap-2">
                                         {/* Manage Taxes Action */}
                                         {onManageTaxes && (
-                                            <button
+                                            <motion.button
                                                 className="text-green-600 hover:text-green-800"
                                                 onClick={() =>
                                                     onManageTaxes(major)
                                                 }
                                                 title="Manage Taxes"
                                                 type="button"
+                                                whileTap={{ scale: 0.9 }}
                                             >
                                                 <FiDollarSign />
-                                            </button>
+                                            </motion.button>
                                         )}
 
                                         {/* Update Action */}
                                         {onEditMajor && (
-                                            <button
+                                            <motion.button
                                                 className="text-blue-600 hover:text-blue-800"
                                                 onClick={() =>
                                                     onEditMajor(major)
                                                 }
                                                 title="Edit"
                                                 type="button"
+                                                whileTap={{ scale: 0.9 }}
                                             >
                                                 <FiEdit2 />
-                                            </button>
+                                            </motion.button>
                                         )}
 
                                         {/* Delete Action */}
                                         {onDeleteMajor && (
-                                            <button
+                                            <motion.button
                                                 className="text-red-500 hover:text-red-700"
                                                 onClick={() =>
                                                     onDeleteMajor(major.id)
                                                 }
                                                 title="Delete"
                                                 type="button"
+                                                whileTap={{ scale: 0.9 }}
                                             >
                                                 <FiTrash2 />
-                                            </button>
+                                            </motion.button>
                                         )}
                                     </td>
                                 </tr>

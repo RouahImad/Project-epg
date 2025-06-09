@@ -5,6 +5,7 @@ import {
     FiPlus,
     FiSearch,
 } from "react-icons/fi";
+import { motion } from "framer-motion";
 import type { MajorType } from "../../types";
 import { useState } from "react";
 
@@ -40,13 +41,14 @@ const ProgramTypesTable = ({
             <div className="flex items-center gap-2 mb-4">
                 <FiBookOpen className="text-blue-500" />
                 <h3 className="text-lg font-bold">Program Types</h3>
-                <button
+                <motion.button
                     className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded flex items-center gap-1 shadow"
                     onClick={onAdd}
                     type="button"
+                    whileTap={{ scale: 0.9 }}
                 >
                     <FiPlus /> Add Major Type
-                </button>
+                </motion.button>
             </div>
             <div className="mb-3 flex items-center">
                 <div className="relative w-full max-w-md">
@@ -113,22 +115,24 @@ const ProgramTypesTable = ({
                                         )}
                                     </td>
                                     <td className="px-3 py-2 flex gap-2">
-                                        <button
+                                        <motion.button
                                             className="text-blue-600 hover:text-blue-800"
                                             onClick={() => onEdit(type)}
                                             title="Edit"
                                             type="button"
+                                            whileTap={{ scale: 0.9 }}
                                         >
                                             <FiEdit2 />
-                                        </button>
-                                        <button
+                                        </motion.button>
+                                        <motion.button
                                             className="text-red-500 hover:text-red-700"
                                             onClick={() => onDelete(type.id)}
                                             title="Delete"
                                             type="button"
+                                            whileTap={{ scale: 0.9 }}
                                         >
                                             <FiTrash2 />
-                                        </button>
+                                        </motion.button>
                                     </td>
                                 </tr>
                             ))}

@@ -22,6 +22,7 @@ import DeleteMajorDialog from "../../components/programs/dialogs/DeleteMajorDial
 import ManageMajorTaxesDialog from "../../components/programs/dialogs/ManageMajorTaxesDialog";
 import type { Major, MajorType } from "../../types";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 
 const initialProgramType = { name: "", description: "" };
 const initialMajor = {
@@ -124,13 +125,14 @@ const Programs = () => {
         <div className="container mx-auto px-4 py-8 md:max-w-[85vw]">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                 <div className="flex items-center mb-6">
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         className="mr-3 text-gray-500 hover:text-blue-600"
                         onClick={() => navigate(-1)}
                         aria-label="Back"
                     >
                         <FiArrowLeft size={22} />
-                    </button>
+                    </motion.button>
                     <h2 className="text-2xl font-bold flex items-center gap-2">
                         <IoSchool className="text-blue-500" />
                         Program Types & Majors

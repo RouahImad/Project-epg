@@ -4,6 +4,7 @@ import { useCreateStudent, useStudents } from "../../hooks/api/";
 import StudentCard from "../../components/student/StudentCard";
 import { FiSearch, FiX, FiPlus, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 
 const StudentsList = () => {
     const [showAddDialog, setShowAddDialog] = useState(false);
@@ -104,14 +105,15 @@ const StudentsList = () => {
                             </button>
                         )}
                     </div>
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm"
                         onClick={() => setShowAddDialog(true)}
                         type="button"
                     >
                         <FiPlus className="h-5 w-5" />
                         <span>Add Student</span>
-                    </button>
+                    </motion.button>
                 </div>
             </div>
 

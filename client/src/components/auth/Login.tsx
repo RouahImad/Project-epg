@@ -5,6 +5,7 @@ import { useLogin, useCurrentUser } from "../../hooks/api/";
 import { isAuthenticated } from "../../utils/authUtils";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiLogIn } from "react-icons/fi";
 import { BiErrorCircle } from "react-icons/bi";
+import { motion } from "framer-motion";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -176,7 +177,9 @@ const Login = () => {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.9 }}
                             type="submit"
                             disabled={loginMutation.isPending}
                             className="group relative w-full flex justify-center items-center py-2.5 px-4 border border-transparent 
@@ -210,7 +213,7 @@ const Login = () => {
                                 <FiLogIn className="mr-2 h-5 w-5" />
                             )}
                             Sign in
-                        </button>
+                        </motion.button>
                     </div>
                 </form>
             </div>
