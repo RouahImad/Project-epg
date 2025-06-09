@@ -10,23 +10,18 @@ const router = Router();
 /**
  * @route   GET /company-info
  * @desc    Get company info
- * @access  Super Admin Only
+ * @access   Admin
  */
-router.get(
-    "/",
-    authenticateJWT,
-    checkRole("super_admin"),
-    async (req: Request, res: Response) => {
-        try {
-            const companyInfo = await getCompanyInfo();
+router.get("/", authenticateJWT, async (req: Request, res: Response) => {
+    try {
+        const companyInfo = await getCompanyInfo();
 
-            res.status(200).json(companyInfo);
-        } catch (error) {
-            console.error("Get company info error:", error);
-            res.status(500).json({ message: "Server error" });
-        }
+        res.status(200).json(companyInfo);
+    } catch (error) {
+        console.error("Get company info error:", error);
+        res.status(500).json({ message: "Server error" });
     }
-);
+});
 
 /**
  * @route   PATCH /company-info
